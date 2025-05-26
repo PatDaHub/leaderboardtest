@@ -25,10 +25,6 @@
                 <h1 class="text-2xl font-bold bg-gradient-to-r from-yellow-400 to-yellow-600 bg-clip-text text-transparent">FIFA LEADERBOARD</h1>
             </div>
             <div class="flex items-center space-x-4">
-                <button id="languageToggle" class="px-3 py-1 bg-gray-800 rounded-md hover:bg-gray-700 transition">
-                    
-                    <span class="ar-lang hidden">English</span>
-                </button>
                 <button id="adminBtn" class="px-3 py-1 bg-blue-600 rounded-md hover:bg-blue-500 transition hidden">
                     <i class="fas fa-lock mr-1"></i>
                     <span class="en-lang">Admin</span>
@@ -49,10 +45,7 @@
                     <i class="fas fa-search absolute right-3 top-3 text-gray-400"></i>
                 </div>
                 <div class="flex flex-col sm:flex-row gap-2">
-                    <select id="teamFilter" class="px-3 py-2 bg-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500">
-                        <option value="">All Teams</option>
-                        <!-- Teams will be populated by JS -->
-                    </select>
+
                     <select id="sortFilter" class="px-3 py-2 bg-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500">
                         <option value="rank" class="en-lang">Sort by Rank</option>
                         <option value="wins" class="en-lang">Sort by Wins</option>
@@ -146,11 +139,7 @@
                             <label class="block mb-2 ar-lang hidden">اسم اللاعب</label>
                             <input type="text" id="playerName" class="w-full px-3 py-2 bg-gray-700 rounded-md">
                         </div>
-                        <div class="mb-4">
-                            <label class="block mb-2 en-lang">Team</label>
-                            <label class="block mb-2 ar-lang hidden">الفريق</label>
-                            <input type="text" id="playerTeam" class="w-full px-3 py-2 bg-gray-700 rounded-md">
-                        </div>
+
                         <div class="grid grid-cols-2 gap-4">
                             <div>
                                 <label class="block mb-2 en-lang">Wins</label>
