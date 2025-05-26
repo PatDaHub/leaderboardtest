@@ -72,6 +72,117 @@
             color: var(--text-light);
         }
 
+        /* Search and Filter Panel */
+        .filter-panel {
+            background: var(--card-bg);
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .filter-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .filter-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .search-box {
+            position: relative;
+            flex: 1;
+            max-width: 400px;
+            margin-right: 20px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 20px 12px 45px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 25px;
+            color: var(--text);
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--highlight);
+            box-shadow: 0 0 0 2px rgba(233, 69, 96, 0.2);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-light);
+        }
+
+        .clear-search {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--text-light);
+            cursor: pointer;
+            display: none;
+        }
+
+        .filter-controls {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .filter-label {
+            font-size: 14px;
+            color: var(--text-light);
+            white-space: nowrap;
+        }
+
+        .filter-select {
+            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            color: var(--text);
+            font-size: 14px;
+            min-width: 120px;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: var(--highlight);
+        }
+
+        .filter-stats {
+            font-size: 14px;
+            color: var(--text-light);
+            margin-left: auto;
+        }
+
         .leaderboard {
             background: var(--card-bg);
             border-radius: 10px;
@@ -221,11 +332,37 @@
             color: var(--trophy);
         }
 
-        .player-points {
+        .player-ratio {
             font-family: 'Montserrat', sans-serif;
             font-weight: 700;
             font-size: 1.2rem;
             color: var(--warning);
+            text-align: center;
+            min-width: 80px;
+        }
+
+        .ratio-perfect {
+            color: var(--success);
+        }
+
+        .ratio-good {
+            color: var(--warning);
+        }
+
+        .ratio-poor {
+            color: var(--highlight);
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-light);
+        }
+
+        .no-results i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            opacity: 0.5;
         }
 
         /* Admin Panel */
@@ -362,6 +499,27 @@
 
         /* Responsive */
         @media (max-width: 768px) {
+            .filter-header {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .search-box {
+                max-width: none;
+                margin-right: 0;
+                order: 2;
+            }
+
+            .filter-controls {
+                justify-content: center;
+                order: 1;
+            }
+
+            .filter-stats {
+                margin: 0;
+                order: 3;
+            }
+
             .player-item {
                 flex-direction: column;
                 text-align: center;
@@ -377,7 +535,7 @@
                 margin-top: 10px;
             }
 
-            .player-points {
+            .player-ratio {
                 margin-top: 10px;
             }
 
@@ -430,6 +588,53 @@
     </header>
 
     <div class="container">
+        <!-- Search and Filter Panel -->
+        <div class="filter-panel fade-in">
+            <div class="filter-header">
+                <div class="filter-title">
+                    <i class="fas fa-filter"></i>
+                    Search & Filters
+                </div>
+                <div class="search-box">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" id="searchInput" class="search-input" placeholder="Search players...">
+                    <button id="clearSearch" class="clear-search"><i class="fas fa-times"></i></button>
+                </div>
+            </div>
+            <div class="filter-controls">
+                <div class="filter-group">
+                    <label class="filter-label">Sort by:</label>
+                    <select id="sortBy" class="filter-select">
+                        <option value="rank">Rank</option>
+                        <option value="ratio">W/L Ratio</option>
+                        <option value="wins">Wins</option>
+                        <option value="losses">Losses</option>
+                        <option value="name">Name</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Order:</label>
+                    <select id="sortOrder" class="filter-select">
+                        <option value="asc">Ascending</option>
+                        <option value="desc">Descending</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Min Wins:</label>
+                    <select id="minWins" class="filter-select">
+                        <option value="0">Any</option>
+                        <option value="1">1+</option>
+                        <option value="5">5+</option>
+                        <option value="10">10+</option>
+                        <option value="20">20+</option>
+                    </select>
+                </div>
+                <div class="filter-stats" id="filterStats">
+                    Showing all players
+                </div>
+            </div>
+        </div>
+
         <div class="leaderboard fade-in">
             <div class="leaderboard-header">
                 <h2 class="leaderboard-title"><i class="fas fa-trophy trophy"></i> Current Standings</h2>
@@ -493,14 +698,14 @@
     <script>
         // Firebase configuration - REPLACE WITH YOUR CONFIG
         const firebaseConfig = {
-apiKey: "AIzaSyBezrUgfVjy6ULS4EtORPv-NkXRQo_kXxg",
-  authDomain: "tic-tac-77ff7.firebaseapp.com",
-  databaseURL: "https://tic-tac-77ff7-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "tic-tac-77ff7",
-  storageBucket: "tic-tac-77ff7.firebasestorage.app",
-  messagingSenderId: "882673281893",
-  appId: "1:882673281893:web:c1ba7b3fd078350e888f8c",
-  measurementId: "G-R2R8W6TZQN"
+            apiKey: "AIzaSyBezrUgfVjy6ULS4EtORPv-NkXRQo_kXxg",
+            authDomain: "tic-tac-77ff7.firebaseapp.com",
+            databaseURL: "https://tic-tac-77ff7-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "tic-tac-77ff7",
+            storageBucket: "tic-tac-77ff7.firebasestorage.app",
+            messagingSenderId: "882673281893",
+            appId: "1:882673281893:web:c1ba7b3fd078350e888f8c",
+            measurementId: "G-R2R8W6TZQN"
         };
 
         // Initialize Firebase
@@ -515,6 +720,14 @@ apiKey: "AIzaSyBezrUgfVjy6ULS4EtORPv-NkXRQo_kXxg",
         const loginForm = document.getElementById('loginForm');
         const loginBtn = document.getElementById('loginBtn');
         const loadingSpinner = document.getElementById('loadingSpinner');
+        
+        // Search and filter elements
+        const searchInput = document.getElementById('searchInput');
+        const clearSearch = document.getElementById('clearSearch');
+        const sortBy = document.getElementById('sortBy');
+        const sortOrder = document.getElementById('sortOrder');
+        const minWins = document.getElementById('minWins');
+        const filterStats = document.getElementById('filterStats');
         
         // Form elements
         const playerNameInput = document.getElementById('playerName');
@@ -533,18 +746,17 @@ apiKey: "AIzaSyBezrUgfVjy6ULS4EtORPv-NkXRQo_kXxg",
         const loginEmailInput = document.getElementById('loginEmail');
         const loginPasswordInput = document.getElementById('loginPassword');
 
-        // Current selected player
+        // Current selected player and data
         let selectedPlayerId = null;
         let playersData = [];
+        let filteredPlayers = [];
 
         // Check auth state
         auth.onAuthStateChanged(user => {
             if (user) {
-                // User is signed in
                 loginForm.style.display = 'none';
                 adminPanel.style.display = 'block';
             } else {
-                // No user is signed in
                 loginForm.style.display = 'block';
                 adminPanel.style.display = 'none';
             }
@@ -564,6 +776,108 @@ apiKey: "AIzaSyBezrUgfVjy6ULS4EtORPv-NkXRQo_kXxg",
                 });
         });
 
+        // Calculate W/L ratio
+        function calculateRatio(wins, losses) {
+            if (losses === 0) {
+                return wins > 0 ? wins.toFixed(1) : '0.0';
+            }
+            return (wins / losses).toFixed(2);
+        }
+
+        // Get ratio color class
+        function getRatioClass(wins, losses) {
+            const ratio = wins / (losses || 1);
+            if (losses === 0 && wins > 0) return 'ratio-perfect';
+            if (ratio >= 2) return 'ratio-perfect';
+            if (ratio >= 1) return 'ratio-good';
+            return 'ratio-poor';
+        }
+
+        // Search and filter functions
+        function applyFilters() {
+            const searchTerm = searchInput.value.toLowerCase().trim();
+            const sortByValue = sortBy.value;
+            const sortOrderValue = sortOrder.value;
+            const minWinsValue = parseInt(minWins.value);
+
+            // Filter by search term
+            let filtered = playersData.filter(player => {
+                const matchesSearch = player.name.toLowerCase().includes(searchTerm);
+                const matchesMinWins = (player.wins || 0) >= minWinsValue;
+                return matchesSearch && matchesMinWins;
+            });
+
+            // Sort players
+            filtered.sort((a, b) => {
+                let aValue, bValue;
+                
+                switch (sortByValue) {
+                    case 'rank':
+                        aValue = a.rank || Infinity;
+                        bValue = b.rank || Infinity;
+                        break;
+                    case 'ratio':
+                        aValue = (a.wins || 0) / ((a.losses || 0) || 1);
+                        bValue = (b.wins || 0) / ((b.losses || 0) || 1);
+                        break;
+                    case 'wins':
+                        aValue = a.wins || 0;
+                        bValue = b.wins || 0;
+                        break;
+                    case 'losses':
+                        aValue = a.losses || 0;
+                        bValue = b.losses || 0;
+                        break;
+                    case 'name':
+                        aValue = a.name.toLowerCase();
+                        bValue = b.name.toLowerCase();
+                        break;
+                    default:
+                        aValue = a.rank || Infinity;
+                        bValue = b.rank || Infinity;
+                }
+
+                if (sortOrderValue === 'desc') {
+                    return bValue > aValue ? 1 : bValue < aValue ? -1 : 0;
+                } else {
+                    return aValue > bValue ? 1 : aValue < bValue ? -1 : 0;
+                }
+            });
+
+            filteredPlayers = filtered;
+            renderPlayers(filteredPlayers);
+            updateFilterStats();
+        }
+
+        function updateFilterStats() {
+            const totalPlayers = playersData.length;
+            const filteredCount = filteredPlayers.length;
+            
+            if (filteredCount === totalPlayers) {
+                filterStats.textContent = `Showing all ${totalPlayers} players`;
+            } else {
+                filterStats.textContent = `Showing ${filteredCount} of ${totalPlayers} players`;
+            }
+        }
+
+        // Search input events
+        searchInput.addEventListener('input', (e) => {
+            const hasValue = e.target.value.length > 0;
+            clearSearch.style.display = hasValue ? 'block' : 'none';
+            applyFilters();
+        });
+
+        clearSearch.addEventListener('click', () => {
+            searchInput.value = '';
+            clearSearch.style.display = 'none';
+            applyFilters();
+        });
+
+        // Filter change events
+        sortBy.addEventListener('change', applyFilters);
+        sortOrder.addEventListener('change', applyFilters);
+        minWins.addEventListener('change', applyFilters);
+
         // Load players from Firebase
         function loadPlayers() {
             loadingSpinner.style.display = 'block';
@@ -579,10 +893,8 @@ apiKey: "AIzaSyBezrUgfVjy6ULS4EtORPv-NkXRQo_kXxg",
                         });
                     });
                     
-                    // Sort by rank ascending (1 is highest)
-                    playersData.sort((a, b) => (a.rank || Infinity) - (b.rank || Infinity));
-                    
-                    renderPlayers(playersData);
+                    // Apply filters and render
+                    applyFilters();
                     loadingSpinner.style.display = 'none';
                 })
                 .catch(error => {
@@ -596,7 +908,14 @@ apiKey: "AIzaSyBezrUgfVjy6ULS4EtORPv-NkXRQo_kXxg",
             playerList.innerHTML = '';
             
             if (players.length === 0) {
-                playerList.innerHTML = '<li class="player-item"><div>No players found. Add some players to get started!</div></li>';
+                const noResults = document.createElement('div');
+                noResults.className = 'no-results';
+                noResults.innerHTML = `
+                    <i class="fas fa-search"></i>
+                    <div>No players found matching your criteria</div>
+                    <div style="font-size: 14px; margin-top: 10px;">Try adjusting your search or filters</div>
+                `;
+                playerList.appendChild(noResults);
                 return;
             }
             
@@ -625,28 +944,32 @@ apiKey: "AIzaSyBezrUgfVjy6ULS4EtORPv-NkXRQo_kXxg",
                 // Default avatar if none provided
                 const avatarUrl = player.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(player.name)}&background=random&size=128`;
                 
+                // Calculate W/L ratio and get appropriate class
+                const wins = player.wins || 0;
+                const losses = player.losses || 0;
+                const ratio = calculateRatio(wins, losses);
+                const ratioClass = getRatioClass(wins, losses);
+                
                 playerItem.innerHTML = `
                     <div class="player-rank ${rankClass}">${rank}</div>
                     <div class="player-avatar">
-                        <img src="${avatarUrl}" alt="${player.name}">
+                        <img src="${avatarUrl}" alt="${player.name}" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(player.name)}&background=random&size=128'">
                     </div>
                     <div class="player-info">
                         <div class="player-name">${player.name}</div>
                         <div class="player-stats">
-                            <div class="stat wins"><i class="fas fa-trophy"></i> ${player.wins || 0} Wins</div>
-                            <div class="stat losses"><i class="fas fa-times-circle"></i> ${player.losses || 0} Losses</div>
+                            <div class="stat wins"><i class="fas fa-trophy"></i> ${wins} Wins</div>
+                            <div class="stat losses"><i class="fas fa-times-circle"></i> ${losses} Losses</div>
                         </div>
                     </div>
-                    <div class="player-points">${calculatePoints(player.wins || 0, player.losses || 0)} PTS</div>
+                    <div class="player-ratio ${ratioClass}">
+                        ${ratio}
+                        <div style="font-size: 0.7rem; opacity: 0.8;">W/L</div>
+                    </div>
                 `;
                 
                 playerList.appendChild(playerItem);
             });
-        }
-
-        // Calculate points based on wins and losses
-        function calculatePoints(wins, losses) {
-            return wins * 3 - losses * 1; // 3 points per win, -1 per loss
         }
 
         // Select a player for editing
@@ -709,8 +1032,7 @@ apiKey: "AIzaSyBezrUgfVjy6ULS4EtORPv-NkXRQo_kXxg",
                 name,
                 rank,
                 wins,
-                losses,
-                points: calculatePoints(wins, losses)
+                losses
             };
             
             if (avatar) {
@@ -747,8 +1069,7 @@ apiKey: "AIzaSyBezrUgfVjy6ULS4EtORPv-NkXRQo_kXxg",
                 name,
                 rank,
                 wins,
-                losses,
-                points: calculatePoints(wins, losses)
+                losses
             };
             
             if (avatar) {
