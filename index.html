@@ -1,35 +1,157 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FIFA Leaderboard</title>
+    <title>FIFA Ultimate Leaderboard</title>
     <!-- CDN Links -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.0.2/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.0.2/firebase-database-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.0.2/firebase-auth-compat.js"></script>
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    
+    <style>
+        :root {
+            --primary: #0f1923;
+            --secondary: #1a2a3a;
+            --accent: #00ff9d;
+            --text: #ffffff;
+            --highlight: #ff4655;
+        }
+        
+        body {
+            font-family: 'Rajdhani', 'Arial Narrow', Arial, sans-serif;
+            background-color: var(--primary);
+            color: var(--text);
+            overflow-x: hidden;
+        }
+        
+        .fifa-gradient {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+        }
+        
+        .player-card {
+            transition: all 0.3s ease;
+            transform-style: preserve-3d;
+            perspective: 1000px;
+        }
+        
+        .player-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 10px 20px rgba(0, 255, 157, 0.2);
+        }
+        
+        .player-card.flipped {
+            transform: rotateY(180deg);
+        }
+        
+        .card-front, .card-back {
+            backface-visibility: hidden;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .card-back {
+            transform: rotateY(180deg);
+        }
+        
+        .rank-1 {
+            background: linear-gradient(135deg, #ffd700 0%, #ff8c00 100%);
+        }
+        
+        .rank-2 {
+            background: linear-gradient(135deg, #c0c0c0 0%, #a0a0a0 100%);
+        }
+        
+        .rank-3 {
+            background: linear-gradient(135deg, #cd7f32 0%, #a0522d 100%);
+        }
+        
+        .glitch {
+            position: relative;
+        }
+        
+        .glitch::before, .glitch::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.8;
+        }
+        
+        .glitch::before {
+            color: #0ff;
+            z-index: -1;
+            animation: glitch-effect 3s infinite;
+        }
+        
+        .glitch::after {
+            color: #f0f;
+            z-index: -2;
+            animation: glitch-effect 2s infinite reverse;
+        }
+        
+        @keyframes glitch-effect {
+            0% { transform: translate(0); }
+            20% { transform: translate(-3px, 3px); }
+            40% { transform: translate(-3px, -3px); }
+            60% { transform: translate(3px, 3px); }
+            80% { transform: translate(3px, -3px); }
+            100% { transform: translate(0); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(0, 255, 157, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(0, 255, 157, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 255, 157, 0); }
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .player-card {
+                width: 100%;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
 </head>
-<body class="bg-gray-900 text-white font-montserrat min-h-screen">
+<body class="fifa-gradient min-h-screen">
     <!-- Header -->
-    <header class="bg-black py-4 px-6 shadow-lg">
+    <header class="py-6 px-4 border-b border-gray-800">
         <div class="container mx-auto flex justify-between items-center">
-            <div class="flex items-center">
-                <img src="https://via.placeholder.com/50" alt="FIFA Logo" class="h-10 mr-3">
-                <h1 class="text-2xl font-bold bg-gradient-to-r from-yellow-400 to-yellow-600 bg-clip-text text-transparent">FIFA LEADERBOARD</h1>
+            <div class="flex items-center space-x-2">
+                <img src="https://via.placeholder.com/50" alt="FIFA Logo" class="h-10">
+                <h1 class="text-3xl font-bold glitch" data-text="FIFA LEADERBOARD">FIFA LEADERBOARD</h1>
             </div>
             <div class="flex items-center space-x-4">
-            
-                <button id="adminBtn" class="px-3 py-1 bg-blue-600 rounded-md hover:bg-blue-500 transition hidden">
-                    <i class="fas fa-lock mr-1"></i>
-                    <span class="en-lang">Admin</span>
-                    <span class="ar-lang hidden">مدير</span>
+                <button id="theme-toggle" class="p-2 rounded-full hover:bg-gray-800">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <button id="admin-btn" class="bg-red-500 hover:bg-red-600 px-4 py-2 rounded-lg hidden">
+                    Admin
                 </button>
             </div>
         </div>
@@ -38,156 +160,638 @@
     <!-- Main Content -->
     <main class="container mx-auto py-8 px-4">
         <!-- Search and Filters -->
-        <div class="mb-8 p-4 bg-gray-800 rounded-lg shadow-lg">
-            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                <div class="relative flex-grow">
-                    <input type="text" id="searchInput" placeholder="Search players..." 
-                        class="w-full px-4 py-2 bg-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500">
+        <div class="mb-8 grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="md:col-span-2">
+                <div class="relative">
+                    <input type="text" id="search-input" placeholder="Search players..." 
+                           class="w-full bg-gray-800 border border-gray-700 rounded-lg py-3 px-4 focus:outline-none focus:ring-2 focus:ring-green-400">
                     <i class="fas fa-search absolute right-3 top-3 text-gray-400"></i>
                 </div>
-                <div class="flex flex-col sm:flex-row gap-2">
-                    <select id="teamFilter" class="px-3 py-2 bg-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500">
-                        <option value="">All Teams</option>
-                        <!-- Teams will be populated by JS -->
-                    </select>
-                    <select id="sortFilter" class="px-3 py-2 bg-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500">
-                        <option value="rank" class="en-lang">Sort by Rank</option>
-                        <option value="wins" class="en-lang">Sort by Wins</option>
-                        <option value="winRate" class="en-lang">Sort by Win Rate</option>
-                        <option value="rank" class="ar-lang hidden">ترتيب حسب الرتبة</option>
-                        <option value="wins" class="ar-lang hidden">ترتيب حسب الانتصارات</option>
-                        <option value="winRate" class="ar-lang hidden">ترتيب حسب نسبة الفوز</option>
-                    </select>
-                </div>
+            </div>
+            <div>
+                <select id="filter-select" class="w-full bg-gray-800 border border-gray-700 rounded-lg py-3 px-4 focus:outline-none focus:ring-2 focus:ring-green-400">
+                    <option value="all">All Players</option>
+                    <option value="top10">Top 10</option>
+                    <option value="winrate">Highest Win Rate</option>
+                    <option value="wins">Most Wins</option>
+                </select>
             </div>
         </div>
 
         <!-- Leaderboard -->
-        <div class="bg-gray-800 rounded-lg shadow-lg overflow-hidden">
-            <div class="grid grid-cols-12 bg-gray-900 p-4 font-bold">
-                <div class="col-span-1 en-lang">Rank</div>
-                <div class="col-span-1 ar-lang hidden">الرتبة</div>
-                <div class="col-span-3 en-lang">Player</div>
-                <div class="col-span-3 ar-lang hidden">اللاعب</div>
-                <div class="col-span-1 en-lang">Wins</div>
-                <div class="col-span-1 ar-lang hidden">انتصارات</div>
-                <div class="col-span-1 en-lang">Losses</div>
-                <div class="col-span-1 ar-lang hidden">خسائر</div>
-                <div class="col-span-2 en-lang">Win Rate</div>
-                <div class="col-span-2 ar-lang hidden">نسبة الفوز</div>
+        <div class="mb-8">
+            <h2 class="text-2xl font-bold mb-4 flex items-center">
+                <i class="fas fa-trophy mr-2 text-yellow-400"></i>
+                Current Rankings
+            </h2>
+            
+            <div id="leaderboard" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Player cards will be inserted here by JavaScript -->
             </div>
-            <div id="leaderboardBody" class="divide-y divide-gray-700">
-                <!-- Players will be populated by JS -->
-                <div class="text-center py-8 text-gray-500">
-                    <i class="fas fa-spinner fa-spin text-2xl mb-2"></i>
-                    <p class="en-lang">Loading leaderboard...</p>
-                    <p class="ar-lang hidden">جاري تحميل لوحة الصدارة...</p>
+        </div>
+
+        <!-- Stats Overview -->
+        <div class="bg-gray-800 rounded-xl p-6 mb-8">
+            <h2 class="text-2xl font-bold mb-4">Global Stats</h2>
+            <div class="stats-grid grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="bg-gray-900 rounded-lg p-4 text-center">
+                    <div class="text-green-400 text-3xl font-bold" id="total-players">0</div>
+                    <div class="text-gray-400">Total Players</div>
+                </div>
+                <div class="bg-gray-900 rounded-lg p-4 text-center">
+                    <div class="text-green-400 text-3xl font-bold" id="total-matches">0</div>
+                    <div class="text-gray-400">Matches Played</div>
+                </div>
+                <div class="bg-gray-900 rounded-lg p-4 text-center">
+                    <div class="text-green-400 text-3xl font-bold" id="avg-winrate">0%</div>
+                    <div class="text-gray-400">Avg Win Rate</div>
+                </div>
+                <div class="bg-gray-900 rounded-lg p-4 text-center">
+                    <div class="text-green-400 text-3xl font-bold" id="top-score">0</div>
+                    <div class="text-gray-400">Top Score</div>
                 </div>
             </div>
         </div>
     </main>
 
     <!-- Floating Action Button -->
-    <button id="fab" class="fixed bottom-6 right-6 bg-yellow-500 text-black w-14 h-14 rounded-full shadow-lg flex items-center justify-center hover:bg-yellow-400 transition transform hover:scale-110">
+    <button id="fab" class="fixed bottom-8 right-8 bg-green-500 hover:bg-green-600 text-white w-14 h-14 rounded-full flex items-center justify-center shadow-lg pulse">
         <i class="fas fa-plus text-xl"></i>
     </button>
 
     <!-- Player Modal -->
-    <div id="playerModal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 hidden">
-        <div class="bg-gray-800 rounded-lg w-full max-w-md mx-4 animate__animated animate__fadeInUp">
-            <div class="flex justify-between items-center p-4 border-b border-gray-700">
-                <h3 id="modalTitle" class="text-xl font-bold"></h3>
-                <button id="closeModal" class="text-gray-400 hover:text-white">
-                    <i class="fas fa-times"></i>
-                </button>
+    <div id="player-modal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 hidden">
+        <div class="bg-gray-800 rounded-xl max-w-md w-full mx-4 p-6 relative fade-in">
+            <button id="close-modal" class="absolute top-4 right-4 text-gray-400 hover:text-white">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="flex items-center mb-6">
+                <img id="modal-player-image" src="https://via.placeholder.com/80" alt="Player" class="w-20 h-20 rounded-full border-2 border-green-400 mr-4">
+                <div>
+                    <h3 id="modal-player-name" class="text-2xl font-bold"></h3>
+                    <div id="modal-player-rank" class="text-green-400"></div>
+                </div>
             </div>
-            <div id="modalContent" class="p-4">
-                <!-- Content will be populated by JS -->
+            <div class="grid grid-cols-2 gap-4 mb-6">
+                <div class="bg-gray-900 rounded-lg p-3">
+                    <div class="text-green-400 text-xl font-bold" id="modal-player-wins">0</div>
+                    <div class="text-gray-400">Wins</div>
+                </div>
+                <div class="bg-gray-900 rounded-lg p-3">
+                    <div class="text-red-400 text-xl font-bold" id="modal-player-losses">0</div>
+                    <div class="text-gray-400">Losses</div>
+                </div>
+                <div class="bg-gray-900 rounded-lg p-3">
+                    <div class="text-yellow-400 text-xl font-bold" id="modal-player-winrate">0%</div>
+                    <div class="text-gray-400">Win Rate</div>
+                </div>
+                <div class="bg-gray-900 rounded-lg p-3">
+                    <div class="text-blue-400 text-xl font-bold" id="modal-player-goals">0</div>
+                    <div class="text-gray-400">Goals</div>
+                </div>
+            </div>
+            <div class="bg-gray-900 rounded-lg p-4">
+                <h4 class="font-bold mb-2">Recent Matches</h4>
+                <div id="modal-player-matches" class="space-y-2">
+                    <!-- Matches will be inserted here -->
+                </div>
             </div>
         </div>
     </div>
 
     <!-- Admin Modal -->
-    <div id="adminModal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 hidden">
-        <div class="bg-gray-800 rounded-lg w-full max-w-md mx-4 animate__animated animate__fadeInUp">
-            <div class="flex justify-between items-center p-4 border-b border-gray-700">
-                <h3 class="text-xl font-bold en-lang">Admin Panel</h3>
-                <h3 class="text-xl font-bold ar-lang hidden">لوحة التحكم</h3>
-                <button id="closeAdminModal" class="text-gray-400 hover:text-white">
-                    <i class="fas fa-times"></i>
+    <div id="admin-modal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 hidden">
+        <div class="bg-gray-800 rounded-xl max-w-md w-full mx-4 p-6 relative fade-in">
+            <button id="close-admin-modal" class="absolute top-4 right-4 text-gray-400 hover:text-white">
+                <i class="fas fa-times"></i>
+            </button>
+            <h2 class="text-2xl font-bold mb-6">Admin Panel</h2>
+            
+            <div id="login-section">
+                <div class="mb-4">
+                    <label class="block text-gray-400 mb-2">Admin Password</label>
+                    <input type="password" id="admin-password" class="w-full bg-gray-900 border border-gray-700 rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-green-400">
+                </div>
+                <button id="login-btn" class="w-full bg-green-500 hover:bg-green-600 text-white py-2 rounded-lg">
+                    Login
                 </button>
             </div>
-            <div class="p-4">
-                <form id="adminForm" class="space-y-4">
-                    <div id="loginSection">
-                        <div class="mb-4">
-                            <label class="block mb-2 en-lang">Email</label>
-                            <label class="block mb-2 ar-lang hidden">البريد الإلكتروني</label>
-                            <input type="email" id="adminEmail" class="w-full px-3 py-2 bg-gray-700 rounded-md">
-                        </div>
-                        <div class="mb-4">
-                            <label class="block mb-2 en-lang">Password</label>
-                            <label class="block mb-2 ar-lang hidden">كلمة المرور</label>
-                            <input type="password" id="adminPassword" class="w-full px-3 py-2 bg-gray-700 rounded-md">
-                        </div>
-                        <button type="button" id="loginBtn" class="w-full bg-blue-600 py-2 rounded-md hover:bg-blue-500 transition en-lang">
-                            Login
-                        </button>
-                        <button type="button" id="loginBtn" class="w-full bg-blue-600 py-2 rounded-md hover:bg-blue-500 transition ar-lang hidden">
-                            تسجيل الدخول
-                        </button>
-                    </div>
-                    <div id="adminControls" class="hidden">
-                        <div class="mb-4">
-                            <label class="block mb-2 en-lang">Player Name</label>
-                            <label class="block mb-2 ar-lang hidden">اسم اللاعب</label>
-                            <input type="text" id="playerName" class="w-full px-3 py-2 bg-gray-700 rounded-md">
-                        </div>
-                        <div class="mb-4">
-                            <label class="block mb-2 en-lang">Team</label>
-                            <label class="block mb-2 ar-lang hidden">الفريق</label>
-                            <input type="text" id="playerTeam" class="w-full px-3 py-2 bg-gray-700 rounded-md">
+            
+            <div id="admin-controls" class="hidden">
+                <div class="mb-6">
+                    <h3 class="text-xl font-bold mb-4">Add/Update Player</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-gray-400 mb-2">Player Name</label>
+                            <input type="text" id="player-name" class="w-full bg-gray-900 border border-gray-700 rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-green-400">
                         </div>
                         <div class="grid grid-cols-2 gap-4">
                             <div>
-                                <label class="block mb-2 en-lang">Wins</label>
-                                <label class="block mb-2 ar-lang hidden">انتصارات</label>
-                                <input type="number" id="playerWins" class="w-full px-3 py-2 bg-gray-700 rounded-md">
+                                <label class="block text-gray-400 mb-2">Wins</label>
+                                <input type="number" id="player-wins" class="w-full bg-gray-900 border border-gray-700 rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-green-400">
                             </div>
                             <div>
-                                <label class="block mb-2 en-lang">Losses</label>
-                                <label class="block mb-2 ar-lang hidden">خسائر</label>
-                                <input type="number" id="playerLosses" class="w-full px-3 py-2 bg-gray-700 rounded-md">
+                                <label class="block text-gray-400 mb-2">Losses</label>
+                                <input type="number" id="player-losses" class="w-full bg-gray-900 border border-gray-700 rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-green-400">
                             </div>
                         </div>
-                        <div class="flex space-x-2 pt-4">
-                            <button type="button" id="addPlayerBtn" class="flex-1 bg-green-600 py-2 rounded-md hover:bg-green-500 transition en-lang">
-                                Add Player
-                            </button>
-                            <button type="button" id="addPlayerBtn" class="flex-1 bg-green-600 py-2 rounded-md hover:bg-green-500 transition ar-lang hidden">
-                                إضافة لاعب
-                            </button>
-                            <button type="button" id="updatePlayerBtn" class="flex-1 bg-yellow-600 py-2 rounded-md hover:bg-yellow-500 transition en-lang">
-                                Update
-                            </button>
-                            <button type="button" id="updatePlayerBtn" class="flex-1 bg-yellow-600 py-2 rounded-md hover:bg-yellow-500 transition ar-lang hidden">
-                                تحديث
-                            </button>
-                            <button type="button" id="deletePlayerBtn" class="flex-1 bg-red-600 py-2 rounded-md hover:bg-red-500 transition en-lang">
-                                Delete
-                            </button>
-                            <button type="button" id="deletePlayerBtn" class="flex-1 bg-red-600 py-2 rounded-md hover:bg-red-500 transition ar-lang hidden">
-                                حذف
-                            </button>
+                        <div>
+                            <label class="block text-gray-400 mb-2">Goals Scored</label>
+                            <input type="number" id="player-goals" class="w-full bg-gray-900 border border-gray-700 rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-green-400">
                         </div>
                     </div>
-                </form>
+                </div>
+                
+                <div class="flex space-x-4">
+                    <button id="add-player-btn" class="flex-1 bg-green-500 hover:bg-green-600 text-white py-2 rounded-lg">
+                        Add Player
+                    </button>
+                    <button id="update-player-btn" class="flex-1 bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-lg">
+                        Update
+                    </button>
+                    <button id="delete-player-btn" class="flex-1 bg-red-500 hover:bg-red-600 text-white py-2 rounded-lg">
+                        Delete
+                    </button>
+                </div>
+                
+                <div class="mt-8">
+                    <h3 class="text-xl font-bold mb-4">Recent Matches</h3>
+                    <div class="space-y-4">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-gray-400 mb-2">Player 1</label>
+                                <select id="match-player1" class="w-full bg-gray-900 border border-gray-700 rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-green-400">
+                                    <!-- Players will be inserted here -->
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-gray-400 mb-2">Player 2</label>
+                                <select id="match-player2" class="w-full bg-gray-900 border border-gray-700 rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-green-400">
+                                    <!-- Players will be inserted here -->
+                                </select>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-gray-400 mb-2">Score 1</label>
+                                <input type="number" id="match-score1" class="w-full bg-gray-900 border border-gray-700 rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-green-400">
+                            </div>
+                            <div>
+                                <label class="block text-gray-400 mb-2">Score 2</label>
+                                <input type="number" id="match-score2" class="w-full bg-gray-900 border border-gray-700 rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-green-400">
+                            </div>
+                        </div>
+                        <button id="record-match-btn" class="w-full bg-purple-500 hover:bg-purple-600 text-white py-2 rounded-lg">
+                            Record Match
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Scripts -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
-    <script src="app.js"></script>
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            databaseURL: "YOUR_DATABASE_URL",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        const auth = firebase.auth();
+
+        // DOM Elements
+        const leaderboard = document.getElementById('leaderboard');
+        const searchInput = document.getElementById('search-input');
+        const filterSelect = document.getElementById('filter-select');
+        const fab = document.getElementById('fab');
+        const playerModal = document.getElementById('player-modal');
+        const closeModal = document.getElementById('close-modal');
+        const adminModal = document.getElementById('admin-modal');
+        const adminBtn = document.getElementById('admin-btn');
+        const closeAdminModal = document.getElementById('close-admin-modal');
+        const loginSection = document.getElementById('login-section');
+        const adminControls = document.getElementById('admin-controls');
+        const loginBtn = document.getElementById('login-btn');
+        const adminPassword = document.getElementById('admin-password');
+        
+        // Global variables
+        let players = [];
+        let matches = [];
+        let isAdmin = false;
+        const ADMIN_PASSWORD = "fifa2023"; // In production, use proper authentication
+
+        // Initialize the app
+        function init() {
+            fetchPlayers();
+            fetchMatches();
+            setupEventListeners();
+            checkAdminStatus();
+        }
+
+        // Fetch players from Firebase
+        function fetchPlayers() {
+            database.ref('players').orderByChild('winRate').on('value', (snapshot) => {
+                players = [];
+                snapshot.forEach((childSnapshot) => {
+                    const player = childSnapshot.val();
+                    player.id = childSnapshot.key;
+                    players.unshift(player); // Reverse order to get highest first
+                });
+                updateLeaderboard();
+                updateGlobalStats();
+            });
+        }
+
+        // Fetch matches from Firebase
+        function fetchMatches() {
+            database.ref('matches').limitToLast(10).on('value', (snapshot) => {
+                matches = [];
+                snapshot.forEach((childSnapshot) => {
+                    const match = childSnapshot.val();
+                    match.id = childSnapshot.key;
+                    matches.unshift(match); // Reverse order to get newest first
+                });
+            });
+        }
+
+        // Update the leaderboard display
+        function updateLeaderboard(filteredPlayers = null) {
+            const displayPlayers = filteredPlayers || players;
+            leaderboard.innerHTML = '';
+            
+            displayPlayers.forEach((player, index) => {
+                const rank = index + 1;
+                const winRate = (player.winRate * 100).toFixed(1);
+                
+                const playerCard = document.createElement('div');
+                playerCard.className = `player-card bg-gray-800 rounded-xl p-4 cursor-pointer transition-all duration-300 fade-in ${rank <= 3 ? `rank-${rank}` : ''}`;
+                playerCard.innerHTML = `
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center mr-3 font-bold ${rank <= 3 ? 'text-white' : 'text-green-400'}">
+                                ${rank}
+                            </div>
+                            <h3 class="font-bold text-lg">${player.name}</h3>
+                        </div>
+                        <div class="text-green-400 font-bold">${winRate}%</div>
+                    </div>
+                    <div class="flex justify-between text-sm text-gray-400">
+                        <div><span class="text-green-400">${player.wins || 0}</span> Wins</div>
+                        <div><span class="text-red-400">${player.losses || 0}</span> Losses</div>
+                        <div><span class="text-yellow-400">${player.goals || 0}</span> Goals</div>
+                    </div>
+                `;
+                
+                playerCard.addEventListener('click', () => openPlayerModal(player));
+                leaderboard.appendChild(playerCard);
+            });
+        }
+
+        // Update global statistics
+        function updateGlobalStats() {
+            if (players.length === 0) return;
+            
+            const totalPlayers = players.length;
+            const totalMatches = players.reduce((sum, player) => sum + (player.wins || 0) + (player.losses || 0), 0);
+            const avgWinRate = (players.reduce((sum, player) => sum + (player.winRate || 0), 0) / players.length * 100;
+            const topScore = Math.max(...players.map(player => player.goals || 0));
+            
+            document.getElementById('total-players').textContent = totalPlayers;
+            document.getElementById('total-matches').textContent = totalMatches;
+            document.getElementById('avg-winrate').textContent = avgWinRate.toFixed(1) + '%';
+            document.getElementById('top-score').textContent = topScore;
+        }
+
+        // Open player modal with details
+        function openPlayerModal(player) {
+            const winRate = (player.winRate * 100).toFixed(1);
+            const rank = players.findIndex(p => p.id === player.id) + 1;
+            
+            document.getElementById('modal-player-name').textContent = player.name;
+            document.getElementById('modal-player-rank').textContent = `Rank #${rank}`;
+            document.getElementById('modal-player-wins').textContent = player.wins || 0;
+            document.getElementById('modal-player-losses').textContent = player.losses || 0;
+            document.getElementById('modal-player-winrate').textContent = winRate + '%';
+            document.getElementById('modal-player-goals').textContent = player.goals || 0;
+            
+            // Set player image (placeholder for now)
+            document.getElementById('modal-player-image').src = `https://via.placeholder.com/150/1a2a3a/ffffff?text=${player.name.charAt(0)}`;
+            
+            // Display recent matches (simplified for this example)
+            const matchesContainer = document.getElementById('modal-player-matches');
+            matchesContainer.innerHTML = '';
+            
+            const playerMatches = matches.filter(m => 
+                m.player1 === player.name || m.player2 === player.name
+            ).slice(0, 5);
+            
+            if (playerMatches.length === 0) {
+                matchesContainer.innerHTML = '<div class="text-gray-400">No recent matches</div>';
+            } else {
+                playerMatches.forEach(match => {
+                    const isPlayer1 = match.player1 === player.name;
+                    const opponent = isPlayer1 ? match.player2 : match.player1;
+                    const playerScore = isPlayer1 ? match.score1 : match.score2;
+                    const opponentScore = isPlayer1 ? match.score2 : match.score1;
+                    const result = playerScore > opponentScore ? 'W' : 'L';
+                    
+                    const matchElement = document.createElement('div');
+                    matchElement.className = 'flex justify-between items-center';
+                    matchElement.innerHTML = `
+                        <div class="flex-1">vs ${opponent}</div>
+                        <div class="flex items-center">
+                            <span class="mx-2 font-bold ${result === 'W' ? 'text-green-400' : 'text-red-400'}">${playerScore}-${opponentScore}</span>
+                            <span class="w-6 h-6 rounded-full flex items-center justify-center ${result === 'W' ? 'bg-green-400' : 'bg-red-400'} text-xs">${result}</span>
+                        </div>
+                    `;
+                    matchesContainer.appendChild(matchElement);
+                });
+            }
+            
+            playerModal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Open admin modal
+        function openAdminModal() {
+            adminModal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            
+            if (isAdmin) {
+                loginSection.classList.add('hidden');
+                adminControls.classList.remove('hidden');
+                populatePlayerSelects();
+            } else {
+                loginSection.classList.remove('hidden');
+                adminControls.classList.add('hidden');
+            }
+        }
+
+        // Populate player selects in admin panel
+        function populatePlayerSelects() {
+            const player1Select = document.getElementById('match-player1');
+            const player2Select = document.getElementById('match-player2');
+            
+            player1Select.innerHTML = '';
+            player2Select.innerHTML = '';
+            
+            players.forEach(player => {
+                const option = document.createElement('option');
+                option.value = player.name;
+                option.textContent = player.name;
+                
+                player1Select.appendChild(option.cloneNode(true));
+                player2Select.appendChild(option);
+            });
+        }
+
+        // Handle admin login
+        function handleAdminLogin() {
+            if (adminPassword.value === ADMIN_PASSWORD) {
+                isAdmin = true;
+                localStorage.setItem('fifaAdmin', 'true');
+                loginSection.classList.add('hidden');
+                adminControls.classList.remove('hidden');
+                adminBtn.classList.remove('hidden');
+                populatePlayerSelects();
+            } else {
+                alert('Incorrect password');
+            }
+        }
+
+        // Check admin status from localStorage
+        function checkAdminStatus() {
+            if (localStorage.getItem('fifaAdmin') === 'true') {
+                isAdmin = true;
+                adminBtn.classList.remove('hidden');
+            }
+        }
+
+        // Add a new player
+        function addPlayer() {
+            const name = document.getElementById('player-name').value.trim();
+            const wins = parseInt(document.getElementById('player-wins').value) || 0;
+            const losses = parseInt(document.getElementById('player-losses').value) || 0;
+            const goals = parseInt(document.getElementById('player-goals').value) || 0;
+            
+            if (!name) {
+                alert('Please enter a player name');
+                return;
+            }
+            
+            const totalMatches = wins + losses;
+            const winRate = totalMatches > 0 ? wins / totalMatches : 0;
+            
+            const playerData = {
+                name,
+                wins,
+                losses,
+                goals,
+                winRate,
+                lastUpdated: firebase.database.ServerValue.TIMESTAMP
+            };
+            
+            database.ref('players').push(playerData)
+                .then(() => {
+                    alert('Player added successfully');
+                    clearAdminForm();
+                })
+                .catch(error => {
+                    console.error('Error adding player:', error);
+                    alert('Error adding player');
+                });
+        }
+
+        // Record a match
+        function recordMatch() {
+            const player1 = document.getElementById('match-player1').value;
+            const player2 = document.getElementById('match-player2').value;
+            const score1 = parseInt(document.getElementById('match-score1').value) || 0;
+            const score2 = parseInt(document.getElementById('match-score2').value) || 0;
+            
+            if (!player1 || !player2 || player1 === player2) {
+                alert('Please select two different players');
+                return;
+            }
+            
+            if (score1 < 0 || score2 < 0) {
+                alert('Scores cannot be negative');
+                return;
+            }
+            
+            const matchData = {
+                player1,
+                player2,
+                score1,
+                score2,
+                timestamp: firebase.database.ServerValue.TIMESTAMP
+            };
+            
+            database.ref('matches').push(matchData)
+                .then(() => {
+                    // Update player stats
+                    updatePlayerStats(player1, player2, score1, score2);
+                    alert('Match recorded successfully');
+                    clearMatchForm();
+                })
+                .catch(error => {
+                    console.error('Error recording match:', error);
+                    alert('Error recording match');
+                });
+        }
+
+        // Update player stats after a match
+        function updatePlayerStats(player1Name, player2Name, score1, score2) {
+            // Find players in the database
+            const playersRef = database.ref('players');
+            
+            playersRef.orderByChild('name').once('value')
+                .then(snapshot => {
+                    let player1 = null;
+                    let player2 = null;
+                    let player1Key = null;
+                    let player2Key = null;
+                    
+                    snapshot.forEach(childSnapshot => {
+                        const player = childSnapshot.val();
+                        if (player.name === player1Name) {
+                            player1 = player;
+                            player1Key = childSnapshot.key;
+                        }
+                        if (player.name === player2Name) {
+                            player2 = player;
+                            player2Key = childSnapshot.key;
+                        }
+                    });
+                    
+                    if (!player1 || !player2) {
+                        throw new Error('One or both players not found');
+                    }
+                    
+                    // Update wins/losses
+                    if (score1 > score2) {
+                        player1.wins = (player1.wins || 0) + 1;
+                        player2.losses = (player2.losses || 0) + 1;
+                    } else {
+                        player1.losses = (player1.losses || 0) + 1;
+                        player2.wins = (player2.wins || 0) + 1;
+                    }
+                    
+                    // Update goals (simplified - you might want to track goals for/against separately)
+                    player1.goals = (player1.goals || 0) + score1;
+                    player2.goals = (player2.goals || 0) + score2;
+                    
+                    // Update win rates
+                    const player1Total = player1.wins + player1.losses;
+                    const player2Total = player2.wins + player2.losses;
+                    
+                    player1.winRate = player1Total > 0 ? player1.wins / player1Total : 0;
+                    player2.winRate = player2Total > 0 ? player2.wins / player2Total : 0;
+                    
+                    // Save updates
+                    const updates = {};
+                    updates[`players/${player1Key}`] = player1;
+                    updates[`players/${player2Key}`] = player2;
+                    
+                    return database.ref().update(updates);
+                })
+                .catch(error => {
+                    console.error('Error updating player stats:', error);
+                });
+        }
+
+        // Clear admin form
+        function clearAdminForm() {
+            document.getElementById('player-name').value = '';
+            document.getElementById('player-wins').value = '';
+            document.getElementById('player-losses').value = '';
+            document.getElementById('player-goals').value = '';
+        }
+
+        // Clear match form
+        function clearMatchForm() {
+            document.getElementById('match-score1').value = '';
+            document.getElementById('match-score2').value = '';
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Search functionality
+            searchInput.addEventListener('input', () => {
+                const searchTerm = searchInput.value.toLowerCase();
+                const filteredPlayers = players.filter(player => 
+                    player.name.toLowerCase().includes(searchTerm)
+                );
+                updateLeaderboard(filteredPlayers);
+            });
+            
+            // Filter functionality
+            filterSelect.addEventListener('change', () => {
+                const filterValue = filterSelect.value;
+                let filteredPlayers = [...players];
+                
+                switch (filterValue) {
+                    case 'top10':
+                        filteredPlayers = players.slice(0, 10);
+                        break;
+                    case 'winrate':
+                        filteredPlayers.sort((a, b) => (b.winRate || 0) - (a.winRate || 0));
+                        break;
+                    case 'wins':
+                        filteredPlayers.sort((a, b) => (b.wins || 0) - (a.wins || 0));
+                        break;
+                }
+                
+                updateLeaderboard(filteredPlayers);
+            });
+            
+            // Modal controls
+            closeModal.addEventListener('click', () => {
+                playerModal.classList.add('hidden');
+                document.body.style.overflow = 'auto';
+            });
+            
+            closeAdminModal.addEventListener('click', () => {
+                adminModal.classList.add('hidden');
+                document.body.style.overflow = 'auto';
+            });
+            
+            // FAB click
+            fab.addEventListener('click', openAdminModal);
+            
+            // Admin button
+            adminBtn.addEventListener('click', openAdminModal);
+            
+            // Admin login
+            loginBtn.addEventListener('click', handleAdminLogin);
+            
+            // Admin form submissions
+            document.getElementById('add-player-btn').addEventListener('click', addPlayer);
+            document.getElementById('record-match-btn').addEventListener('click', recordMatch);
+            
+            // Close modals when clicking outside
+            window.addEventListener('click', (e) => {
+                if (e.target === playerModal) {
+                    playerModal.classList.add('hidden');
+                    document.body.style.overflow = 'auto';
+                }
+                if (e.target === adminModal) {
+                    adminModal.classList.add('hidden');
+                    document.body.style.overflow = 'auto';
+                }
+            });
+        }
+
+        // Initialize the app when DOM is loaded
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
 </body>
 </html>
