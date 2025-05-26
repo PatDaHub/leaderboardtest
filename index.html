@@ -211,12 +211,12 @@
             align-items: center;
         }
 
-        .stat i {
+        .stat.losses i {
             margin-right: 5px;
             color: var(--highlight);
         }
 
-        .stat i fa-trophy {
+        .stat.wins i  {
             margin-right: 5px;
             color: var(--trophy);
         }
@@ -633,8 +633,8 @@ apiKey: "AIzaSyBezrUgfVjy6ULS4EtORPv-NkXRQo_kXxg",
                     <div class="player-info">
                         <div class="player-name">${player.name}</div>
                         <div class="player-stats">
-                            <div class="stat"><i class="fas fa-trophy"></i> ${player.wins || 0} Wins</div>
-                            <div class="stat"><i class="fas fa-times-circle"></i> ${player.losses || 0} Losses</div>
+                            <div class="stat wins"><i class="fas fa-trophy"></i> ${player.wins || 0} Wins</div>
+                            <div class="stat losses"><i class="fas fa-times-circle"></i> ${player.losses || 0} Losses</div>
                         </div>
                     </div>
                     <div class="player-points">${calculatePoints(player.wins || 0, player.losses || 0)} PTS</div>
