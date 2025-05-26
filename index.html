@@ -26,91 +26,8 @@
             --card-bg: #16213e;
             --highlight: #e94560;
             --trophy: green;
-            --sidebar-width: 350px;
-
         }
-.floating-admin-btn {
-    position: fixed;
-    bottom: 30px;
-    right: 30px;
-    background-color: var(--accent); /* [cite: 2] */
-    color: white; /* [cite: 7] */
-    border: none;
-    border-radius: 50%;
-    width: 60px;
-    height: 60px;
-    font-size: 1.5rem; /* Adjusted for better icon display */
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
-    cursor: pointer;
-    z-index: 1050; /* Ensure it's above other elements */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: transform 0.2s ease-out, background-color 0.2s;
-}
-        
-.floating-admin-btn:hover {
-    transform: scale(1.1);
-    background-color: #d13354; /* Darker accent */
-}
 
-.admin-sidebar {
-    position: fixed;
-    top: 0;
-    right: calc(var(--sidebar-width) * -1); /* Start off-screen */
-    width: var(--sidebar-width);
-    height: 100%;
-    background: var(--card-bg); /* [cite: 11] */
-    padding: 20px;
-    padding-top: 50px; /* Space for close button */
-    box-shadow: -5px 0 25px rgba(0, 0, 0, 0.5);
-    transition: right 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); /* Smoother transition */
-    z-index: 1100; /* Higher than overlay and floating button */
-    overflow-y: auto;
-    border-left: 1px solid rgba(255, 255, 255, 0.1); /* [cite: 72] */
-}
-
-.admin-sidebar.open {
-    right: 0;
-}
-
-.close-sidebar-btn {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    background: none;
-    border: none;
-    color: var(--text-light); /* [cite: 2] */
-    font-size: 1.8rem;
-    cursor: pointer;
-    line-height: 1;
-}
-
-.close-sidebar-btn:hover {
-    color: var(--text); /* [cite: 2] */
-}
-
-/* Optional: Overlay when sidebar is open */
-body.sidebar-open-overlay::before {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.5);
-    z-index: 1040; /* Below sidebar, above content */
-}
-
-/* Adjust admin panel form elements for better spacing in sidebar */
-.admin-sidebar .form-group {
-    margin-bottom: 18px; /* [cite: 75] */
-}
-
-.admin-sidebar h2 {
-    margin-top: 0; /* Adjust if needed */
-}
-        
         * {
             margin: 0;
             padding: 0;
@@ -728,71 +645,52 @@ body.sidebar-open-overlay::before {
             </ul>
         </div>
 
-     </div> <button id="toggleAdminSidebarBtn" class="floating-admin-btn" style="display: none;">
-        <i class="fas fa-user-shield"></i>
-    </button>
-
-    <div class="admin-sidebar" id="adminSidebar">
-        <button id="closeAdminSidebarBtn" class="close-sidebar-btn">&times;</button>
-        <h2><i class="fas fa-user-shield"></i> Admin Panel</h2>
-        
-        <div class="form-group">
-            <label for="playerName">Player Name</label>
-            <input type="text" id="playerName" class="form-control" placeholder="Enter player name"> </div>
-        
-        <div class="form-group">
-            <label for="playerRank">Rank</label>
-            <input type="number" id="playerRank" class="form-control" placeholder="Enter rank (1 is highest)">
-        </div>
+        <div class="admin-panel" id="adminPanel">
+            <h2><i class="fas fa-user-shield"></i> Admin Panel</h2>
             
-        <div class="form-group">
-            <label for="playerWins">Wins</label>
-            <input type="number" id="playerWins" class="form-control" placeholder="Enter wins">
-        </div>
-        
-        <div class="form-group">
-            <label for="playerLosses">Losses</label>
-            <input type="number" id="playerLosses" class="form-control" placeholder="Enter losses"> </div>
-        
-        <div class="form-group">
-            <label for="playerAvatar">Avatar URL (optional)</label>
-            <input type="text" id="playerAvatar" class="form-control" placeholder="Enter image URL"> </div>
-        
-        <div class="btn-group">
-            <button id="addPlayerBtn" class="btn btn-primary"><i class="fas fa-plus"></i> Add Player</button>
-            <button id="updatePlayerBtn" class="btn btn-success" disabled><i class="fas fa-edit"></i> Update Player</button>
-            <button id="deletePlayerBtn" class="btn btn-danger" disabled><i class="fas fa-trash"></i> Delete Player</button> <button id="clearSelectionBtn" class="btn" style="background: var(--secondary);"><i class="fas fa-times"></i> Clear</button>
+            <div class="form-group">
+                <label for="playerName">Player Name</label>
+                <input type="text" id="playerName" class="form-control" placeholder="Enter player name">
+            </div>
+            
+            <div class="form-group">
+                <label for="playerRank">Rank</label>
+                <input type="number" id="playerRank" class="form-control" placeholder="Enter rank (1 is highest)">
+            </div>
+            
+            <div class="form-group">
+                <label for="playerWins">Wins</label>
+                <input type="number" id="playerWins" class="form-control" placeholder="Enter wins">
+            </div>
+            
+            <div class="form-group">
+                <label for="playerLosses">Losses</label>
+                <input type="number" id="playerLosses" class="form-control" placeholder="Enter losses">
+            </div>
+            
+            <div class="form-group">
+                <label for="playerAvatar">Avatar URL (optional)</label>
+                <input type="text" id="playerAvatar" class="form-control" placeholder="Enter image URL">
+            </div>
+            
+            <div class="btn-group">
+                <button id="addPlayerBtn" class="btn btn-primary"><i class="fas fa-plus"></i> Add Player</button>
+                <button id="updatePlayerBtn" class="btn btn-success" disabled><i class="fas fa-edit"></i> Update Player</button>
+                <button id="deletePlayerBtn" class="btn btn-danger" disabled><i class="fas fa-trash"></i> Delete Player</button>
+                <button id="clearSelectionBtn" class="btn" style="background: var(--secondary);"><i class="fas fa-times"></i> Clear</button>
+            </div>
         </div>
 
-        <div id="addMatchSection" style="margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); display:none;">
-            <h3>Add Match for Selected Player</h3>
+        <div class="login-form" id="loginForm">
+            <h2><i class="fas fa-lock"></i> Admin Login</h2>
             <div class="form-group">
-                <label for="matchOpponentName">Opponent Name</label>
-                <input type="text" id="matchOpponentName" class="form-control" placeholder="Opponent's Name">
-            </div>
-            <div class="form-group">
-                <label for="matchPlayerScore">Your Score</label>
-                <input type="number" id="matchPlayerScore" class="form-control" placeholder="e.g., 3">
-            </div>
-            <div class="form-group">
-                <label for="matchOpponentScore">Opponent's Score</label>
-                <input type="number" id="matchOpponentScore" class="form-control" placeholder="e.g., 1">
-            </div>
-            <div class="form-group">
-                <label for="matchDate">Match Date (optional)</label>
-                <input type="date" id="matchDate" class="form-control">
-            </div>
-            <button id="addMatchBtn" class="btn btn-primary"><i class="fas fa-gamepad"></i> Add Match</button>
-        </div>
-    </div>
-
-    <div class="container"> <div class="login-form" id="loginForm"> <h2><i class="fas fa-lock"></i> Admin Login</h2>
-            <div class="form-group">
-                <label for="loginEmail">Email</label> <input type="email" id="loginEmail" class="form-control" placeholder="Enter admin email">
+                <label for="loginEmail">Email</label>
+                <input type="email" id="loginEmail" class="form-control" placeholder="Enter admin email">
             </div>
             <div class="form-group">
                 <label for="loginPassword">Password</label>
-                <input type="password" id="loginPassword" class="form-control" placeholder="Enter password"> </div>
+                <input type="password" id="loginPassword" class="form-control" placeholder="Enter password">
+            </div>
             <button id="loginBtn" class="btn btn-primary"><i class="fas fa-sign-in-alt"></i> Login</button>
         </div>
     </div>
@@ -818,14 +716,10 @@ body.sidebar-open-overlay::before {
         // DOM elements
         const playerList = document.getElementById('playerList');
         const refreshBtn = document.getElementById('refreshBtn');
+        const adminPanel = document.getElementById('adminPanel');
         const loginForm = document.getElementById('loginForm');
         const loginBtn = document.getElementById('loginBtn');
         const loadingSpinner = document.getElementById('loadingSpinner');
-        const toggleAdminSidebarBtn = document.getElementById('toggleAdminSidebarBtn');
-const adminSidebar = document.getElementById('adminSidebar');
-const closeAdminSidebarBtn = document.getElementById('closeAdminSidebarBtn');
-const addMatchSection = document.getElementById('addMatchSection'); // For match history
-const addMatchBtn = document.getElementById('addMatchBtn');
         
         // Search and filter elements
         const searchInput = document.getElementById('searchInput');
@@ -858,42 +752,16 @@ const addMatchBtn = document.getElementById('addMatchBtn');
         let filteredPlayers = [];
 
         // Check auth state
-     auth.onAuthStateChanged(user => {
-    if (user) {
-        loginForm.style.display = 'none';
-        // adminPanel.style.display = 'block'; // OLD [cite: 147]
-        toggleAdminSidebarBtn.style.display = 'flex'; // Show floating button
-        if (selectedPlayerId) { // Show add match section if a player is selected
-            addMatchSection.style.display = 'block';
-        }
-    } else {
-        loginForm.style.display = 'block'; // [cite: 147]
-        // adminPanel.style.display = 'none'; // OLD [cite: 147]
-        adminSidebar.classList.remove('open');
-        document.body.classList.remove('sidebar-open-overlay');
-        toggleAdminSidebarBtn.style.display = 'none';
-        addMatchSection.style.display = 'none';
-    }
-});
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                loginForm.style.display = 'none';
+                adminPanel.style.display = 'block';
+            } else {
+                loginForm.style.display = 'block';
+                adminPanel.style.display = 'none';
+            }
+        });
 
-// Toggle Admin Sidebar
-toggleAdminSidebarBtn.addEventListener('click', () => {
-    adminSidebar.classList.add('open');
-    document.body.classList.add('sidebar-open-overlay');
-});
-
-closeAdminSidebarBtn.addEventListener('click', () => {
-    adminSidebar.classList.remove('open');
-    document.body.classList.remove('sidebar-open-overlay');
-});
-
-// Optional: Close sidebar if clicking on the overlay
-document.body.addEventListener('click', (e) => {
-    if (e.target.classList.contains('sidebar-open-overlay')) {
-        adminSidebar.classList.remove('open');
-        document.body.classList.remove('sidebar-open-overlay');
-    }
-});
         // Login function
         loginBtn.addEventListener('click', () => {
             const email = loginEmailInput.value;
@@ -1109,14 +977,6 @@ document.body.addEventListener('click', (e) => {
             // Deselect all players first
             document.querySelectorAll('.player-item').forEach(item => {
                 item.classList.remove('selected');
-                   updatePlayerBtn.disabled = false;
-    deletePlayerBtn.disabled = false;
-    addPlayerBtn.disabled = true; // [cite: 198]
-
-    // Show "Add Match" section in sidebar if admin is logged in
-    if (auth.currentUser) {
-        addMatchSection.style.display = 'block';
-        document.getElementById('addMatchSection').querySelector('h3').textContent = `Add Match for ${player.name}`;
             });
             
             // Select the clicked player
@@ -1141,13 +1001,6 @@ document.body.addEventListener('click', (e) => {
         function clearSelection() {
             document.querySelectorAll('.player-item').forEach(item => {
                 item.classList.remove('selected');
-                  
-    addMatchSection.style.display = 'none'; // Hide "Add Match" section
-    // Clear match form fields
-    document.getElementById('matchOpponentName').value = '';
-    document.getElementById('matchPlayerScore').value = '';
-    document.getElementById('matchOpponentScore').value = '';
-    document.getElementById('matchDate').value = '';
             });
             
             selectedPlayerId = null;
