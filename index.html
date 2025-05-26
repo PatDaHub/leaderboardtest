@@ -3,19 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FIFA Ultimate Leaderboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <title>FIFA Leaderboard</title>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary: #2c3e50;
-            --secondary: #1abc9c;
+            --secondary: #3498db;
             --accent: #e74c3c;
             --light: #ecf0f1;
             --dark: #2c3e50;
             --success: #2ecc71;
             --warning: #f39c12;
-            --danger: #e74c3c;
+            --text: #333;
+            --text-light: #7f8c8d;
         }
 
         * {
@@ -27,133 +34,129 @@
         body {
             font-family: 'Open Sans', sans-serif;
             background-color: #f5f5f5;
-            color: var(--dark);
+            color: var(--text);
             line-height: 1.6;
-        }
-
-        header {
-            background: linear-gradient(135deg, var(--primary), var(--dark));
-            color: white;
-            padding: 2rem 0;
-            text-align: center;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            position: relative;
-            overflow: hidden;
-        }
-
-        header::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: url('https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1605&q=80') center/cover;
-            opacity: 0.2;
-            z-index: 0;
-        }
-
-        header h1 {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 3rem;
-            margin-bottom: 1rem;
-            position: relative;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-        }
-
-        header p {
-            font-size: 1.2rem;
-            opacity: 0.9;
-            position: relative;
         }
 
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 0 20px;
+            padding: 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-weight: 400;
+            opacity: 0.9;
         }
 
         .leaderboard {
             background: white;
             border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            margin: 2rem auto;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             overflow: hidden;
+            margin-bottom: 30px;
         }
 
         .leaderboard-header {
-            background: var(--secondary);
+            background: var(--dark);
             color: white;
-            padding: 1rem;
+            padding: 15px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
-        .leaderboard-header h2 {
+        .leaderboard-title {
             font-family: 'Montserrat', sans-serif;
-            font-size: 1.8rem;
-        }
-
-        .last-updated {
-            font-size: 0.9rem;
-            opacity: 0.9;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th {
-            background-color: var(--light);
-            padding: 1rem;
-            text-align: left;
             font-weight: 600;
-            text-transform: uppercase;
-            font-size: 0.8rem;
-            letter-spacing: 1px;
+            font-size: 1.5rem;
         }
 
-        td {
-            padding: 1rem;
-            border-bottom: 1px solid #eee;
-            vertical-align: middle;
+        .refresh-btn {
+            background: var(--secondary);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
         }
 
-        tr:last-child td {
-            border-bottom: none;
+        .refresh-btn:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
         }
 
-        tr:hover {
-            background-color: #f9f9f9;
+        .player-list {
+            list-style: none;
         }
 
-        .rank {
-            font-weight: bold;
-            font-size: 1.2rem;
-            color: var(--primary);
-            text-align: center;
-            width: 60px;
-        }
-
-        .player {
+        .player-item {
             display: flex;
             align-items: center;
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+            transition: all 0.3s;
+        }
+
+        .player-item:hover {
+            background: #f9f9f9;
+            transform: translateX(5px);
+        }
+
+        .player-rank {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 1.2rem;
+            width: 40px;
+            text-align: center;
+            color: var(--text-light);
+        }
+
+        .player-rank.rank-1 {
+            color: #f1c40f;
+            font-size: 1.5rem;
+        }
+
+        .player-rank.rank-2 {
+            color: #95a5a6;
+            font-size: 1.4rem;
+        }
+
+        .player-rank.rank-3 {
+            color: #cd7f32;
+            font-size: 1.3rem;
         }
 
         .player-avatar {
             width: 50px;
             height: 50px;
             border-radius: 50%;
-            background-color: var(--light);
-            margin-right: 1rem;
+            background: var(--light);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: bold;
-            color: var(--primary);
+            margin: 0 15px;
             overflow: hidden;
+            border: 3px solid #eee;
         }
 
         .player-avatar img {
@@ -162,272 +165,132 @@
             object-fit: cover;
         }
 
-        .player-info h3 {
+        .player-info {
+            flex: 1;
+        }
+
+        .player-name {
+            font-family: 'Montserrat', sans-serif;
             font-weight: 600;
-            margin-bottom: 0.2rem;
-        }
-
-        .player-info p {
-            font-size: 0.8rem;
-            color: #777;
-        }
-
-        .stats {
-            text-align: center;
-        }
-
-        .stats span {
-            display: inline-block;
-            padding: 0.3rem 0.6rem;
-            border-radius: 20px;
-            font-weight: 600;
-            font-size: 0.8rem;
-        }
-
-        .wins {
-            background-color: rgba(46, 204, 113, 0.2);
-            color: var(--success);
-        }
-
-        .losses {
-            background-color: rgba(231, 76, 60, 0.2);
-            color: var(--danger);
-        }
-
-        .draws {
-            background-color: rgba(241, 196, 15, 0.2);
-            color: var(--warning);
-        }
-
-        .points {
-            font-weight: bold;
-            color: var(--secondary);
             font-size: 1.1rem;
+            margin-bottom: 5px;
         }
 
-        .trend {
+        .player-stats {
+            display: flex;
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+
+        .stat {
+            margin-right: 15px;
             display: flex;
             align-items: center;
-            justify-content: center;
         }
 
-        .trend.up {
-            color: var(--success);
+        .stat i {
+            margin-right: 5px;
+            color: var(--secondary);
         }
 
-        .trend.down {
-            color: var(--danger);
+        .player-points {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: var(--primary);
         }
 
-        .trend.neutral {
-            color: var(--warning);
-        }
-
-        .medal {
-            display: inline-block;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            text-align: center;
-            line-height: 30px;
-            font-weight: bold;
-            margin-right: 0.5rem;
-        }
-
-        .gold {
-            background: linear-gradient(135deg, #ffd700, #daa520);
-            color: white;
-            text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
-        }
-
-        .silver {
-            background: linear-gradient(135deg, #c0c0c0, #a0a0a0);
-            color: white;
-            text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
-        }
-
-        .bronze {
-            background: linear-gradient(135deg, #cd7f32, #a05a2c);
-            color: white;
-            text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
-        }
-
+        /* Admin Panel */
         .admin-panel {
             background: white;
             border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            margin: 2rem auto;
-            padding: 2rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 30px;
+            display: none;
         }
 
         .admin-panel h2 {
             font-family: 'Montserrat', sans-serif;
             color: var(--primary);
-            margin-bottom: 1.5rem;
-            border-bottom: 2px solid var(--light);
-            padding-bottom: 0.5rem;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #eee;
         }
 
         .form-group {
-            margin-bottom: 1.5rem;
+            margin-bottom: 15px;
         }
 
         .form-group label {
             display: block;
-            margin-bottom: 0.5rem;
+            margin-bottom: 5px;
             font-weight: 600;
         }
 
         .form-control {
             width: 100%;
-            padding: 0.8rem;
+            padding: 10px;
             border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 1rem;
-            transition: border 0.3s;
-        }
-
-        .form-control:focus {
-            border-color: var(--secondary);
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(26, 188, 156, 0.2);
+            border-radius: 5px;
+            font-family: inherit;
         }
 
         .btn {
-            display: inline-block;
-            padding: 0.8rem 1.5rem;
-            background-color: var(--secondary);
-            color: white;
+            padding: 10px 15px;
             border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 1rem;
+            border-radius: 5px;
             font-weight: 600;
+            cursor: pointer;
             transition: all 0.3s;
         }
 
-        .btn:hover {
-            background-color: #16a085;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        .btn-primary {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2980b9;
         }
 
         .btn-danger {
-            background-color: var(--danger);
+            background: var(--accent);
+            color: white;
         }
 
         .btn-danger:hover {
-            background-color: #c0392b;
+            background: #c0392b;
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #27ae60;
         }
 
         .btn-group {
             display: flex;
-            gap: 1rem;
+            gap: 10px;
         }
 
-        .hidden {
-            display: none;
+        /* Login Form */
+        .login-form {
+            max-width: 400px;
+            margin: 50px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
 
-        .admin-toggle {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: var(--accent);
-            color: white;
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-            z-index: 100;
-            transition: all 0.3s;
-        }
-
-        .admin-toggle:hover {
-            transform: scale(1.1);
-        }
-
-        .admin-toggle i {
-            font-size: 1.5rem;
-        }
-
-        .tabs {
-            display: flex;
-            margin-bottom: 1.5rem;
-            border-bottom: 1px solid #ddd;
-        }
-
-        .tab {
-            padding: 0.8rem 1.5rem;
-            cursor: pointer;
-            font-weight: 600;
-            color: #777;
-            transition: all 0.3s;
-            border-bottom: 3px solid transparent;
-        }
-
-        .tab.active {
-            color: var(--secondary);
-            border-bottom-color: var(--secondary);
-        }
-
-        .tab:hover:not(.active) {
+        .login-form h2 {
+            text-align: center;
+            margin-bottom: 20px;
             color: var(--primary);
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        .search-box {
-            margin-bottom: 1.5rem;
-        }
-
-        .search-box input {
-            padding: 0.8rem 1rem;
-            width: 100%;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 1rem;
-        }
-
-        .search-box input:focus {
-            border-color: var(--secondary);
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(26, 188, 156, 0.2);
-        }
-
-        @media (max-width: 768px) {
-            header h1 {
-                font-size: 2rem;
-            }
-
-            .player {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            .player-avatar {
-                margin-right: 0;
-                margin-bottom: 0.5rem;
-            }
-
-            th, td {
-                padding: 0.8rem 0.5rem;
-            }
-
-            .stats span {
-                display: block;
-                margin-bottom: 0.3rem;
-            }
         }
 
         /* Animations */
@@ -440,515 +303,371 @@
             animation: fadeIn 0.5s ease-out forwards;
         }
 
-        .delay-1 { animation-delay: 0.1s; }
-        .delay-2 { animation-delay: 0.2s; }
-        .delay-3 { animation-delay: 0.3s; }
-        .delay-4 { animation-delay: 0.4s; }
-        .delay-5 { animation-delay: 0.5s; }
+        /* Responsive */
+        @media (max-width: 768px) {
+            .player-item {
+                flex-direction: column;
+                text-align: center;
+                padding: 20px;
+            }
 
-        /* Trophy animation */
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
+            .player-avatar {
+                margin: 0 auto 10px;
+            }
+
+            .player-stats {
+                justify-content: center;
+                margin-top: 10px;
+            }
+
+            .player-points {
+                margin-top: 10px;
+            }
         }
 
+        /* Trophy icon for top players */
         .trophy {
-            display: inline-block;
-            animation: bounce 2s infinite;
-        }
-
-        /* Confetti effect */
-        .confetti {
-            position: absolute;
-            width: 10px;
-            height: 10px;
-            background-color: #f00;
-            opacity: 0.7;
-            animation: confettiFall 5s linear forwards;
-        }
-
-        @keyframes confettiFall {
-            0% { transform: translateY(-100px) rotate(0deg); }
-            100% { transform: translateY(1000px) rotate(360deg); }
+            color: #f1c40f;
+            margin-right: 5px;
         }
     </style>
 </head>
 <body>
     <header>
         <div class="container">
-            <h1><i class="fas fa-trophy trophy"></i> FIFA Ultimate Leaderboard</h1>
-            <p>Track your ranking among friends in our FIFA tournament</p>
+            <h1>FIFA Leaderboard</h1>
+            <p class="subtitle">Track your ranking among friends</p>
         </div>
     </header>
 
     <div class="container">
         <div class="leaderboard fade-in">
             <div class="leaderboard-header">
-                <h2>Current Standings</h2>
-                <div class="last-updated">Last updated: <span id="update-time">Just now</span></div>
+                <h2 class="leaderboard-title"><i class="fas fa-trophy trophy"></i> Current Standings</h2>
+                <button id="refreshBtn" class="refresh-btn"><i class="fas fa-sync-alt"></i> Refresh</button>
             </div>
-            <div class="search-box">
-                <input type="text" id="search-input" placeholder="Search players...">
-            </div>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Rank</th>
-                        <th>Player</th>
-                        <th class="stats">Wins</th>
-                        <th class="stats">Losses</th>
-                        <th class="stats">Draws</th>
-                        <th class="stats">Points</th>
-                        <th class="stats">Trend</th>
-                    </tr>
-                </thead>
-                <tbody id="leaderboard-body">
-                    <!-- Players will be added here dynamically -->
-                </tbody>
-            </table>
+            <ul class="player-list" id="playerList">
+                <!-- Players will be loaded here -->
+                <li class="player-item" id="loading">
+                    <div>Loading players...</div>
+                </li>
+            </ul>
         </div>
 
-        <div class="admin-panel hidden" id="admin-panel">
-            <h2>Admin Dashboard</h2>
+        <div class="admin-panel" id="adminPanel">
+            <h2><i class="fas fa-user-shield"></i> Admin Panel</h2>
             
-            <div class="tabs">
-                <div class="tab active" data-tab="manage">Manage Players</div>
-                <div class="tab" data-tab="add">Add Player</div>
-                <div class="tab" data-tab="edit">Edit Rankings</div>
+            <div class="form-group">
+                <label for="playerName">Player Name</label>
+                <input type="text" id="playerName" class="form-control" placeholder="Enter player name">
             </div>
             
-            <div class="tab-content active" id="manage-tab">
-                <h3>Current Players</h3>
-                <div class="player-list" id="admin-player-list">
-                    <!-- Players will be added here dynamically -->
-                </div>
+            <div class="form-group">
+                <label for="playerPoints">Points</label>
+                <input type="number" id="playerPoints" class="form-control" placeholder="Enter points">
             </div>
             
-            <div class="tab-content" id="add-tab">
-                <h3>Add New Player</h3>
-                <form id="add-player-form">
-                    <div class="form-group">
-                        <label for="player-name">Player Name</label>
-                        <input type="text" id="player-name" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="player-avatar">Avatar URL (optional)</label>
-                        <input type="url" id="player-avatar" class="form-control">
-                    </div>
-                    <div class="form-group">
-                        <label for="initial-wins">Initial Wins</label>
-                        <input type="number" id="initial-wins" class="form-control" value="0" min="0">
-                    </div>
-                    <div class="form-group">
-                        <label for="initial-losses">Initial Losses</label>
-                        <input type="number" id="initial-losses" class="form-control" value="0" min="0">
-                    </div>
-                    <div class="form-group">
-                        <label for="initial-draws">Initial Draws</label>
-                        <input type="number" id="initial-draws" class="form-control" value="0" min="0">
-                    </div>
-                    <button type="submit" class="btn">Add Player</button>
-                </form>
+            <div class="form-group">
+                <label for="playerWins">Wins</label>
+                <input type="number" id="playerWins" class="form-control" placeholder="Enter wins">
             </div>
             
-            <div class="tab-content" id="edit-tab">
-                <h3>Edit Rankings</h3>
-                <form id="edit-rankings-form">
-                    <div class="form-group">
-                        <label>Drag to reorder players:</label>
-                        <ul id="sortable-players" style="list-style-type: none; padding: 0;">
-                            <!-- Players will be added here dynamically and made sortable -->
-                        </ul>
-                    </div>
-                    <button type="submit" class="btn">Save Rankings</button>
-                </form>
+            <div class="form-group">
+                <label for="playerLosses">Losses</label>
+                <input type="number" id="playerLosses" class="form-control" placeholder="Enter losses">
             </div>
+            
+            <div class="form-group">
+                <label for="playerAvatar">Avatar URL (optional)</label>
+                <input type="text" id="playerAvatar" class="form-control" placeholder="Enter image URL">
+            </div>
+            
+            <div class="btn-group">
+                <button id="addPlayerBtn" class="btn btn-primary"><i class="fas fa-plus"></i> Add Player</button>
+                <button id="updatePlayerBtn" class="btn btn-success" disabled><i class="fas fa-edit"></i> Update Player</button>
+                <button id="deletePlayerBtn" class="btn btn-danger" disabled><i class="fas fa-trash"></i> Delete Player</button>
+            </div>
+        </div>
+
+        <div class="login-form" id="loginForm">
+            <h2><i class="fas fa-lock"></i> Admin Login</h2>
+            <div class="form-group">
+                <label for="loginEmail">Email</label>
+                <input type="email" id="loginEmail" class="form-control" placeholder="Enter admin email">
+            </div>
+            <div class="form-group">
+                <label for="loginPassword">Password</label>
+                <input type="password" id="loginPassword" class="form-control" placeholder="Enter password">
+            </div>
+            <button id="loginBtn" class="btn btn-primary btn-block"><i class="fas fa-sign-in-alt"></i> Login</button>
         </div>
     </div>
 
-    <div class="admin-toggle" id="admin-toggle">
-        <i class="fas fa-lock"></i>
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.14.0/Sortable.min.js"></script>
     <script>
-        // Sample data - in a real app, this would come from a database
-        let players = [
-            { id: 1, name: "Alex Johnson", avatar: "https://randomuser.me/api/portraits/men/32.jpg", wins: 12, losses: 3, draws: 2, points: 38, trend: "up" },
-            { id: 2, name: "Maria Garcia", avatar: "https://randomuser.me/api/portraits/women/44.jpg", wins: 10, losses: 4, draws: 3, points: 33, trend: "down" },
-            { id: 3, name: "James Smith", avatar: "https://randomuser.me/api/portraits/men/22.jpg", wins: 9, losses: 5, draws: 3, points: 30, trend: "up" },
-            { id: 4, name: "Sarah Williams", avatar: "https://randomuser.me/api/portraits/women/63.jpg", wins: 8, losses: 6, draws: 3, points: 27, trend: "neutral" },
-            { id: 5, name: "David Brown", avatar: "https://randomuser.me/api/portraits/men/75.jpg", wins: 7, losses: 7, draws: 3, points: 24, trend: "up" },
-            { id: 6, name: "Emma Davis", avatar: "https://randomuser.me/api/portraits/women/90.jpg", wins: 6, losses: 8, draws: 3, points: 21, trend: "down" },
-            { id: 7, name: "Michael Wilson", avatar: "https://randomuser.me/api/portraits/men/95.jpg", wins: 5, losses: 9, draws: 3, points: 18, trend: "neutral" },
-            { id: 8, name: "Olivia Martinez", avatar: "https://randomuser.me/api/portraits/women/33.jpg", wins: 4, losses: 10, draws: 3, points: 15, trend: "down" },
-            { id: 9, name: "Robert Anderson", avatar: "https://randomuser.me/api/portraits/men/67.jpg", wins: 3, losses: 11, draws: 3, points: 12, trend: "up" },
-            { id: 10, name: "Sophia Taylor", avatar: "https://randomuser.me/api/portraits/women/25.jpg", wins: 2, losses: 12, draws: 3, points: 9, trend: "down" }
-        ];
+        // Firebase configuration - YOU NEED TO REPLACE THIS WITH YOUR OWN CONFIG
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            databaseURL: "YOUR_DATABASE_URL",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
 
-        // Calculate points (3 for win, 1 for draw)
-        function calculatePoints(player) {
-            return player.wins * 3 + player.draws * 1;
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        const auth = firebase.auth();
+
+        // DOM elements
+        const playerList = document.getElementById('playerList');
+        const refreshBtn = document.getElementById('refreshBtn');
+        const adminPanel = document.getElementById('adminPanel');
+        const loginForm = document.getElementById('loginForm');
+        const loginBtn = document.getElementById('loginBtn');
+        
+        // Form elements
+        const playerNameInput = document.getElementById('playerName');
+        const playerPointsInput = document.getElementById('playerPoints');
+        const playerWinsInput = document.getElementById('playerWins');
+        const playerLossesInput = document.getElementById('playerLosses');
+        const playerAvatarInput = document.getElementById('playerAvatar');
+        
+        // Buttons
+        const addPlayerBtn = document.getElementById('addPlayerBtn');
+        const updatePlayerBtn = document.getElementById('updatePlayerBtn');
+        const deletePlayerBtn = document.getElementById('deletePlayerBtn');
+        
+        // Login elements
+        const loginEmailInput = document.getElementById('loginEmail');
+        const loginPasswordInput = document.getElementById('loginPassword');
+
+        // Current selected player
+        let selectedPlayerId = null;
+
+        // Check auth state
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                // User is signed in
+                loginForm.style.display = 'none';
+                adminPanel.style.display = 'block';
+            } else {
+                // No user is signed in
+                loginForm.style.display = 'block';
+                adminPanel.style.display = 'none';
+            }
+        });
+
+        // Login function
+        loginBtn.addEventListener('click', () => {
+            const email = loginEmailInput.value;
+            const password = loginPasswordInput.value;
+            
+            auth.signInWithEmailAndPassword(email, password)
+                .then(() => {
+                    alert('Login successful!');
+                })
+                .catch(error => {
+                    alert('Login failed: ' + error.message);
+                });
+        });
+
+        // Load players from Firebase
+        function loadPlayers() {
+            playerList.innerHTML = '<li class="player-item" id="loading"><div>Loading players...</div></li>';
+            
+            database.ref('players').orderByChild('points').once('value')
+                .then(snapshot => {
+                    const players = [];
+                    snapshot.forEach(childSnapshot => {
+                        players.push({
+                            id: childSnapshot.key,
+                            ...childSnapshot.val()
+                        });
+                    });
+                    
+                    // Sort by points descending
+                    players.sort((a, b) => b.points - a.points);
+                    
+                    renderPlayers(players);
+                })
+                .catch(error => {
+                    playerList.innerHTML = '<li class="player-item"><div>Error loading players: ' + error.message + '</div></li>';
+                });
         }
 
-        // Sort players by points (descending)
-        function sortPlayers() {
-            players.sort((a, b) => b.points - a.points);
-            // Update ranks
+        // Render players to the DOM
+        function renderPlayers(players) {
+            playerList.innerHTML = '';
+            
+            if (players.length === 0) {
+                playerList.innerHTML = '<li class="player-item"><div>No players found. Add some players to get started!</div></li>';
+                return;
+            }
+            
             players.forEach((player, index) => {
-                player.rank = index + 1;
+                const rank = index + 1;
+                const playerItem = document.createElement('li');
+                playerItem.className = `player-item fade-in`;
+                playerItem.style.animationDelay = `${index * 0.1}s`;
+                playerItem.dataset.id = player.id;
+                
+                // Add click event to select player for editing
+                playerItem.addEventListener('click', () => {
+                    selectPlayer(player);
+                });
+                
+                // Rank with special styling for top 3
+                let rankClass = '';
+                if (rank === 1) rankClass = 'rank-1';
+                else if (rank === 2) rankClass = 'rank-2';
+                else if (rank === 3) rankClass = 'rank-3';
+                
+                // Default avatar if none provided
+                const avatarUrl = player.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(player.name)}&background=random&size=128`;
+                
+                playerItem.innerHTML = `
+                    <div class="player-rank ${rankClass}">${rank}</div>
+                    <div class="player-avatar">
+                        <img src="${avatarUrl}" alt="${player.name}">
+                    </div>
+                    <div class="player-info">
+                        <div class="player-name">${player.name}</div>
+                        <div class="player-stats">
+                            <div class="stat"><i class="fas fa-trophy"></i> ${player.wins || 0} Wins</div>
+                            <div class="stat"><i class="fas fa-times-circle"></i> ${player.losses || 0} Losses</div>
+                        </div>
+                    </div>
+                    <div class="player-points">${player.points || 0} PTS</div>
+                `;
+                
+                playerList.appendChild(playerItem);
             });
         }
 
-        // Render leaderboard
-        function renderLeaderboard() {
-            const leaderboardBody = document.getElementById('leaderboard-body');
-            leaderboardBody.innerHTML = '';
-
-            players.forEach((player, index) => {
-                const row = document.createElement('tr');
-                row.className = `fade-in delay-${index % 5}`;
-                
-                // Rank with medals for top 3
-                let rankCell = '';
-                if (index === 0) {
-                    rankCell = `<td class="rank"><span class="medal gold">1</span></td>`;
-                } else if (index === 1) {
-                    rankCell = `<td class="rank"><span class="medal silver">2</span></td>`;
-                } else if (index === 2) {
-                    rankCell = `<td class="rank"><span class="medal bronze">3</span></td>`;
-                } else {
-                    rankCell = `<td class="rank">${index + 1}</td>`;
-                }
-
-                // Player info
-                const avatar = player.avatar ? `<img src="${player.avatar}" alt="${player.name}">` : player.name.charAt(0);
-                
-                row.innerHTML = `
-                    ${rankCell}
-                    <td>
-                        <div class="player">
-                            <div class="player-avatar">${avatar}</div>
-                            <div class="player-info">
-                                <h3>${player.name}</h3>
-                                <p>Last game: 2 days ago</p>
-                            </div>
-                        </div>
-                    </td>
-                    <td class="stats"><span class="wins">${player.wins}</span></td>
-                    <td class="stats"><span class="losses">${player.losses}</span></td>
-                    <td class="stats"><span class="draws">${player.draws}</span></td>
-                    <td class="stats points">${player.points}</td>
-                    <td class="stats">
-                        <div class="trend ${player.trend}">
-                            <i class="fas fa-arrow-${player.trend === 'up' ? 'up' : player.trend === 'down' ? 'down' : 'right'}"></i>
-                        </div>
-                    </td>
-                `;
-                
-                leaderboardBody.appendChild(row);
-            });
-
-            // Update timestamp
-            document.getElementById('update-time').textContent = new Date().toLocaleString();
+        // Select a player for editing
+        function selectPlayer(player) {
+            selectedPlayerId = player.id;
+            playerNameInput.value = player.name;
+            playerPointsInput.value = player.points || 0;
+            playerWinsInput.value = player.wins || 0;
+            playerLossesInput.value = player.losses || 0;
+            playerAvatarInput.value = player.avatar || '';
+            
+            updatePlayerBtn.disabled = false;
+            deletePlayerBtn.disabled = false;
+            addPlayerBtn.disabled = true;
         }
 
-        // Render admin player list
-        function renderAdminPlayerList() {
-            const adminList = document.getElementById('admin-player-list');
-            adminList.innerHTML = '';
-
-            players.forEach(player => {
-                const playerDiv = document.createElement('div');
-                playerDiv.className = 'player-admin-item';
-                playerDiv.style.display = 'flex';
-                playerDiv.style.justifyContent = 'space-between';
-                playerDiv.style.alignItems = 'center';
-                playerDiv.style.padding = '1rem';
-                playerDiv.style.borderBottom = '1px solid #eee';
-                
-                const avatar = player.avatar ? `<img src="${player.avatar}" alt="${player.name}" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 1rem;">` : player.name.charAt(0);
-                
-                playerDiv.innerHTML = `
-                    <div style="display: flex; align-items: center;">
-                        <div style="width: 40px; height: 40px; border-radius: 50%; background-color: #eee; display: flex; align-items: center; justify-content: center; margin-right: 1rem; overflow: hidden;">
-                            ${avatar}
-                        </div>
-                        <div>
-                            <h3 style="margin-bottom: 0.2rem;">${player.name}</h3>
-                            <p style="font-size: 0.8rem; color: #777;">Rank: ${player.rank} | Points: ${player.points}</p>
-                        </div>
-                    </div>
-                    <div class="btn-group">
-                        <button class="btn" onclick="editPlayer(${player.id})">Edit</button>
-                        <button class="btn btn-danger" onclick="deletePlayer(${player.id})">Delete</button>
-                    </div>
-                `;
-                
-                adminList.appendChild(playerDiv);
-            });
-        }
-
-        // Render sortable players for ranking edit
-        function renderSortablePlayers() {
-            const sortableList = document.getElementById('sortable-players');
-            sortableList.innerHTML = '';
-
-            players.forEach(player => {
-                const li = document.createElement('li');
-                li.dataset.id = player.id;
-                li.style.padding = '0.8rem';
-                li.style.marginBottom = '0.5rem';
-                li.style.background = '#f9f9f9';
-                li.style.borderRadius = '4px';
-                li.style.cursor = 'move';
-                
-                li.innerHTML = `
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <span>${player.rank}. ${player.name}</span>
-                        <span style="font-weight: bold; color: var(--secondary);">${player.points} pts</span>
-                    </div>
-                `;
-                
-                sortableList.appendChild(li);
-            });
-
-            // Initialize sortable
-            new Sortable(sortableList, {
-                animation: 150,
-                ghostClass: 'sortable-ghost'
-            });
+        // Clear selection
+        function clearSelection() {
+            selectedPlayerId = null;
+            playerNameInput.value = '';
+            playerPointsInput.value = '';
+            playerWinsInput.value = '';
+            playerLossesInput.value = '';
+            playerAvatarInput.value = '';
+            
+            updatePlayerBtn.disabled = true;
+            deletePlayerBtn.disabled = true;
+            addPlayerBtn.disabled = false;
         }
 
         // Add a new player
-        function addPlayer(event) {
-            event.preventDefault();
+        addPlayerBtn.addEventListener('click', () => {
+            const name = playerNameInput.value.trim();
+            const points = parseInt(playerPointsInput.value) || 0;
+            const wins = parseInt(playerWinsInput.value) || 0;
+            const losses = parseInt(playerLossesInput.value) || 0;
+            const avatar = playerAvatarInput.value.trim();
             
-            const name = document.getElementById('player-name').value;
-            const avatar = document.getElementById('player-avatar').value;
-            const wins = parseInt(document.getElementById('initial-wins').value) || 0;
-            const losses = parseInt(document.getElementById('initial-losses').value) || 0;
-            const draws = parseInt(document.getElementById('initial-draws').value) || 0;
+            if (!name) {
+                alert('Please enter a player name');
+                return;
+            }
             
-            const newPlayer = {
-                id: players.length > 0 ? Math.max(...players.map(p => p.id)) + 1 : 1,
+            const playerData = {
                 name,
-                avatar,
+                points,
                 wins,
-                losses,
-                draws,
-                points: calculatePoints({ wins, draws }),
-                trend: "neutral"
+                losses
             };
             
-            players.push(newPlayer);
-            sortPlayers();
-            renderLeaderboard();
-            renderAdminPlayerList();
-            renderSortablePlayers();
-            
-            // Reset form
-            document.getElementById('add-player-form').reset();
-            
-            // Show success message
-            alert(`${name} has been added to the leaderboard!`);
-        }
-
-        // Edit player
-        function editPlayer(id) {
-            const player = players.find(p => p.id === id);
-            if (!player) return;
-            
-            const newName = prompt("Edit player name:", player.name);
-            if (newName === null) return;
-            
-            const newAvatar = prompt("Edit avatar URL (leave empty to keep current):", player.avatar);
-            
-            const newWins = parseInt(prompt("Edit wins:", player.wins));
-            if (isNaN(newWins)) return;
-            
-            const newLosses = parseInt(prompt("Edit losses:", player.losses));
-            if (isNaN(newLosses)) return;
-            
-            const newDraws = parseInt(prompt("Edit draws:", player.draws));
-            if (isNaN(newDraws)) return;
-            
-            player.name = newName;
-            player.avatar = newAvatar || player.avatar;
-            player.wins = newWins;
-            player.losses = newLosses;
-            player.draws = newDraws;
-            player.points = calculatePoints(player);
-            
-            sortPlayers();
-            renderLeaderboard();
-            renderAdminPlayerList();
-            renderSortablePlayers();
-            
-            alert(`${player.name}'s details have been updated!`);
-        }
-
-        // Delete player
-        function deletePlayer(id) {
-            if (!confirm("Are you sure you want to delete this player?")) return;
-            
-            const playerIndex = players.findIndex(p => p.id === id);
-            if (playerIndex === -1) return;
-            
-            const playerName = players[playerIndex].name;
-            players.splice(playerIndex, 1);
-            
-            sortPlayers();
-            renderLeaderboard();
-            renderAdminPlayerList();
-            renderSortablePlayers();
-            
-            alert(`${playerName} has been removed from the leaderboard.`);
-        }
-
-        // Save ranking order
-        function saveRankings(event) {
-            event.preventDefault();
-            
-            const sortableList = document.getElementById('sortable-players');
-            const items = sortableList.children;
-            
-            // Get the new order of player IDs
-            const newOrder = Array.from(items).map(item => parseInt(item.dataset.id));
-            
-            // Reorder the players array based on the new order
-            const newPlayers = [];
-            newOrder.forEach(id => {
-                const player = players.find(p => p.id === id);
-                if (player) newPlayers.push(player);
-            });
-            
-            players = newPlayers;
-            sortPlayers();
-            renderLeaderboard();
-            renderAdminPlayerList();
-            renderSortablePlayers();
-            
-            alert("Player rankings have been updated!");
-        }
-
-        // Search players
-        function searchPlayers() {
-            const searchTerm = document.getElementById('search-input').value.toLowerCase();
-            const rows = document.querySelectorAll('#leaderboard-body tr');
-            
-            rows.forEach(row => {
-                const name = row.querySelector('.player-info h3').textContent.toLowerCase();
-                if (name.includes(searchTerm)) {
-                    row.style.display = '';
-                } else {
-                    row.style.display = 'none';
-                }
-            });
-        }
-
-        // Tab switching
-        function setupTabs() {
-            const tabs = document.querySelectorAll('.tab');
-            tabs.forEach(tab => {
-                tab.addEventListener('click', () => {
-                    // Remove active class from all tabs and content
-                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-                    
-                    // Add active class to clicked tab and corresponding content
-                    tab.classList.add('active');
-                    const tabId = tab.dataset.tab + '-tab';
-                    document.getElementById(tabId).classList.add('active');
-                    
-                    // If edit tab is selected, render sortable players
-                    if (tab.dataset.tab === 'edit') {
-                        renderSortablePlayers();
-                    }
-                });
-            });
-        }
-
-        // Toggle admin panel
-        function toggleAdminPanel() {
-            const adminPanel = document.getElementById('admin-panel');
-            const adminToggle = document.getElementById('admin-toggle');
-            
-            if (adminPanel.classList.contains('hidden')) {
-                // Show admin panel
-                adminPanel.classList.remove('hidden');
-                adminToggle.innerHTML = '<i class="fas fa-times"></i>';
-                adminToggle.style.backgroundColor = 'var(--danger)';
-                
-                // Render admin views
-                renderAdminPlayerList();
-            } else {
-                // Hide admin panel
-                adminPanel.classList.add('hidden');
-                adminToggle.innerHTML = '<i class="fas fa-lock"></i>';
-                adminToggle.style.backgroundColor = 'var(--accent)';
+            if (avatar) {
+                playerData.avatar = avatar;
             }
-        }
+            
+            database.ref('players').push(playerData)
+                .then(() => {
+                    alert('Player added successfully!');
+                    clearSelection();
+                    loadPlayers();
+                })
+                .catch(error => {
+                    alert('Error adding player: ' + error.message);
+                });
+        });
 
-        // Initialize the app
-        function init() {
-            // Calculate initial points and sort
-            players.forEach(player => {
-                player.points = calculatePoints(player);
-            });
-            sortPlayers();
+        // Update a player
+        updatePlayerBtn.addEventListener('click', () => {
+            if (!selectedPlayerId) return;
             
-            // Render initial views
-            renderLeaderboard();
+            const name = playerNameInput.value.trim();
+            const points = parseInt(playerPointsInput.value) || 0;
+            const wins = parseInt(playerWinsInput.value) || 0;
+            const losses = parseInt(playerLossesInput.value) || 0;
+            const avatar = playerAvatarInput.value.trim();
             
-            // Set up event listeners
-            document.getElementById('add-player-form').addEventListener('submit', addPlayer);
-            document.getElementById('edit-rankings-form').addEventListener('submit', saveRankings);
-            document.getElementById('search-input').addEventListener('input', searchPlayers);
-            document.getElementById('admin-toggle').addEventListener('click', toggleAdminPanel);
+            if (!name) {
+                alert('Please enter a player name');
+                return;
+            }
             
-            // Set up tabs
-            setupTabs();
+            const playerData = {
+                name,
+                points,
+                wins,
+                losses
+            };
             
-            // Add some confetti for fun
-            setTimeout(() => {
-                for (let i = 0; i < 50; i++) {
-                    createConfetti();
-                }
-            }, 1000);
-        }
+            if (avatar) {
+                playerData.avatar = avatar;
+            }
+            
+            database.ref('players/' + selectedPlayerId).update(playerData)
+                .then(() => {
+                    alert('Player updated successfully!');
+                    clearSelection();
+                    loadPlayers();
+                })
+                .catch(error => {
+                    alert('Error updating player: ' + error.message);
+                });
+        });
 
-        // Create confetti effect
-        function createConfetti() {
-            const confetti = document.createElement('div');
-            confetti.className = 'confetti';
+        // Delete a player
+        deletePlayerBtn.addEventListener('click', () => {
+            if (!selectedPlayerId) return;
             
-            // Random color
-            const colors = ['#f00', '#0f0', '#00f', '#ff0', '#f0f', '#0ff'];
-            const randomColor = colors[Math.floor(Math.random() * colors.length)];
-            confetti.style.backgroundColor = randomColor;
-            
-            // Random position
-            confetti.style.left = Math.random() * 100 + 'vw';
-            
-            // Random size
-            const size = Math.random() * 10 + 5;
-            confetti.style.width = size + 'px';
-            confetti.style.height = size + 'px';
-            
-            // Random animation duration
-            confetti.style.animationDuration = Math.random() * 3 + 2 + 's';
-            
-            document.body.appendChild(confetti);
-            
-            // Remove after animation
-            setTimeout(() => {
-                confetti.remove();
-            }, 5000);
-        }
+            if (confirm('Are you sure you want to delete this player?')) {
+                database.ref('players/' + selectedPlayerId).remove()
+                    .then(() => {
+                        alert('Player deleted successfully!');
+                        clearSelection();
+                        loadPlayers();
+                    })
+                    .catch(error => {
+                        alert('Error deleting player: ' + error.message);
+                    });
+            }
+        });
 
-        // Start the app when DOM is loaded
-        document.addEventListener('DOMContentLoaded', init);
+        // Refresh button
+        refreshBtn.addEventListener('click', loadPlayers);
+
+        // Initialize
+        loadPlayers();
     </script>
 </body>
 </html>
