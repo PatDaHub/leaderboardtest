@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>دوري الازاريطه الممتاز</title>
+    <title>FIFA Leaderboard</title>
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
@@ -14,15 +14,17 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #2c3e50;
-            --secondary: #3498db;
-            --accent: #e74c3c;
-            --light: #ecf0f1;
-            --dark: #2c3e50;
-            --success: #2ecc71;
-            --warning: #f39c12;
-            --text: #333;
-            --text-light: #7f8c8d;
+            --primary: #1a1a2e;
+            --secondary: #16213e;
+            --accent: #e94560;
+            --light: #e6e6e6;
+            --dark: #0f0f1a;
+            --success: #00b894;
+            --warning: #fdcb6e;
+            --text: #f1f1f1;
+            --text-light: #b8b8b8;
+            --card-bg: #16213e;
+            --highlight: #e94560;
         }
 
         * {
@@ -33,7 +35,7 @@
 
         body {
             font-family: 'Open Sans', sans-serif;
-            background-color: #f5f5f5;
+            background-color: var(--primary);
             color: var(--text);
             line-height: 1.6;
         }
@@ -50,8 +52,9 @@
             padding: 20px 0;
             text-align: center;
             border-radius: 0 0 10px 10px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
             margin-bottom: 30px;
+            border-bottom: 2px solid var(--highlight);
         }
 
         h1 {
@@ -59,19 +62,22 @@
             font-weight: 700;
             font-size: 2.5rem;
             margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
         }
 
         .subtitle {
             font-weight: 400;
             opacity: 0.9;
+            color: var(--text-light);
         }
 
         .leaderboard {
-            background: white;
+            background: var(--card-bg);
             border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
             overflow: hidden;
             margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .leaderboard-header {
@@ -81,6 +87,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .leaderboard-title {
@@ -90,7 +97,7 @@
         }
 
         .refresh-btn {
-            background: var(--secondary);
+            background: var(--highlight);
             color: white;
             border: none;
             padding: 8px 15px;
@@ -98,11 +105,15 @@
             cursor: pointer;
             font-weight: 600;
             transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .refresh-btn:hover {
-            background: #2980b9;
+            background: #d13354;
             transform: translateY(-2px);
+            box-shadow: 0 2px 8px rgba(233, 69, 96, 0.3);
         }
 
         .player-list {
@@ -113,13 +124,19 @@
             display: flex;
             align-items: center;
             padding: 15px 20px;
-            border-bottom: 1px solid #eee;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
             transition: all 0.3s;
+            background: var(--card-bg);
         }
 
         .player-item:hover {
-            background: #f9f9f9;
+            background: rgba(22, 33, 62, 0.7);
             transform: translateX(5px);
+        }
+
+        .player-item.selected {
+            background: rgba(233, 69, 96, 0.1);
+            border-left: 3px solid var(--highlight);
         }
 
         .player-rank {
@@ -132,18 +149,21 @@
         }
 
         .player-rank.rank-1 {
-            color: #f1c40f;
+            color: #fdcb6e;
             font-size: 1.5rem;
+            text-shadow: 0 0 8px rgba(253, 203, 110, 0.4);
         }
 
         .player-rank.rank-2 {
-            color: #95a5a6;
+            color: #a4b0be;
             font-size: 1.4rem;
+            text-shadow: 0 0 6px rgba(164, 176, 190, 0.3);
         }
 
         .player-rank.rank-3 {
             color: #cd7f32;
             font-size: 1.3rem;
+            text-shadow: 0 0 4px rgba(205, 127, 50, 0.3);
         }
 
         .player-avatar {
@@ -156,7 +176,8 @@
             justify-content: center;
             margin: 0 15px;
             overflow: hidden;
-            border: 3px solid #eee;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
         }
 
         .player-avatar img {
@@ -174,6 +195,7 @@
             font-weight: 600;
             font-size: 1.1rem;
             margin-bottom: 5px;
+            color: var(--text);
         }
 
         .player-stats {
@@ -190,32 +212,33 @@
 
         .stat i {
             margin-right: 5px;
-            color: var(--secondary);
+            color: var(--highlight);
         }
 
         .player-points {
             font-family: 'Montserrat', sans-serif;
             font-weight: 700;
             font-size: 1.2rem;
-            color: var(--primary);
+            color: var(--warning);
         }
 
         /* Admin Panel */
         .admin-panel {
-            background: white;
+            background: var(--card-bg);
             border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
             padding: 20px;
             margin-bottom: 30px;
             display: none;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .admin-panel h2 {
             font-family: 'Montserrat', sans-serif;
-            color: var(--primary);
+            color: var(--text);
             margin-bottom: 20px;
             padding-bottom: 10px;
-            border-bottom: 2px solid #eee;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .form-group {
@@ -226,14 +249,24 @@
             display: block;
             margin-bottom: 5px;
             font-weight: 600;
+            color: var(--text-light);
         }
 
         .form-control {
             width: 100%;
             padding: 10px;
-            border: 1px solid #ddd;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 5px;
             font-family: inherit;
+            color: var(--text);
+            transition: all 0.3s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--highlight);
+            box-shadow: 0 0 0 2px rgba(233, 69, 96, 0.2);
         }
 
         .btn {
@@ -243,24 +276,29 @@
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .btn-primary {
-            background: var(--secondary);
+            background: var(--highlight);
             color: white;
         }
 
         .btn-primary:hover {
-            background: #2980b9;
+            background: #d13354;
+            box-shadow: 0 2px 8px rgba(233, 69, 96, 0.3);
         }
 
         .btn-danger {
-            background: var(--accent);
+            background: #d63031;
             color: white;
         }
 
         .btn-danger:hover {
-            background: #c0392b;
+            background: #c23636;
+            box-shadow: 0 2px 8px rgba(214, 48, 49, 0.3);
         }
 
         .btn-success {
@@ -269,7 +307,8 @@
         }
 
         .btn-success:hover {
-            background: #27ae60;
+            background: #00a884;
+            box-shadow: 0 2px 8px rgba(0, 184, 148, 0.3);
         }
 
         .btn-group {
@@ -281,16 +320,17 @@
         .login-form {
             max-width: 400px;
             margin: 50px auto;
-            background: white;
+            background: var(--card-bg);
             padding: 30px;
             border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .login-form h2 {
             text-align: center;
             margin-bottom: 20px;
-            color: var(--primary);
+            color: var(--text);
         }
 
         /* Animations */
@@ -301,6 +341,17 @@
 
         .fade-in {
             animation: fadeIn 0.5s ease-out forwards;
+        }
+
+        /* Glow effect for top players */
+        @keyframes glow {
+            0% { text-shadow: 0 0 5px rgba(253, 203, 110, 0.5); }
+            50% { text-shadow: 0 0 15px rgba(253, 203, 110, 0.8); }
+            100% { text-shadow: 0 0 5px rgba(253, 203, 110, 0.5); }
+        }
+
+        .rank-1 {
+            animation: glow 2s infinite;
         }
 
         /* Responsive */
@@ -323,19 +374,52 @@
             .player-points {
                 margin-top: 10px;
             }
+
+            .btn-group {
+                flex-direction: column;
+            }
         }
 
-        /* Trophy icon for top players */
-        .trophy {
-            color: #f1c40f;
-            margin-right: 5px;
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--primary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--highlight);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #d13354;
+        }
+
+        /* Loading spinner */
+        .spinner {
+            width: 40px;
+            height: 40px;
+            margin: 20px auto;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            border-top: 4px solid var(--highlight);
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
     </style>
 </head>
 <body>
     <header>
         <div class="container">
-            <h1>ترتيب دوري الازاريطه الممتاز</h1>
+            <h1>FIFA Leaderboard</h1>
+            <p class="subtitle">Track your ranking among friends</p>
         </div>
     </header>
 
@@ -346,10 +430,7 @@
                 <button id="refreshBtn" class="refresh-btn"><i class="fas fa-sync-alt"></i> Refresh</button>
             </div>
             <ul class="player-list" id="playerList">
-                <!-- Players will be loaded here -->
-                <li class="player-item" id="loading">
-                    <div>Loading players...</div>
-                </li>
+                <div class="spinner" id="loadingSpinner"></div>
             </ul>
         </div>
 
@@ -362,8 +443,8 @@
             </div>
             
             <div class="form-group">
-                <label for="playerPoints">Points</label>
-                <input type="number" id="playerPoints" class="form-control" placeholder="Enter points">
+                <label for="playerRank">Rank</label>
+                <input type="number" id="playerRank" class="form-control" placeholder="Enter rank (1 is highest)">
             </div>
             
             <div class="form-group">
@@ -385,6 +466,7 @@
                 <button id="addPlayerBtn" class="btn btn-primary"><i class="fas fa-plus"></i> Add Player</button>
                 <button id="updatePlayerBtn" class="btn btn-success" disabled><i class="fas fa-edit"></i> Update Player</button>
                 <button id="deletePlayerBtn" class="btn btn-danger" disabled><i class="fas fa-trash"></i> Delete Player</button>
+                <button id="clearSelectionBtn" class="btn" style="background: var(--secondary);"><i class="fas fa-times"></i> Clear</button>
             </div>
         </div>
 
@@ -398,21 +480,20 @@
                 <label for="loginPassword">Password</label>
                 <input type="password" id="loginPassword" class="form-control" placeholder="Enter password">
             </div>
-            <button id="loginBtn" class="btn btn-primary btn-block"><i class="fas fa-sign-in-alt"></i> Login</button>
+            <button id="loginBtn" class="btn btn-primary"><i class="fas fa-sign-in-alt"></i> Login</button>
         </div>
     </div>
 
     <script>
-        // Firebase configuration - YOU NEED TO REPLACE THIS WITH YOUR OWN CONFIG
+        // Firebase configuration - REPLACE WITH YOUR CONFIG
         const firebaseConfig = {
-              apiKey: "AIzaSyBezrUgfVjy6ULS4EtORPv-NkXRQo_kXxg",
-  authDomain: "tic-tac-77ff7.firebaseapp.com",
-  databaseURL: "https://tic-tac-77ff7-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "tic-tac-77ff7",
-  storageBucket: "tic-tac-77ff7.firebasestorage.app",
-  messagingSenderId: "882673281893",
-  appId: "1:882673281893:web:c1ba7b3fd078350e888f8c",
-  measurementId: "G-R2R8W6TZQN"
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            databaseURL: "YOUR_DATABASE_URL",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_SENDER_ID",
+            appId: "YOUR_APP_ID"
         };
 
         // Initialize Firebase
@@ -426,10 +507,11 @@
         const adminPanel = document.getElementById('adminPanel');
         const loginForm = document.getElementById('loginForm');
         const loginBtn = document.getElementById('loginBtn');
+        const loadingSpinner = document.getElementById('loadingSpinner');
         
         // Form elements
         const playerNameInput = document.getElementById('playerName');
-        const playerPointsInput = document.getElementById('playerPoints');
+        const playerRankInput = document.getElementById('playerRank');
         const playerWinsInput = document.getElementById('playerWins');
         const playerLossesInput = document.getElementById('playerLosses');
         const playerAvatarInput = document.getElementById('playerAvatar');
@@ -438,6 +520,7 @@
         const addPlayerBtn = document.getElementById('addPlayerBtn');
         const updatePlayerBtn = document.getElementById('updatePlayerBtn');
         const deletePlayerBtn = document.getElementById('deletePlayerBtn');
+        const clearSelectionBtn = document.getElementById('clearSelectionBtn');
         
         // Login elements
         const loginEmailInput = document.getElementById('loginEmail');
@@ -445,6 +528,7 @@
 
         // Current selected player
         let selectedPlayerId = null;
+        let playersData = [];
 
         // Check auth state
         auth.onAuthStateChanged(user => {
@@ -475,25 +559,28 @@
 
         // Load players from Firebase
         function loadPlayers() {
-            playerList.innerHTML = '<li class="player-item" id="loading"><div>Loading players...</div></li>';
+            loadingSpinner.style.display = 'block';
+            playerList.innerHTML = '';
             
-            database.ref('players').orderByChild('points').once('value')
+            database.ref('players').once('value')
                 .then(snapshot => {
-                    const players = [];
+                    playersData = [];
                     snapshot.forEach(childSnapshot => {
-                        players.push({
+                        playersData.push({
                             id: childSnapshot.key,
                             ...childSnapshot.val()
                         });
                     });
                     
-                    // Sort by points descending
-                    players.sort((a, b) => b.points - a.points);
+                    // Sort by rank ascending (1 is highest)
+                    playersData.sort((a, b) => (a.rank || Infinity) - (b.rank || Infinity));
                     
-                    renderPlayers(players);
+                    renderPlayers(playersData);
+                    loadingSpinner.style.display = 'none';
                 })
                 .catch(error => {
                     playerList.innerHTML = '<li class="player-item"><div>Error loading players: ' + error.message + '</div></li>';
+                    loadingSpinner.style.display = 'none';
                 });
         }
 
@@ -507,11 +594,14 @@
             }
             
             players.forEach((player, index) => {
-                const rank = index + 1;
                 const playerItem = document.createElement('li');
                 playerItem.className = `player-item fade-in`;
                 playerItem.style.animationDelay = `${index * 0.1}s`;
                 playerItem.dataset.id = player.id;
+                
+                if (player.id === selectedPlayerId) {
+                    playerItem.classList.add('selected');
+                }
                 
                 // Add click event to select player for editing
                 playerItem.addEventListener('click', () => {
@@ -520,6 +610,7 @@
                 
                 // Rank with special styling for top 3
                 let rankClass = '';
+                const rank = player.rank || index + 1;
                 if (rank === 1) rankClass = 'rank-1';
                 else if (rank === 2) rankClass = 'rank-2';
                 else if (rank === 3) rankClass = 'rank-3';
@@ -539,18 +630,34 @@
                             <div class="stat"><i class="fas fa-times-circle"></i> ${player.losses || 0} Losses</div>
                         </div>
                     </div>
-                    <div class="player-points">${player.points || 0} PTS</div>
+                    <div class="player-points">${calculatePoints(player.wins || 0, player.losses || 0)} PTS</div>
                 `;
                 
                 playerList.appendChild(playerItem);
             });
         }
 
+        // Calculate points based on wins and losses
+        function calculatePoints(wins, losses) {
+            return wins * 3 - losses * 1; // 3 points per win, -1 per loss
+        }
+
         // Select a player for editing
         function selectPlayer(player) {
+            // Deselect all players first
+            document.querySelectorAll('.player-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            
+            // Select the clicked player
+            const playerElement = document.querySelector(`.player-item[data-id="${player.id}"]`);
+            if (playerElement) {
+                playerElement.classList.add('selected');
+            }
+            
             selectedPlayerId = player.id;
             playerNameInput.value = player.name;
-            playerPointsInput.value = player.points || 0;
+            playerRankInput.value = player.rank || '';
             playerWinsInput.value = player.wins || 0;
             playerLossesInput.value = player.losses || 0;
             playerAvatarInput.value = player.avatar || '';
@@ -562,9 +669,13 @@
 
         // Clear selection
         function clearSelection() {
+            document.querySelectorAll('.player-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            
             selectedPlayerId = null;
             playerNameInput.value = '';
-            playerPointsInput.value = '';
+            playerRankInput.value = '';
             playerWinsInput.value = '';
             playerLossesInput.value = '';
             playerAvatarInput.value = '';
@@ -577,7 +688,7 @@
         // Add a new player
         addPlayerBtn.addEventListener('click', () => {
             const name = playerNameInput.value.trim();
-            const points = parseInt(playerPointsInput.value) || 0;
+            const rank = parseInt(playerRankInput.value) || playersData.length + 1;
             const wins = parseInt(playerWinsInput.value) || 0;
             const losses = parseInt(playerLossesInput.value) || 0;
             const avatar = playerAvatarInput.value.trim();
@@ -589,9 +700,10 @@
             
             const playerData = {
                 name,
-                points,
+                rank,
                 wins,
-                losses
+                losses,
+                points: calculatePoints(wins, losses)
             };
             
             if (avatar) {
@@ -614,7 +726,7 @@
             if (!selectedPlayerId) return;
             
             const name = playerNameInput.value.trim();
-            const points = parseInt(playerPointsInput.value) || 0;
+            const rank = parseInt(playerRankInput.value) || playersData.length + 1;
             const wins = parseInt(playerWinsInput.value) || 0;
             const losses = parseInt(playerLossesInput.value) || 0;
             const avatar = playerAvatarInput.value.trim();
@@ -626,9 +738,10 @@
             
             const playerData = {
                 name,
-                points,
+                rank,
                 wins,
-                losses
+                losses,
+                points: calculatePoints(wins, losses)
             };
             
             if (avatar) {
@@ -662,6 +775,9 @@
                     });
             }
         });
+
+        // Clear selection button
+        clearSelectionBtn.addEventListener('click', clearSelection);
 
         // Refresh button
         refreshBtn.addEventListener('click', loadPlayers);
