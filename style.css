@@ -1,0 +1,105 @@
+/* Base Styles */
+body {
+    font-family: 'Montserrat', sans-serif;
+    direction: ltr;
+}
+
+body[dir="rtl"] {
+    direction: rtl;
+}
+
+/* Animations */
+.player-card {
+    transition: all 0.3s ease;
+}
+
+.player-card:hover {
+    transform: translateY(-3px);
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* RTL Support */
+[dir="rtl"] .ar-lang {
+    display: block !important;
+}
+
+[dir="rtl"] .en-lang {
+    display: none !important;
+}
+
+/* Glitch Effect */
+.glitch {
+    position: relative;
+}
+
+.glitch::before, .glitch::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.8;
+}
+
+.glitch::before {
+    color: #0ff;
+    z-index: -1;
+    animation: glitch-effect 3s infinite;
+}
+
+.glitch::after {
+    color: #f0f;
+    z-index: -2;
+    animation: glitch-effect 2s infinite reverse;
+}
+
+@keyframes glitch-effect {
+    0% { transform: translate(0); }
+    20% { transform: translate(-3px, 3px); }
+    40% { transform: translate(-3px, -3px); }
+    60% { transform: translate(3px, 3px); }
+    80% { transform: translate(3px, -3px); }
+    100% { transform: translate(0); }
+}
+
+/* Rank Badges */
+.rank-1 {
+    background: linear-gradient(135deg, #ffd700, #ff9800);
+    color: black;
+}
+
+.rank-2 {
+    background: linear-gradient(135deg, #c0c0c0, #9e9e9e);
+    color: black;
+}
+
+.rank-3 {
+    background: linear-gradient(135deg, #cd7f32, #a05a2c);
+    color: black;
+}
+
+/* Progress Bar */
+.win-rate-bar {
+    height: 6px;
+    background-color: #333;
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.win-rate-progress {
+    height: 100%;
+    background: linear-gradient(90deg, #4CAF50, #8BC34A);
+    border-radius: 3px;
+}
+
+/* Responsive Table */
+@media (max-width: 768px) {
+    .leaderboard-header, .player-row {
+        grid-template-columns: 1fr 2fr 1fr !important;
+    }
+    
+    .player-team, .player-wins, .player-losses, .player-win-rate {
+        display: none;
+    }
+}
