@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bottled - Messaging App</title>
+    <title>Bottled - Message in a Bottle</title>
     <style>
         * {
             margin: 0;
@@ -13,9 +13,39 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
             min-height: 100vh;
             color: #333;
+            overflow-x: hidden;
+        }
+
+        .ocean-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(120, 219, 226, 0.2) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            z-index: -1;
+        }
+
+        .waves {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100px;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120'%3E%3Cpath d='M0,60 C200,100 400,20 600,60 C800,100 1000,20 1200,60 L1200,120 L0,120 Z' fill='rgba(255,255,255,0.1)'/%3E%3C/svg%3E") repeat-x;
+            animation: wave 15s ease-in-out infinite;
+            z-index: -1;
+        }
+
+        @keyframes wave {
+            0%, 100% { transform: translateX(0px); }
+            50% { transform: translateX(-50px); }
         }
 
         .container {
@@ -28,20 +58,34 @@
         }
 
         .header {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
             padding: 20px;
             margin-bottom: 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             color: white;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
         }
 
         .logo {
-            font-size: 24px;
+            font-size: 28px;
             font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .bottle-icon {
+            font-size: 32px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
         }
 
         .user-info {
@@ -51,29 +95,32 @@
         }
 
         .user-avatar {
-            width: 40px;
-            height: 40px;
+            width: 45px;
+            height: 45px;
             border-radius: 50%;
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.25);
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: bold;
+            font-size: 18px;
         }
 
         .auth-section {
             background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 15px;
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
             padding: 40px;
             text-align: center;
-            max-width: 400px;
+            max-width: 420px;
             margin: auto;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
         }
 
         .auth-section h2 {
             margin-bottom: 30px;
-            color: #333;
+            color: #2a5298;
+            font-size: 24px;
         }
 
         .form-group {
@@ -90,47 +137,66 @@
 
         .form-group input {
             width: 100%;
-            padding: 12px;
+            padding: 14px;
             border: 2px solid #e1e5e9;
-            border-radius: 8px;
+            border-radius: 12px;
             font-size: 16px;
-            transition: border-color 0.3s;
+            transition: all 0.3s;
         }
 
         .form-group input:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: #2a5298;
+            box-shadow: 0 0 0 3px rgba(42, 82, 152, 0.1);
         }
 
         .btn {
-            padding: 12px 24px;
+            padding: 14px 28px;
             border: none;
-            border-radius: 8px;
+            border-radius: 12px;
             font-size: 16px;
-            font-weight: 500;
+            font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
-            margin: 5px;
+            margin: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #2a5298 0%, #1e3c72 100%);
             color: white;
         }
 
         .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(42, 82, 152, 0.4);
         }
 
         .btn-secondary {
-            background: #f8f9fa;
+            background: rgba(255, 255, 255, 0.8);
             color: #333;
             border: 2px solid #e1e5e9;
         }
 
         .btn-secondary:hover {
-            background: #e9ecef;
+            background: rgba(255, 255, 255, 0.95);
+            transform: translateY(-2px);
         }
 
         .btn-danger {
@@ -146,18 +212,79 @@
         }
 
         .sidebar {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 15px;
-            padding: 20px;
-            width: 300px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 25px;
+            width: 350px;
             display: flex;
             flex-direction: column;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
         }
 
-        .sidebar h3 {
+        .bottle-section {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+        }
+
+        .bottle-container {
+            position: relative;
+            display: inline-block;
+            margin: 20px 0;
+        }
+
+        .bottle {
+            font-size: 80px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: block;
+            filter: drop-shadow(0 5px 15px rgba(0,0,0,0.2));
+        }
+
+        .bottle:hover {
+            transform: scale(1.1) rotate(5deg);
+            filter: drop-shadow(0 8px 25px rgba(0,0,0,0.3));
+        }
+
+        .bottle.opening {
+            animation: shake 0.5s ease-in-out, glow 0.5s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(-10deg); }
+            75% { transform: rotate(10deg); }
+        }
+
+        @keyframes glow {
+            0%, 100% { filter: drop-shadow(0 5px 15px rgba(0,0,0,0.2)); }
+            50% { filter: drop-shadow(0 0 30px rgba(120, 219, 226, 0.8)); }
+        }
+
+        .bottle-text {
+            color: white;
+            font-size: 18px;
+            font-weight: 500;
+            margin-top: 10px;
+        }
+
+        .bottle-subtitle {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .connections-section {
+            flex: 1;
+        }
+
+        .connections-section h3 {
+            color: white;
             margin-bottom: 20px;
-            color: #333;
+            font-size: 20px;
         }
 
         .user-list {
@@ -166,39 +293,77 @@
         }
 
         .user-item {
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 8px;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 10px;
             cursor: pointer;
-            transition: background 0.3s;
+            transition: all 0.3s;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            position: relative;
+        }
+
+        .user-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 3px;
+            background: #78dbe2;
+            border-radius: 0 3px 3px 0;
+            transform: scaleY(0);
+            transition: transform 0.3s;
+        }
+
+        .user-item:hover::before,
+        .user-item.active::before {
+            transform: scaleY(1);
         }
 
         .user-item:hover {
-            background: rgba(102, 126, 234, 0.1);
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(5px);
         }
 
         .user-item.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: rgba(120, 219, 226, 0.3);
+        }
+
+        .user-item.new-connection {
+            animation: newConnection 1s ease-out;
+        }
+
+        @keyframes newConnection {
+            0% { 
+                transform: translateX(-100%) scale(0.5);
+                opacity: 0;
+            }
+            100% { 
+                transform: translateX(0) scale(1);
+                opacity: 1;
+            }
         }
 
         .chat-area {
             flex: 1;
             background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 15px;
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
             display: flex;
             flex-direction: column;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
         }
 
         .chat-header {
-            padding: 20px;
-            border-bottom: 1px solid #e1e5e9;
-            font-weight: 500;
-            color: #333;
+            padding: 25px;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+            font-weight: 600;
+            color: #2a5298;
+            font-size: 18px;
         }
 
         .messages-container {
@@ -208,100 +373,174 @@
             display: flex;
             flex-direction: column;
             gap: 15px;
+            scroll-behavior: smooth;
         }
 
         .message {
-            max-width: 70%;
-            padding: 12px 16px;
-            border-radius: 18px;
+            max-width: 75%;
+            padding: 14px 18px;
+            border-radius: 20px;
             position: relative;
-            animation: fadeIn 0.3s ease-in;
+            animation: messageSlide 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            word-wrap: break-word;
         }
 
         .message.sent {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #2a5298 0%, #1e3c72 100%);
             color: white;
             align-self: flex-end;
-            border-bottom-right-radius: 4px;
+            border-bottom-right-radius: 6px;
         }
 
         .message.received {
-            background: #f8f9fa;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
             color: #333;
             align-self: flex-start;
-            border-bottom-left-radius: 4px;
+            border-bottom-left-radius: 6px;
         }
 
         .message-info {
-            font-size: 12px;
+            font-size: 11px;
             opacity: 0.7;
-            margin-top: 4px;
+            margin-top: 6px;
+        }
+
+        @keyframes messageSlide {
+            0% { 
+                opacity: 0;
+                transform: translateY(30px) scale(0.8);
+            }
+            100% { 
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
         }
 
         .compose-area {
-            padding: 20px;
-            border-top: 1px solid #e1e5e9;
+            padding: 25px;
+            border-top: 1px solid rgba(0,0,0,0.1);
             display: flex;
-            gap: 10px;
+            gap: 15px;
             align-items: flex-end;
         }
 
         .compose-input {
             flex: 1;
-            padding: 12px;
+            padding: 15px 20px;
             border: 2px solid #e1e5e9;
-            border-radius: 20px;
+            border-radius: 25px;
             resize: none;
             font-family: inherit;
             font-size: 16px;
-            min-height: 44px;
-            max-height: 120px;
+            min-height: 50px;
+            max-height: 150px;
+            transition: all 0.3s;
         }
 
         .compose-input:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: #2a5298;
+            box-shadow: 0 0 0 3px rgba(42, 82, 152, 0.15);
         }
 
         .send-btn {
-            width: 44px;
-            height: 44px;
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #2a5298 0%, #1e3c72 100%);
             color: white;
             border: none;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: transform 0.2s;
+            transition: all 0.3s;
+            font-size: 18px;
         }
 
         .send-btn:hover {
-            transform: scale(1.05);
+            transform: scale(1.1);
+            box-shadow: 0 5px 20px rgba(42, 82, 152, 0.4);
+        }
+
+        .send-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
         }
 
         .hidden {
             display: none !important;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
         .loading {
             text-align: center;
             padding: 20px;
-            color: #666;
+            color: rgba(255, 255, 255, 0.8);
         }
 
         .error {
-            background: #f8d7da;
-            color: #721c24;
-            padding: 10px;
-            border-radius: 8px;
+            background: rgba(220, 53, 69, 0.1);
+            color: #dc3545;
+            padding: 12px;
+            border-radius: 12px;
             margin: 10px 0;
+            border: 1px solid rgba(220, 53, 69, 0.2);
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(40, 167, 69, 0.95);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 12px;
+            transform: translateX(400px);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .typing-indicator {
+            padding: 10px 15px;
+            margin: 5px 0;
+            align-self: flex-start;
+            background: #f8f9fa;
+            border-radius: 20px;
+            border-bottom-left-radius: 6px;
+            max-width: 75%;
+        }
+
+        .typing-dots {
+            display: flex;
+            gap: 3px;
+        }
+
+        .typing-dots span {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #999;
+            animation: typing 1.4s infinite ease-in-out;
+        }
+
+        .typing-dots span:nth-child(1) { animation-delay: -0.32s; }
+        .typing-dots span:nth-child(2) { animation-delay: -0.16s; }
+
+        @keyframes typing {
+            0%, 80%, 100% { 
+                transform: scale(0.8);
+                opacity: 0.5;
+            }
+            40% { 
+                transform: scale(1);
+                opacity: 1;
+            }
         }
 
         @media (max-width: 768px) {
@@ -313,20 +552,31 @@
             .sidebar {
                 width: 100%;
                 order: 2;
+                height: 300px;
             }
             
             .chat-area {
                 order: 1;
-                min-height: 400px;
+                min-height: 500px;
+            }
+
+            .bottle {
+                font-size: 60px;
             }
         }
     </style>
 </head>
 <body>
+    <div class="ocean-bg"></div>
+    <div class="waves"></div>
+    
     <div class="container">
         <!-- Header -->
         <div class="header">
-            <div class="logo">🍶 Bottled</div>
+            <div class="logo">
+                <span class="bottle-icon">🍶</span>
+                Bottled
+            </div>
             <div class="user-info hidden" id="userInfo">
                 <div class="user-avatar" id="userAvatar"></div>
                 <span id="userName"></span>
@@ -336,7 +586,7 @@
 
         <!-- Authentication Section -->
         <div class="auth-section" id="authSection">
-            <h2>Welcome to Bottled</h2>
+            <h2>🌊 Cast Your Message Into The Digital Ocean</h2>
             <div id="loginForm">
                 <div class="form-group">
                     <label for="email">Email</label>
@@ -358,36 +608,52 @@
         <div class="main-content hidden" id="mainContent">
             <!-- Sidebar -->
             <div class="sidebar">
-                <h3>Users</h3>
-                <div class="user-list" id="userList">
-                    <div class="loading">Loading users...</div>
+                <!-- Bottle Opening Section -->
+                <div class="bottle-section">
+                    <div class="bottle-container">
+                        <div class="bottle" id="magicBottle" onclick="openBottle()">🍶</div>
+                    </div>
+                    <div class="bottle-text">Find a Random Connection</div>
+                    <div class="bottle-subtitle">Click the bottle to meet someone new</div>
+                </div>
+
+                <!-- Connections Section -->
+                <div class="connections-section">
+                    <h3>Your Connections</h3>
+                    <div class="user-list" id="userList">
+                        <div class="loading">Open a bottle to make connections...</div>
+                    </div>
                 </div>
             </div>
 
             <!-- Chat Area -->
             <div class="chat-area">
                 <div class="chat-header" id="chatHeader">
-                    Select a user to start messaging
+                    🌊 Open a bottle to start your first conversation
                 </div>
                 
                 <div class="messages-container" id="messagesContainer">
-                    <div class="loading">Select a conversation to view messages</div>
+                    <div class="loading" style="color: #666;">Select a connection to view your conversation</div>
                 </div>
 
                 <div class="compose-area">
                     <textarea 
                         class="compose-input" 
                         id="messageInput" 
-                        placeholder="Type your message..."
+                        placeholder="Type your message and cast it into the digital ocean..."
                         onkeypress="handleKeyPress(event)"
+                        oninput="handleTyping()"
                     ></textarea>
-                    <button class="send-btn" onclick="sendMessage()">
+                    <button class="send-btn" id="sendBtn" onclick="sendMessage()">
                         ➤
                     </button>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Notification -->
+    <div class="notification" id="notification"></div>
 
     <!-- Firebase SDK -->
     <script type="module">
@@ -411,12 +677,19 @@
             onSnapshot,
             serverTimestamp,
             where,
-            getDocs
+            getDocs,
+            doc,
+            setDoc,
+            updateDoc,
+            limit,
+            writeBatch,
+            arrayUnion,
+            arrayRemove
         } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 
         // TODO: Replace with your Firebase configuration
         const firebaseConfig = {
-   apiKey: "AIzaSyA1wrUreV-64WVaa1SmT02QKu-iKyY-Pvs",
+  apiKey: "AIzaSyA1wrUreV-64WVaa1SmT02QKu-iKyY-Pvs",
   authDomain: "testapp-ced4f.firebaseapp.com",
   databaseURL: "https://testapp-ced4f.firebaseio.com",
   projectId: "testapp-ced4f",
@@ -439,6 +712,10 @@
         window.currentUser = null;
         window.selectedUser = null;
         window.unsubscribeMessages = null;
+        window.unsubscribeConnections = null;
+        window.connections = new Set();
+        window.typingTimer = null;
+        window.isTyping = false;
 
         // Authentication functions
         window.signIn = async () => {
@@ -476,37 +753,187 @@
 
         window.signOut = async () => {
             try {
+                if (window.currentUser) {
+                    await updateUserStatus(false);
+                }
                 await firebaseSignOut(auth);
             } catch (error) {
                 console.error('Sign out error:', error);
             }
         };
 
-        // Message functions
+        // Bottle opening function - the magic feature!
+        window.openBottle = async () => {
+            const bottle = document.getElementById('magicBottle');
+            bottle.classList.add('opening');
+            
+            try {
+                // Find available users (excluding current user and existing connections)
+                const usersQuery = query(
+                    collection(db, 'users'),
+                    where('isOnline', '==', true),
+                    limit(20)
+                );
+                
+                const usersSnapshot = await getDocs(usersQuery);
+                const availableUsers = [];
+                
+                usersSnapshot.forEach((doc) => {
+                    const userData = doc.data();
+                    if (userData.uid !== window.currentUser.uid && 
+                        !window.connections.has(userData.uid)) {
+                        availableUsers.push({
+                            id: doc.id,
+                            ...userData
+                        });
+                    }
+                });
+
+                if (availableUsers.length === 0) {
+                    showNotification("🌊 No new connections available right now. Try again later!");
+                    return;
+                }
+
+                // Random selection
+                const randomUser = availableUsers[Math.floor(Math.random() * availableUsers.length)];
+                
+                // Create mutual connection
+                await createConnection(randomUser);
+                
+                showNotification(`🍶 You found ${randomUser.email}! Start chatting now!`);
+                
+            } catch (error) {
+                console.error('Error opening bottle:', error);
+                showNotification("❌ Couldn't open the bottle. Try again!");
+            } finally {
+                setTimeout(() => {
+                    bottle.classList.remove('opening');
+                }, 500);
+            }
+        };
+
+        // Create connection between users
+        async function createConnection(otherUser) {
+            const batch = writeBatch(db);
+            
+            // Update current user's connections
+            const currentUserRef = doc(db, 'users', window.currentUser.uid);
+            batch.update(currentUserRef, {
+                connections: arrayUnion(otherUser.uid)
+            });
+            
+            // Update other user's connections
+            const otherUserRef = doc(db, 'users', otherUser.uid);
+            batch.update(otherUserRef, {
+                connections: arrayUnion(window.currentUser.uid)
+            });
+            
+            await batch.commit();
+            
+            // Add to local connections
+            window.connections.add(otherUser.uid);
+        }
+
+        // Message functions with real-time optimizations
         window.sendMessage = async () => {
             const messageInput = document.getElementById('messageInput');
             const messageText = messageInput.value.trim();
+            const sendBtn = document.getElementById('sendBtn');
             
             if (!messageText || !window.selectedUser) return;
 
+            // Disable send button temporarily
+            sendBtn.disabled = true;
+            
+            // Clear typing indicator
+            clearTypingIndicator();
+
             try {
-                const chatId = getChatId(window.currentUser.uid, window.selectedUser.id);
+                const chatId = getChatId(window.currentUser.uid, window.selectedUser.uid);
                 
+                // Optimistically add message to UI immediately
+                addMessageToUI({
+                    text: messageText,
+                    senderId: window.currentUser.uid,
+                    timestamp: new Date(),
+                    senderEmail: window.currentUser.email
+                });
+
+                // Clear input immediately for better UX
+                messageInput.value = '';
+                messageInput.style.height = '50px';
+                
+                // Send to Firebase
                 await addDoc(collection(db, 'messages'), {
                     text: messageText,
                     senderId: window.currentUser.uid,
-                    receiverId: window.selectedUser.id,
+                    receiverId: window.selectedUser.uid,
                     chatId: chatId,
                     timestamp: serverTimestamp(),
                     senderEmail: window.currentUser.email
                 });
 
-                messageInput.value = '';
-                messageInput.style.height = '44px';
             } catch (error) {
                 console.error('Error sending message:', error);
+                showNotification("❌ Failed to send message. Please try again.");
+                // Remove optimistic message on error
+                const messages = document.getElementById('messagesContainer');
+                const lastMessage = messages.lastElementChild;
+                if (lastMessage && lastMessage.classList.contains('message')) {
+                    lastMessage.remove();
+                }
+            } finally {
+                sendBtn.disabled = false;
             }
         };
+
+        // Typing indicator
+        window.handleTyping = () => {
+            if (!window.selectedUser) return;
+            
+            if (!window.isTyping) {
+                window.isTyping = true;
+                updateTypingStatus(true);
+            }
+            
+            clearTimeout(window.typingTimer);
+            window.typingTimer = setTimeout(() => {
+                window.isTyping = false;
+                updateTypingStatus(false);
+            }, 1000);
+        };
+
+        async function updateTypingStatus(isTyping) {
+            try {
+                const chatId = getChatId(window.currentUser.uid, window.selectedUser.uid);
+                const typingRef = doc(db, 'typing', chatId);
+                
+                if (isTyping) {
+                    await setDoc(typingRef, {
+                        [window.currentUser.uid]: {
+                            isTyping: true,
+                            timestamp: serverTimestamp()
+                        }
+                    }, { merge: true });
+                } else {
+                    await updateDoc(typingRef, {
+                        [window.currentUser.uid]: {
+                            isTyping: false,
+                            timestamp: serverTimestamp()
+                        }
+                    });
+                }
+            } catch (error) {
+                console.error('Error updating typing status:', error);
+            }
+        }
+
+        function clearTypingIndicator() {
+            const indicator = document.querySelector('.typing-indicator');
+            if (indicator) {
+                indicator.remove();
+            }
+        }
 
         window.handleKeyPress = (event) => {
             if (event.key === 'Enter' && !event.shiftKey) {
@@ -530,9 +957,19 @@
             document.getElementById('authError').classList.add('hidden');
         }
 
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 4000);
+        }
+
         function formatTime(timestamp) {
             if (!timestamp) return '';
-            const date = timestamp.toDate();
+            const date = timestamp.toDate ? timestamp.toDate() : timestamp;
             return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         }
 
@@ -540,38 +977,100 @@
             return email.charAt(0).toUpperCase();
         }
 
-        // Load users
-        async function loadUsers() {
+        // Update user online status
+        async function updateUserStatus(isOnline) {
+            if (!window.currentUser) return;
+            
             try {
-                const usersQuery = query(collection(db, 'users'));
-                const querySnapshot = await getDocs(usersQuery);
+                const userRef = doc(db, 'users', window.currentUser.uid);
+                await updateDoc(userRef, {
+                    isOnline: isOnline,
+                    lastSeen: serverTimestamp()
+                });
+            } catch (error) {
+                console.error('Error updating user status:', error);
+            }
+        }
+
+        // Load connections with real-time updates
+        function loadConnections() {
+            if (!window.currentUser) return;
+
+            const userRef = doc(db, 'users', window.currentUser.uid);
+            
+            window.unsubscribeConnections = onSnapshot(userRef, async (doc) => {
+                if (!doc.exists()) return;
                 
+                const userData = doc.data();
+                const userConnections = userData.connections || [];
+                
+                // Update local connections set
+                window.connections = new Set(userConnections);
+                
+                // Load connection details
                 const userList = document.getElementById('userList');
                 userList.innerHTML = '';
-
-                querySnapshot.forEach((doc) => {
-                    const userData = doc.data();
-                    if (userData.email !== window.currentUser.email) {
-                        const userElement = document.createElement('div');
-                        userElement.className = 'user-item';
-                        userElement.innerHTML = `
-                            <div class="user-avatar">${getInitials(userData.email)}</div>
-                            <span>${userData.email}</span>
-                        `;
-                        userElement.onclick = () => selectUser({
-                            id: doc.id,
-                            email: userData.email
-                        });
-                        userList.appendChild(userElement);
-                    }
-                });
-
-                if (userList.children.length === 0) {
-                    userList.innerHTML = '<div class="loading">No other users found</div>';
+                
+                if (userConnections.length === 0) {
+                    userList.innerHTML = '<div class="loading">Open a bottle to make connections...</div>';
+                    return;
                 }
-            } catch (error) {
-                console.error('Error loading users:', error);
-            }
+
+                // Get details for each connection
+                for (const connectionId of userConnections) {
+                    try {
+                        const connectionQuery = query(
+                            collection(db, 'users'),
+                            where('uid', '==', connectionId)
+                        );
+                        const connectionSnapshot = await getDocs(connectionQuery);
+                        
+                        connectionSnapshot.forEach((connectionDoc) => {
+                            const connectionData = connectionDoc.data();
+                            addConnectionToUI(connectionData, connectionDoc.id);
+                        });
+                    } catch (error) {
+                        console.error('Error loading connection:', error);
+                    }
+                }
+            });
+        }
+
+        function addConnectionToUI(userData, docId) {
+            const userList = document.getElementById('userList');
+            
+            // Remove loading message if it exists
+            const loading = userList.querySelector('.loading');
+            if (loading) loading.remove();
+            
+            // Check if user already exists
+            const existingUser = userList.querySelector(`[data-user-id="${docId}"]`);
+            if (existingUser) return;
+            
+            const userElement = document.createElement('div');
+            userElement.className = 'user-item new-connection';
+            userElement.setAttribute('data-user-id', docId);
+            userElement.innerHTML = `
+                <div class="user-avatar">${getInitials(userData.email)}</div>
+                <div>
+                    <div>${userData.email}</div>
+                    <div style="font-size: 12px; opacity: 0.7;">
+                        ${userData.isOnline ? '🟢 Online' : '⚫ Offline'}
+                    </div>
+                </div>
+            `;
+            userElement.onclick = () => selectUser({
+                id: docId,
+                uid: userData.uid,
+                email: userData.email
+            });
+            
+            userList.appendChild(userElement);
+            
+            // Remove animation class after animation completes
+            setTimeout(() => {
+                userElement.classList.remove('new-connection');
+            }, 1000);
         }
 
         // Select user for chat
@@ -582,15 +1081,22 @@
             document.querySelectorAll('.user-item').forEach(item => {
                 item.classList.remove('active');
             });
-            event.target.closest('.user-item').classList.add('active');
             
-            document.getElementById('chatHeader').textContent = `Chat with ${user.email}`;
+            const selectedElement = document.querySelector(`[data-user-id="${user.id}"]`);
+            if (selectedElement) {
+                selectedElement.classList.add('active');
+            }
+            
+            document.getElementById('chatHeader').textContent = `💬 ${user.email}`;
             
             // Load messages
             loadMessages();
+            
+            // Listen for typing indicators
+            listenForTyping();
         };
 
-        // Load messages for selected chat
+        // Load messages with real-time updates
         function loadMessages() {
             if (window.unsubscribeMessages) {
                 window.unsubscribeMessages();
@@ -598,43 +1104,102 @@
 
             if (!window.selectedUser) return;
 
-            const chatId = getChatId(window.currentUser.uid, window.selectedUser.id);
+            const chatId = getChatId(window.currentUser.uid, window.selectedUser.uid);
             const messagesQuery = query(
                 collection(db, 'messages'),
                 where('chatId', '==', chatId),
                 orderBy('timestamp', 'asc')
             );
 
+            const messagesContainer = document.getElementById('messagesContainer');
+            messagesContainer.innerHTML = '';
+
             window.unsubscribeMessages = onSnapshot(messagesQuery, (snapshot) => {
-                const messagesContainer = document.getElementById('messagesContainer');
-                messagesContainer.innerHTML = '';
-
-                snapshot.forEach((doc) => {
-                    const message = doc.data();
-                    const messageElement = document.createElement('div');
-                    messageElement.className = `message ${message.senderId === window.currentUser.uid ? 'sent' : 'received'}`;
-                    
-                    messageElement.innerHTML = `
-                        <div>${message.text}</div>
-                        <div class="message-info">${formatTime(message.timestamp)}</div>
-                    `;
-                    
-                    messagesContainer.appendChild(messageElement);
+                snapshot.docChanges().forEach((change) => {
+                    if (change.type === 'added') {
+                        const message = change.doc.data();
+                        addMessageToUI(message);
+                    }
                 });
-
-                // Scroll to bottom
-                messagesContainer.scrollTop = messagesContainer.scrollHeight;
             });
+        }
+
+        function addMessageToUI(message) {
+            const messagesContainer = document.getElementById('messagesContainer');
+            
+            // Remove loading message if it exists
+            const loading = messagesContainer.querySelector('.loading');
+            if (loading) loading.remove();
+            
+            const messageElement = document.createElement('div');
+            messageElement.className = `message ${message.senderId === window.currentUser.uid ? 'sent' : 'received'}`;
+            
+            messageElement.innerHTML = `
+                <div>${message.text}</div>
+                <div class="message-info">${formatTime(message.timestamp)}</div>
+            `;
+            
+            messagesContainer.appendChild(messageElement);
+            
+            // Scroll to bottom smoothly
+            setTimeout(() => {
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }, 50);
+        }
+
+        // Listen for typing indicators
+        function listenForTyping() {
+            if (!window.selectedUser) return;
+            
+            const chatId = getChatId(window.currentUser.uid, window.selectedUser.uid);
+            const typingRef = doc(db, 'typing', chatId);
+            
+            onSnapshot(typingRef, (doc) => {
+                if (!doc.exists()) return;
+                
+                const typingData = doc.data();
+                const otherUserTyping = typingData[window.selectedUser.uid];
+                
+                if (otherUserTyping && otherUserTyping.isTyping) {
+                    showTypingIndicator();
+                } else {
+                    clearTypingIndicator();
+                }
+            });
+        }
+
+        function showTypingIndicator() {
+            const messagesContainer = document.getElementById('messagesContainer');
+            
+            // Don't add if already exists
+            if (messagesContainer.querySelector('.typing-indicator')) return;
+            
+            const typingElement = document.createElement('div');
+            typingElement.className = 'typing-indicator';
+            typingElement.innerHTML = `
+                <div class="typing-dots">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            `;
+            
+            messagesContainer.appendChild(typingElement);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
         }
 
         // Create user document in Firestore
         async function createUserDocument(user) {
             try {
-                await addDoc(collection(db, 'users'), {
+                const userRef = doc(db, 'users', user.uid);
+                await setDoc(userRef, {
                     email: user.email,
                     uid: user.uid,
-                    createdAt: serverTimestamp()
-                });
+                    isOnline: true,
+                    connections: [],
+                    createdAt: serverTimestamp(),
+                    lastSeen: serverTimestamp()
+                }, { merge: true });
             } catch (error) {
                 console.error('Error creating user document:', error);
             }
@@ -653,11 +1218,18 @@
                 document.getElementById('userName').textContent = user.email;
                 document.getElementById('userAvatar').textContent = getInitials(user.email);
                 
-                // Create user document if it doesn't exist
+                // Create/update user document
                 await createUserDocument(user);
                 
-                // Load users
-                loadUsers();
+                // Set user as online
+                await updateUserStatus(true);
+                
+                // Load connections
+                loadConnections();
+                
+                // Show welcome notification
+                showNotification(`🌊 Welcome back, ${user.email}! Open a bottle to find new connections.`);
+                
             } else {
                 window.currentUser = null;
                 window.selectedUser = null;
@@ -671,17 +1243,43 @@
                 document.getElementById('email').value = '';
                 document.getElementById('password').value = '';
                 
+                // Cleanup subscriptions
                 if (window.unsubscribeMessages) {
                     window.unsubscribeMessages();
+                }
+                if (window.unsubscribeConnections) {
+                    window.unsubscribeConnections();
                 }
             }
         });
 
         // Auto-resize textarea
         document.getElementById('messageInput').addEventListener('input', function() {
-            this.style.height = '44px';
-            this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+            this.style.height = '50px';
+            this.style.height = Math.min(this.scrollHeight, 150) + 'px';
         });
+
+        // Handle page visibility changes
+        document.addEventListener('visibilitychange', () => {
+            if (window.currentUser) {
+                updateUserStatus(!document.hidden);
+            }
+        });
+
+        // Handle page unload
+        window.addEventListener('beforeunload', () => {
+            if (window.currentUser) {
+                updateUserStatus(false);
+            }
+        });
+
+        // Periodic connection check
+        setInterval(() => {
+            if (window.currentUser) {
+                updateUserStatus(true);
+            }
+        }, 30000); // Update every 30 seconds
+
     </script>
 </body>
 </html>
