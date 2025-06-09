@@ -762,56 +762,57 @@
             }
         };
 
-        // Bottle opening function - the magic feature!
-        window.openBottle = async () => {
-            const bottle = document.getElementById('magicBottle');
-            bottle.classList.add('opening');
+window.openBottle = async () => {
+    const bottle = document.getElementById('magicBottle');
+    bottle.classList.add('opening');
+    
+    try {
+        // Real-time query for online users
+        const usersQuery = query(
+            collection(db, 'users'),
+            where('isOnline', '==', true),
+            where('lastSeen', '>', new Date(Date.now() - 60000)) // Active in last minute
+        );
+        
+        // Use real-time listener for instant results
+        const unsubscribe = onSnapshot(usersQuery, (snapshot) => {
+            const availableUsers = [];
             
-            try {
-                // Find available users (excluding current user and existing connections)
-                const usersQuery = query(
-                    collection(db, 'users'),
-                    where('isOnline', '==', true),
-                    limit(20)
-                );
-                
-                const usersSnapshot = await getDocs(usersQuery);
-                const availableUsers = [];
-                
-                usersSnapshot.forEach((doc) => {
-                    const userData = doc.data();
-                    if (userData.uid !== window.currentUser.uid && 
-                        !window.connections.has(userData.uid)) {
-                        availableUsers.push({
-                            id: doc.id,
-                            ...userData
-                        });
-                    }
-                });
-
-                if (availableUsers.length === 0) {
-                    showNotification("🌊 No new connections available right now. Try again later!");
-                    return;
+            snapshot.forEach((doc) => {
+                const userData = doc.data();
+                if (userData.uid !== window.currentUser.uid && 
+                    !window.connections.has(userData.uid)) {
+                    availableUsers.push({
+                        id: doc.id,
+                        ...userData
+                    });
                 }
+            });
 
-                // Random selection
+            if (availableUsers.length > 0) {
                 const randomUser = availableUsers[Math.floor(Math.random() * availableUsers.length)];
-                
-                // Create mutual connection
-                await createConnection(randomUser);
-                
+                createConnection(randomUser);
                 showNotification(`🍶 You found ${randomUser.email}! Start chatting now!`);
-                
-            } catch (error) {
-                console.error('Error opening bottle:', error);
-                showNotification("❌ Couldn't open the bottle. Try again!");
-            } finally {
-                setTimeout(() => {
-                    bottle.classList.remove('opening');
-                }, 500);
+                unsubscribe(); // Stop listening after finding connection
             }
-        };
-
+        });
+        
+        // Timeout after 5 seconds if no users found
+        setTimeout(() => {
+            unsubscribe();
+            showNotification("🌊 No new connections available right now. Try again later!");
+        }, 5000);
+        
+    } catch (error) {
+        console.error('Error opening bottle:', error);
+        showNotification("❌ Couldn't open the bottle. Try again!");
+    } finally {
+        setTimeout(() => {
+            bottle.classList.remove('opening');
+        }, 500);
+    }
+};
+        
         // Create connection between users
         async function createConnection(otherUser) {
             const batch = writeBatch(db);
@@ -834,74 +835,71 @@
             window.connections.add(otherUser.uid);
         }
 
-        // Message functions with real-time optimizations
-        window.sendMessage = async () => {
-            const messageInput = document.getElementById('messageInput');
-            const messageText = messageInput.value.trim();
-            const sendBtn = document.getElementById('sendBtn');
-            
-            if (!messageText || !window.selectedUser) return;
+window.sendMessage = async () => {
+    const messageInput = document.getElementById('messageInput');
+    const messageText = messageInput.value.trim();
+    const sendBtn = document.getElementById('sendBtn');
+    
+    if (!messageText || !window.selectedUser) return;
 
-            // Disable send button temporarily
-            sendBtn.disabled = true;
-            
-            // Clear typing indicator
-            clearTypingIndicator();
+    sendBtn.disabled = true;
+    clearTypingIndicator();
 
-            try {
-                const chatId = getChatId(window.currentUser.uid, window.selectedUser.uid);
-                
-                // Optimistically add message to UI immediately
-                addMessageToUI({
-                    text: messageText,
-                    senderId: window.currentUser.uid,
-                    timestamp: new Date(),
-                    senderEmail: window.currentUser.email
-                });
-
-                // Clear input immediately for better UX
-                messageInput.value = '';
-                messageInput.style.height = '50px';
-                
-                // Send to Firebase
-                await addDoc(collection(db, 'messages'), {
-                    text: messageText,
-                    senderId: window.currentUser.uid,
-                    receiverId: window.selectedUser.uid,
-                    chatId: chatId,
-                    timestamp: serverTimestamp(),
-                    senderEmail: window.currentUser.email
-                });
-
-            } catch (error) {
-                console.error('Error sending message:', error);
-                showNotification("❌ Failed to send message. Please try again.");
-                // Remove optimistic message on error
-                const messages = document.getElementById('messagesContainer');
-                const lastMessage = messages.lastElementChild;
-                if (lastMessage && lastMessage.classList.contains('message')) {
-                    lastMessage.remove();
-                }
-            } finally {
-                sendBtn.disabled = false;
-            }
+    try {
+        const chatId = getChatId(window.currentUser.uid, window.selectedUser.uid);
+        
+        // Create message object with temporary ID
+        const tempMessage = {
+            text: messageText,
+            senderId: window.currentUser.uid,
+            timestamp: new Date(),
+            senderEmail: window.currentUser.email,
+            id: 'temp-' + Date.now()
         };
 
+        // Add to UI immediately with temporary styling
+        addMessageToUI(tempMessage, true);
+
+        messageInput.value = '';
+        messageInput.style.height = '50px';
+        
+        // Send to Firebase
+        const docRef = await addDoc(collection(db, 'messages'), {
+            text: messageText,
+            senderId: window.currentUser.uid,
+            receiverId: window.selectedUser.uid,
+            chatId: chatId,
+            timestamp: serverTimestamp(),
+            senderEmail: window.currentUser.email
+        });
+
+        // Update the temporary message with real ID
+        updateTemporaryMessage(tempMessage.id, docRef.id);
+
+    } catch (error) {
+        console.error('Error sending message:', error);
+        removeTemporaryMessage(tempMessage.id);
+        showNotification("❌ Failed to send message. Please try again.");
+    } finally {
+        sendBtn.disabled = false;
+    }
+};
         // Typing indicator
-        window.handleTyping = () => {
-            if (!window.selectedUser) return;
-            
-            if (!window.isTyping) {
-                window.isTyping = true;
-                updateTypingStatus(true);
-            }
-            
-            clearTimeout(window.typingTimer);
-            window.typingTimer = setTimeout(() => {
-                window.isTyping = false;
-                updateTypingStatus(false);
-            }, 1000);
-        };
+window.handleTyping = () => {
+    if (!window.selectedUser) return;
+    
+    clearTimeout(window.typingDebounce);
+    
+    if (!window.isTyping) {
+        window.isTyping = true;
+        updateTypingStatus(true);
+    }
+    
+    window.typingDebounce = setTimeout(() => {
+        window.isTyping = false;
+        updateTypingStatus(false);
+    }, 800);
+};
 
         async function updateTypingStatus(isTyping) {
             try {
@@ -1124,29 +1122,30 @@
             });
         }
 
-        function addMessageToUI(message) {
-            const messagesContainer = document.getElementById('messagesContainer');
-            
-            // Remove loading message if it exists
-            const loading = messagesContainer.querySelector('.loading');
-            if (loading) loading.remove();
-            
-            const messageElement = document.createElement('div');
-            messageElement.className = `message ${message.senderId === window.currentUser.uid ? 'sent' : 'received'}`;
-            
-            messageElement.innerHTML = `
-                <div>${message.text}</div>
-                <div class="message-info">${formatTime(message.timestamp)}</div>
-            `;
-            
-            messagesContainer.appendChild(messageElement);
-            
-            // Scroll to bottom smoothly
-            setTimeout(() => {
-                messagesContainer.scrollTop = messagesContainer.scrollHeight;
-            }, 50);
-        }
-
+function addMessageToUI(message, isTemporary = false) {
+    const messagesContainer = document.getElementById('messagesContainer');
+    
+    const loading = messagesContainer.querySelector('.loading');
+    if (loading) loading.remove();
+    
+    const messageElement = document.createElement('div');
+    messageElement.className = `message ${message.senderId === window.currentUser.uid ? 'sent' : 'received'}`;
+    messageElement.setAttribute('data-message-id', message.id);
+    
+    if (isTemporary) {
+        messageElement.classList.add('sending');
+        messageElement.style.opacity = '0.7';
+    }
+    
+    messageElement.innerHTML = `
+        <div>${message.text}</div>
+        <div class="message-info">${formatTime(message.timestamp)}</div>
+    `;
+    
+    messagesContainer.appendChild(messageElement);
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+}
+        
         // Listen for typing indicators
         function listenForTyping() {
             if (!window.selectedUser) return;
@@ -1273,13 +1272,44 @@
             }
         });
 
-        // Periodic connection check
-        setInterval(() => {
-            if (window.currentUser) {
-                updateUserStatus(true);
-            }
-        }, 30000); // Update every 30 seconds
+        
+setInterval(() => {
+    if (window.currentUser) {
+        updateUserStatus(true);
+    }
+}, 10000); // Update every 10 seconds for more real-time status
 
+// Helper functions for temporary messages
+function updateTemporaryMessage(tempId, realId) {
+    const messageEl = document.querySelector(`[data-message-id="${tempId}"]`);
+    if (messageEl) {
+        messageEl.setAttribute('data-message-id', realId);
+        messageEl.classList.remove('sending');
+        messageEl.style.opacity = '1';
+    }
+}
+
+function removeTemporaryMessage(tempId) {
+    const messageEl = document.querySelector(`[data-message-id="${tempId}"]`);
+    if (messageEl) {
+        messageEl.remove();
+    }
+}
+
+// Update connection status in real-time
+function updateConnectionInUI(userData, docId) {
+    let userElement = document.querySelector(`[data-user-id="${docId}"]`);
+    
+    if (!userElement) {
+        addConnectionToUI(userData, docId);
+    } else {
+        const statusEl = userElement.querySelector('div:last-child div:last-child');
+        if (statusEl) {
+            statusEl.textContent = userData.isOnline ? '🟢 Online' : '⚫ Offline';
+        }
+    }
+}
+        
     </script>
 </body>
 </html>
