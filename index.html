@@ -3,1313 +3,758 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bottled - Message in a Bottle</title>
+    <title>SkillSwap - Exchange Skills, Build Connections</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-
+        
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             color: #333;
-            overflow-x: hidden;
         }
-
-        .ocean-bg {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: 
-                radial-gradient(circle at 20% 80%, rgba(120, 219, 226, 0.2) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
-                linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-            z-index: -1;
-        }
-
-        .waves {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 100px;
-            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120'%3E%3Cpath d='M0,60 C200,100 400,20 600,60 C800,100 1000,20 1200,60 L1200,120 L0,120 Z' fill='rgba(255,255,255,0.1)'/%3E%3C/svg%3E") repeat-x;
-            animation: wave 15s ease-in-out infinite;
-            z-index: -1;
-        }
-
-        @keyframes wave {
-            0%, 100% { transform: translateX(0px); }
-            50% { transform: translateX(-50px); }
-        }
-
+        
         .container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
         }
-
+        
         .header {
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(15px);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
             border-radius: 20px;
-            padding: 20px;
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            color: white;
+            padding: 30px;
+            margin-bottom: 30px;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            text-align: center;
         }
-
-        .logo {
-            font-size: 28px;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+        
+        .header h1 {
+            font-size: 2.5em;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
         }
-
-        .bottle-icon {
-            font-size: 32px;
-            animation: float 3s ease-in-out infinite;
+        
+        .header p {
+            font-size: 1.2em;
+            color: #666;
+            margin-bottom: 20px;
         }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .user-avatar {
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.25);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 18px;
-        }
-
+        
         .auth-section {
             background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(15px);
+            backdrop-filter: blur(10px);
             border-radius: 20px;
-            padding: 40px;
-            text-align: center;
-            max-width: 420px;
-            margin: auto;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-        }
-
-        .auth-section h2 {
+            padding: 30px;
             margin-bottom: 30px;
-            color: #2a5298;
-            font-size: 24px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
         }
-
+        
+        .auth-tabs {
+            display: flex;
+            margin-bottom: 30px;
+            border-radius: 15px;
+            overflow: hidden;
+            background: #f8f9fa;
+        }
+        
+        .auth-tab {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.1em;
+            transition: all 0.3s ease;
+        }
+        
+        .auth-tab.active {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+        }
+        
+        .auth-form {
+            display: none;
+        }
+        
+        .auth-form.active {
+            display: block;
+        }
+        
         .form-group {
             margin-bottom: 20px;
-            text-align: left;
         }
-
+        
         .form-group label {
             display: block;
             margin-bottom: 8px;
-            font-weight: 500;
+            font-weight: 600;
             color: #555;
         }
-
-        .form-group input {
+        
+        .form-group input, .form-group select, .form-group textarea {
             width: 100%;
-            padding: 14px;
-            border: 2px solid #e1e5e9;
+            padding: 15px;
+            border: 2px solid #e9ecef;
             border-radius: 12px;
-            font-size: 16px;
-            transition: all 0.3s;
+            font-size: 1em;
+            transition: border-color 0.3s ease;
         }
-
-        .form-group input:focus {
+        
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
             outline: none;
-            border-color: #2a5298;
-            box-shadow: 0 0 0 3px rgba(42, 82, 152, 0.1);
+            border-color: #667eea;
         }
-
+        
         .btn {
-            padding: 14px 28px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px 30px;
             border: none;
             border-radius: 12px;
-            font-size: 16px;
-            font-weight: 600;
+            font-size: 1.1em;
             cursor: pointer;
-            transition: all 0.3s;
-            margin: 8px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
+            transition: transform 0.2s ease;
             width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transition: left 0.5s;
         }
-
-        .btn:hover::before {
-            left: 100%;
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
         }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #2a5298 0%, #1e3c72 100%);
-            color: white;
+        
+        .main-app {
+            display: none;
         }
-
-        .btn-primary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(42, 82, 152, 0.4);
+        
+        .main-app.active {
+            display: block;
         }
-
-        .btn-secondary {
-            background: rgba(255, 255, 255, 0.8);
-            color: #333;
-            border: 2px solid #e1e5e9;
-        }
-
-        .btn-secondary:hover {
+        
+        .nav-bar {
             background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .nav-btn {
+            padding: 12px 24px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-btn:hover {
             transform: translateY(-2px);
         }
-
-        .btn-danger {
-            background: #dc3545;
-            color: white;
+        
+        .nav-btn.logout {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a52);
         }
-
-        .main-content {
-            display: flex;
-            flex: 1;
-            gap: 20px;
-            height: calc(100vh - 140px);
-        }
-
-        .sidebar {
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(15px);
+        
+        .content-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
             border-radius: 20px;
-            padding: 25px;
-            width: 350px;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-        }
-
-        .bottle-section {
-            text-align: center;
+            padding: 30px;
             margin-bottom: 30px;
-            padding: 20px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            display: none;
         }
-
-        .bottle-container {
-            position: relative;
-            display: inline-block;
-            margin: 20px 0;
-        }
-
-        .bottle {
-            font-size: 80px;
-            cursor: pointer;
-            transition: all 0.3s;
+        
+        .content-section.active {
             display: block;
-            filter: drop-shadow(0 5px 15px rgba(0,0,0,0.2));
         }
-
-        .bottle:hover {
-            transform: scale(1.1) rotate(5deg);
-            filter: drop-shadow(0 8px 25px rgba(0,0,0,0.3));
-        }
-
-        .bottle.opening {
-            animation: shake 0.5s ease-in-out, glow 0.5s ease-in-out;
-        }
-
-        @keyframes shake {
-            0%, 100% { transform: rotate(0deg); }
-            25% { transform: rotate(-10deg); }
-            75% { transform: rotate(10deg); }
-        }
-
-        @keyframes glow {
-            0%, 100% { filter: drop-shadow(0 5px 15px rgba(0,0,0,0.2)); }
-            50% { filter: drop-shadow(0 0 30px rgba(120, 219, 226, 0.8)); }
-        }
-
-        .bottle-text {
-            color: white;
-            font-size: 18px;
-            font-weight: 500;
-            margin-top: 10px;
-        }
-
-        .bottle-subtitle {
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 14px;
-            margin-top: 5px;
-        }
-
-        .connections-section {
-            flex: 1;
-        }
-
-        .connections-section h3 {
-            color: white;
+        
+        .profile-card {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 25px;
             margin-bottom: 20px;
-            font-size: 20px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
         }
-
-        .user-list {
-            flex: 1;
-            overflow-y: auto;
+        
+        .profile-card:hover {
+            transform: translateY(-5px);
         }
-
-        .user-item {
-            padding: 15px;
-            border-radius: 12px;
-            margin-bottom: 10px;
-            cursor: pointer;
-            transition: all 0.3s;
+        
+        .profile-header {
             display: flex;
             align-items: center;
-            gap: 12px;
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            position: relative;
+            margin-bottom: 15px;
         }
-
-        .user-item::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            height: 100%;
-            width: 3px;
-            background: #78dbe2;
-            border-radius: 0 3px 3px 0;
-            transform: scaleY(0);
-            transition: transform 0.3s;
-        }
-
-        .user-item:hover::before,
-        .user-item.active::before {
-            transform: scaleY(1);
-        }
-
-        .user-item:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: translateX(5px);
-        }
-
-        .user-item.active {
-            background: rgba(120, 219, 226, 0.3);
-        }
-
-        .user-item.new-connection {
-            animation: newConnection 1s ease-out;
-        }
-
-        @keyframes newConnection {
-            0% { 
-                transform: translateX(-100%) scale(0.5);
-                opacity: 0;
-            }
-            100% { 
-                transform: translateX(0) scale(1);
-                opacity: 1;
-            }
-        }
-
-        .chat-area {
-            flex: 1;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(15px);
-            border-radius: 20px;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-        }
-
-        .chat-header {
-            padding: 25px;
-            border-bottom: 1px solid rgba(0,0,0,0.1);
-            font-weight: 600;
-            color: #2a5298;
-            font-size: 18px;
-        }
-
-        .messages-container {
-            flex: 1;
-            padding: 20px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            scroll-behavior: smooth;
-        }
-
-        .message {
-            max-width: 75%;
-            padding: 14px 18px;
-            border-radius: 20px;
-            position: relative;
-            animation: messageSlide 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            word-wrap: break-word;
-        }
-
-        .message.sent {
-            background: linear-gradient(135deg, #2a5298 0%, #1e3c72 100%);
-            color: white;
-            align-self: flex-end;
-            border-bottom-right-radius: 6px;
-        }
-
-        .message.received {
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            color: #333;
-            align-self: flex-start;
-            border-bottom-left-radius: 6px;
-        }
-
-        .message-info {
-            font-size: 11px;
-            opacity: 0.7;
-            margin-top: 6px;
-        }
-
-        @keyframes messageSlide {
-            0% { 
-                opacity: 0;
-                transform: translateY(30px) scale(0.8);
-            }
-            100% { 
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-        }
-
-        .compose-area {
-            padding: 25px;
-            border-top: 1px solid rgba(0,0,0,0.1);
-            display: flex;
-            gap: 15px;
-            align-items: flex-end;
-        }
-
-        .compose-input {
-            flex: 1;
-            padding: 15px 20px;
-            border: 2px solid #e1e5e9;
-            border-radius: 25px;
-            resize: none;
-            font-family: inherit;
-            font-size: 16px;
-            min-height: 50px;
-            max-height: 150px;
-            transition: all 0.3s;
-        }
-
-        .compose-input:focus {
-            outline: none;
-            border-color: #2a5298;
-            box-shadow: 0 0 0 3px rgba(42, 82, 152, 0.15);
-        }
-
-        .send-btn {
-            width: 50px;
-            height: 50px;
+        
+        .profile-avatar {
+            width: 60px;
+            height: 60px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #2a5298 0%, #1e3c72 100%);
-            color: white;
-            border: none;
-            cursor: pointer;
+            background: linear-gradient(45deg, #667eea, #764ba2);
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.3s;
-            font-size: 18px;
-        }
-
-        .send-btn:hover {
-            transform: scale(1.1);
-            box-shadow: 0 5px 20px rgba(42, 82, 152, 0.4);
-        }
-
-        .send-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .hidden {
-            display: none !important;
-        }
-
-        .loading {
-            text-align: center;
-            padding: 20px;
-            color: rgba(255, 255, 255, 0.8);
-        }
-
-        .error {
-            background: rgba(220, 53, 69, 0.1);
-            color: #dc3545;
-            padding: 12px;
-            border-radius: 12px;
-            margin: 10px 0;
-            border: 1px solid rgba(220, 53, 69, 0.2);
-        }
-
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: rgba(40, 167, 69, 0.95);
             color: white;
-            padding: 15px 20px;
-            border-radius: 12px;
-            transform: translateX(400px);
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            z-index: 1000;
-            backdrop-filter: blur(10px);
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-right: 15px;
         }
-
-        .notification.show {
-            transform: translateX(0);
+        
+        .profile-info h3 {
+            margin-bottom: 5px;
+            color: #333;
         }
-
-        .typing-indicator {
-            padding: 10px 15px;
-            margin: 5px 0;
-            align-self: flex-start;
-            background: #f8f9fa;
-            border-radius: 20px;
-            border-bottom-left-radius: 6px;
-            max-width: 75%;
+        
+        .profile-info p {
+            color: #666;
+            margin-bottom: 5px;
         }
-
-        .typing-dots {
+        
+        .skills-section {
+            margin: 15px 0;
+        }
+        
+        .skills-list {
             display: flex;
-            gap: 3px;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 8px;
         }
-
-        .typing-dots span {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #999;
-            animation: typing 1.4s infinite ease-in-out;
+        
+        .skill-tag {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.9em;
         }
-
-        .typing-dots span:nth-child(1) { animation-delay: -0.32s; }
-        .typing-dots span:nth-child(2) { animation-delay: -0.16s; }
-
-        @keyframes typing {
-            0%, 80%, 100% { 
-                transform: scale(0.8);
-                opacity: 0.5;
-            }
-            40% { 
-                transform: scale(1);
-                opacity: 1;
-            }
+        
+        .skill-tag.wants {
+            background: linear-gradient(45deg, #ff9a9e, #fecfef);
+            color: #333;
         }
-
+        
+        .match-button {
+            background: linear-gradient(45deg, #4ecdc4, #44a08d);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 15px;
+        }
+        
+        .match-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(78, 205, 196, 0.4);
+        }
+        
+        .alert {
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+        
+        .alert.success {
+            background: linear-gradient(45deg, #4ecdc4, #44a08d);
+            color: white;
+        }
+        
+        .alert.error {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a52);
+            color: white;
+        }
+        
+        .no-matches {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+        
+        .no-matches h3 {
+            margin-bottom: 15px;
+            color: #999;
+        }
+        
         @media (max-width: 768px) {
-            .main-content {
+            .container {
+                padding: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .nav-bar {
                 flex-direction: column;
-                height: auto;
+                gap: 15px;
             }
             
-            .sidebar {
-                width: 100%;
-                order: 2;
-                height: 300px;
-            }
-            
-            .chat-area {
-                order: 1;
-                min-height: 500px;
-            }
-
-            .bottle {
-                font-size: 60px;
+            .nav-buttons {
+                flex-wrap: wrap;
+                justify-content: center;
             }
         }
     </style>
 </head>
 <body>
-    <div class="ocean-bg"></div>
-    <div class="waves"></div>
-    
     <div class="container">
         <!-- Header -->
         <div class="header">
-            <div class="logo">
-                <span class="bottle-icon">🍶</span>
-                Bottled
-            </div>
-            <div class="user-info hidden" id="userInfo">
-                <div class="user-avatar" id="userAvatar"></div>
-                <span id="userName"></span>
-                <button class="btn btn-danger" onclick="signOut()">Sign Out</button>
-            </div>
+            <h1>SkillSwap</h1>
+            <p>Connect, Learn, and Share Your Expertise</p>
+            <p>Exchange skills with professionals and build meaningful connections</p>
         </div>
 
         <!-- Authentication Section -->
         <div class="auth-section" id="authSection">
-            <h2>🌊 Cast Your Message Into The Digital Ocean</h2>
-            <div id="loginForm">
-                <div class="form-group">
-                    <label for="email">Email</label>
-                    <input type="email" id="email" placeholder="Enter your email">
-                </div>
-                <div class="form-group">
-                    <label for="password">Password</label>
-                    <input type="password" id="password" placeholder="Enter your password">
-                </div>
-                <button class="btn btn-primary" onclick="signIn()">Sign In</button>
-                <button class="btn btn-secondary" onclick="signUp()">Sign Up</button>
-                <br><br>
-                <button class="btn btn-secondary" onclick="signInWithGoogle()">🔗 Sign in with Google</button>
+            <div class="auth-tabs">
+                <button class="auth-tab active" onclick="switchTab('login')">Login</button>
+                <button class="auth-tab" onclick="switchTab('register')">Register</button>
             </div>
-            <div id="authError" class="error hidden"></div>
+
+            <!-- Login Form -->
+            <div class="auth-form active" id="loginForm">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="loginEmail" placeholder="Enter your email">
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="loginPassword" placeholder="Enter your password">
+                </div>
+                <button class="btn" onclick="loginUser()">Login</button>
+            </div>
+
+            <!-- Register Form -->
+            <div class="auth-form" id="registerForm">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="registerName" placeholder="Enter your full name">
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="registerEmail" placeholder="Enter your email">
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="registerPassword" placeholder="Create a password">
+                </div>
+                <div class="form-group">
+                    <label>Profession</label>
+                    <input type="text" id="registerProfession" placeholder="e.g., Software Developer, Designer">
+                </div>
+                <div class="form-group">
+                    <label>Location</label>
+                    <input type="text" id="registerLocation" placeholder="City, Country">
+                </div>
+                <div class="form-group">
+                    <label>Skills I Have (comma-separated)</label>
+                    <input type="text" id="registerSkillsHave" placeholder="e.g., JavaScript, React, Node.js">
+                </div>
+                <div class="form-group">
+                    <label>Skills I Want to Learn (comma-separated)</label>
+                    <input type="text" id="registerSkillsWant" placeholder="e.g., Python, Machine Learning, UI/UX">
+                </div>
+                <div class="form-group">
+                    <label>Bio</label>
+                    <textarea id="registerBio" rows="3" placeholder="Tell others about yourself and your experience"></textarea>
+                </div>
+                <button class="btn" onclick="registerUser()">Create Account</button>
+            </div>
         </div>
 
-        <!-- Main App Content -->
-        <div class="main-content hidden" id="mainContent">
-            <!-- Sidebar -->
-            <div class="sidebar">
-                <!-- Bottle Opening Section -->
-                <div class="bottle-section">
-                    <div class="bottle-container">
-                        <div class="bottle" id="magicBottle" onclick="openBottle()">🍶</div>
-                    </div>
-                    <div class="bottle-text">Find a Random Connection</div>
-                    <div class="bottle-subtitle">Click the bottle to meet someone new</div>
+        <!-- Main Application -->
+        <div class="main-app" id="mainApp">
+            <!-- Navigation -->
+            <div class="nav-bar">
+                <div>
+                    <span id="welcomeText">Welcome back!</span>
                 </div>
-
-                <!-- Connections Section -->
-                <div class="connections-section">
-                    <h3>Your Connections</h3>
-                    <div class="user-list" id="userList">
-                        <div class="loading">Open a bottle to make connections...</div>
-                    </div>
+                <div class="nav-buttons">
+                    <button class="nav-btn" onclick="showSection('matches')">Find Matches</button>
+                    <button class="nav-btn" onclick="showSection('profile')">My Profile</button>
+                    <button class="nav-btn" onclick="showSection('connections')">Connections</button>
+                    <button class="nav-btn logout" onclick="logoutUser()">Logout</button>
                 </div>
             </div>
 
-            <!-- Chat Area -->
-            <div class="chat-area">
-                <div class="chat-header" id="chatHeader">
-                    🌊 Open a bottle to start your first conversation
-                </div>
-                
-                <div class="messages-container" id="messagesContainer">
-                    <div class="loading" style="color: #666;">Select a connection to view your conversation</div>
-                </div>
+            <!-- Matches Section -->
+            <div class="content-section active" id="matchesSection">
+                <h2>Potential Skill Matches</h2>
+                <p>Find people who have the skills you want and need the skills you have!</p>
+                <div id="matchesList"></div>
+            </div>
 
-                <div class="compose-area">
-                    <textarea 
-                        class="compose-input" 
-                        id="messageInput" 
-                        placeholder="Type your message and cast it into the digital ocean..."
-                        onkeypress="handleKeyPress(event)"
-                        oninput="handleTyping()"
-                    ></textarea>
-                    <button class="send-btn" id="sendBtn" onclick="sendMessage()">
-                        ➤
-                    </button>
-                </div>
+            <!-- Profile Section -->
+            <div class="content-section" id="profileSection">
+                <h2>My Profile</h2>
+                <div id="userProfile"></div>
+                <button class="btn" onclick="editProfile()">Edit Profile</button>
+            </div>
+
+            <!-- Connections Section -->
+            <div class="content-section" id="connectionsSection">
+                <h2>My Connections</h2>
+                <p>People you've connected with for skill exchanges</p>
+                <div id="connectionsList"></div>
             </div>
         </div>
     </div>
 
-    <!-- Notification -->
-    <div class="notification" id="notification"></div>
-
-    <!-- Firebase SDK -->
     <script type="module">
-        // Import Firebase modules
-        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-        import { 
-            getAuth, 
-            signInWithEmailAndPassword, 
-            createUserWithEmailAndPassword,
-            signInWithPopup,
-            GoogleAuthProvider,
-            signOut as firebaseSignOut,
-            onAuthStateChanged 
-        } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
-        import { 
-            getFirestore, 
-            collection, 
-            addDoc, 
-            query, 
-            orderBy, 
-            onSnapshot,
-            serverTimestamp,
-            where,
-            getDocs,
-            doc,
-            setDoc,
-            updateDoc,
-            limit,
-            writeBatch,
-            arrayUnion,
-            arrayRemove
-        } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+        // Firebase configuration (replace with your config)
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js';
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js';
+        import { getFirestore, collection, addDoc, getDocs, doc, getDoc, updateDoc, query, where } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js';
 
-        // TODO: Replace with your Firebase configuration
+        // Replace this with your Firebase config
         const firebaseConfig = {
-  apiKey: "AIzaSyA1wrUreV-64WVaa1SmT02QKu-iKyY-Pvs",
-  authDomain: "testapp-ced4f.firebaseapp.com",
-  databaseURL: "https://testapp-ced4f.firebaseio.com",
-  projectId: "testapp-ced4f",
-  storageBucket: "testapp-ced4f.firebasestorage.app",
-  messagingSenderId: "649071991572",
-  appId: "1:649071991572:web:f7c5cf820021b07689c001",
-  measurementId: "G-NV8M669RE2"
+            apiKey: "your-api-key",
+            authDomain: "your-auth-domain",
+            projectId: "your-project-id",
+            storageBucket: "your-storage-bucket",
+            messagingSenderId: "your-messaging-sender-id",
+            appId: "your-app-id"
         };
 
         // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
-        const provider = new GoogleAuthProvider();
 
         // Global variables
-        window.auth = auth;
-        window.db = db;
-        window.provider = provider;
-        window.currentUser = null;
-        window.selectedUser = null;
-        window.unsubscribeMessages = null;
-        window.unsubscribeConnections = null;
-        window.connections = new Set();
-        window.typingTimer = null;
-        window.isTyping = false;
+        let currentUser = null;
+        let userProfile = null;
+        let allUsers = [];
+        let connections = [];
 
-        // Authentication functions
-        window.signIn = async () => {
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
+        // Make functions globally available
+        window.switchTab = switchTab;
+        window.loginUser = loginUser;
+        window.registerUser = registerUser;
+        window.logoutUser = logoutUser;
+        window.showSection = showSection;
+        window.connectWithUser = connectWithUser;
+        window.editProfile = editProfile;
+
+        // Auth state observer
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                currentUser = user;
+                loadUserProfile();
+                showMainApp();
+            } else {
+                currentUser = null;
+                showAuthSection();
+            }
+        });
+
+        function switchTab(tab) {
+            document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
             
+            document.querySelector(`[onclick="switchTab('${tab}')"]`).classList.add('active');
+            document.getElementById(tab + 'Form').classList.add('active');
+        }
+
+        async function registerUser() {
+            const name = document.getElementById('registerName').value;
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+            const profession = document.getElementById('registerProfession').value;
+            const location = document.getElementById('registerLocation').value;
+            const skillsHave = document.getElementById('registerSkillsHave').value.split(',').map(s => s.trim());
+            const skillsWant = document.getElementById('registerSkillsWant').value.split(',').map(s => s.trim());
+            const bio = document.getElementById('registerBio').value;
+
+            if (!name || !email || !password || !profession || !location) {
+                showAlert('Please fill in all required fields', 'error');
+                return;
+            }
+
+            try {
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+
+                // Save user profile to Firestore
+                await addDoc(collection(db, 'users'), {
+                    uid: user.uid,
+                    name: name,
+                    email: email,
+                    profession: profession,
+                    location: location,
+                    skillsHave: skillsHave,
+                    skillsWant: skillsWant,
+                    bio: bio,
+                    createdAt: new Date()
+                });
+
+                showAlert('Account created successfully!', 'success');
+            } catch (error) {
+                showAlert(error.message, 'error');
+            }
+        }
+
+        async function loginUser() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            if (!email || !password) {
+                showAlert('Please enter email and password', 'error');
+                return;
+            }
+
             try {
                 await signInWithEmailAndPassword(auth, email, password);
-                hideError();
+                showAlert('Login successful!', 'success');
             } catch (error) {
-                showError(error.message);
+                showAlert(error.message, 'error');
             }
-        };
-
-        window.signUp = async () => {
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            
-            try {
-                await createUserWithEmailAndPassword(auth, email, password);
-                hideError();
-            } catch (error) {
-                showError(error.message);
-            }
-        };
-
-        window.signInWithGoogle = async () => {
-            try {
-                await signInWithPopup(auth, provider);
-                hideError();
-            } catch (error) {
-                showError(error.message);
-            }
-        };
-
-        window.signOut = async () => {
-            try {
-                if (window.currentUser) {
-                    await updateUserStatus(false);
-                }
-                await firebaseSignOut(auth);
-            } catch (error) {
-                console.error('Sign out error:', error);
-            }
-        };
-
-window.openBottle = async () => {
-    const bottle = document.getElementById('magicBottle');
-    bottle.classList.add('opening');
-    
-    try {
-        // Real-time query for online users
-        const usersQuery = query(
-            collection(db, 'users'),
-            where('isOnline', '==', true),
-            where('lastSeen', '>', new Date(Date.now() - 60000)) // Active in last minute
-        );
-        
-        // Use real-time listener for instant results
-        const unsubscribe = onSnapshot(usersQuery, (snapshot) => {
-            const availableUsers = [];
-            
-            snapshot.forEach((doc) => {
-                const userData = doc.data();
-                if (userData.uid !== window.currentUser.uid && 
-                    !window.connections.has(userData.uid)) {
-                    availableUsers.push({
-                        id: doc.id,
-                        ...userData
-                    });
-                }
-            });
-
-            if (availableUsers.length > 0) {
-                const randomUser = availableUsers[Math.floor(Math.random() * availableUsers.length)];
-                createConnection(randomUser);
-                showNotification(`🍶 You found ${randomUser.email}! Start chatting now!`);
-                unsubscribe(); // Stop listening after finding connection
-            }
-        });
-        
-        // Timeout after 5 seconds if no users found
-        setTimeout(() => {
-            unsubscribe();
-            showNotification("🌊 No new connections available right now. Try again later!");
-        }, 5000);
-        
-    } catch (error) {
-        console.error('Error opening bottle:', error);
-        showNotification("❌ Couldn't open the bottle. Try again!");
-    } finally {
-        setTimeout(() => {
-            bottle.classList.remove('opening');
-        }, 500);
-    }
-};
-        
-        // Create connection between users
-        async function createConnection(otherUser) {
-            const batch = writeBatch(db);
-            
-            // Update current user's connections
-            const currentUserRef = doc(db, 'users', window.currentUser.uid);
-            batch.update(currentUserRef, {
-                connections: arrayUnion(otherUser.uid)
-            });
-            
-            // Update other user's connections
-            const otherUserRef = doc(db, 'users', otherUser.uid);
-            batch.update(otherUserRef, {
-                connections: arrayUnion(window.currentUser.uid)
-            });
-            
-            await batch.commit();
-            
-            // Add to local connections
-            window.connections.add(otherUser.uid);
         }
 
-window.sendMessage = async () => {
-    const messageInput = document.getElementById('messageInput');
-    const messageText = messageInput.value.trim();
-    const sendBtn = document.getElementById('sendBtn');
-    
-    if (!messageText || !window.selectedUser) return;
-
-    sendBtn.disabled = true;
-    clearTypingIndicator();
-
-    try {
-        const chatId = getChatId(window.currentUser.uid, window.selectedUser.uid);
-        
-        // Create message object with temporary ID
-        const tempMessage = {
-            text: messageText,
-            senderId: window.currentUser.uid,
-            timestamp: new Date(),
-            senderEmail: window.currentUser.email,
-            id: 'temp-' + Date.now()
-        };
-
-        // Add to UI immediately with temporary styling
-        addMessageToUI(tempMessage, true);
-
-        messageInput.value = '';
-        messageInput.style.height = '50px';
-        
-        // Send to Firebase
-        const docRef = await addDoc(collection(db, 'messages'), {
-            text: messageText,
-            senderId: window.currentUser.uid,
-            receiverId: window.selectedUser.uid,
-            chatId: chatId,
-            timestamp: serverTimestamp(),
-            senderEmail: window.currentUser.email
-        });
-
-        // Update the temporary message with real ID
-        updateTemporaryMessage(tempMessage.id, docRef.id);
-
-    } catch (error) {
-        console.error('Error sending message:', error);
-        removeTemporaryMessage(tempMessage.id);
-        showNotification("❌ Failed to send message. Please try again.");
-    } finally {
-        sendBtn.disabled = false;
-    }
-};
-        // Typing indicator
-window.handleTyping = () => {
-    if (!window.selectedUser) return;
-    
-    clearTimeout(window.typingDebounce);
-    
-    if (!window.isTyping) {
-        window.isTyping = true;
-        updateTypingStatus(true);
-    }
-    
-    window.typingDebounce = setTimeout(() => {
-        window.isTyping = false;
-        updateTypingStatus(false);
-    }, 800);
-};
-
-        async function updateTypingStatus(isTyping) {
+        async function logoutUser() {
             try {
-                const chatId = getChatId(window.currentUser.uid, window.selectedUser.uid);
-                const typingRef = doc(db, 'typing', chatId);
+                await signOut(auth);
+                showAlert('Logged out successfully!', 'success');
+            } catch (error) {
+                showAlert(error.message, 'error');
+            }
+        }
+
+        async function loadUserProfile() {
+            try {
+                const q = query(collection(db, 'users'), where('uid', '==', currentUser.uid));
+                const querySnapshot = await getDocs(q);
                 
-                if (isTyping) {
-                    await setDoc(typingRef, {
-                        [window.currentUser.uid]: {
-                            isTyping: true,
-                            timestamp: serverTimestamp()
-                        }
-                    }, { merge: true });
-                } else {
-                    await updateDoc(typingRef, {
-                        [window.currentUser.uid]: {
-                            isTyping: false,
-                            timestamp: serverTimestamp()
-                        }
-                    });
+                if (!querySnapshot.empty) {
+                    const doc = querySnapshot.docs[0];
+                    userProfile = { id: doc.id, ...doc.data() };
+                    document.getElementById('welcomeText').textContent = `Welcome, ${userProfile.name}!`;
+                    displayUserProfile();
+                    loadAllUsers();
+                    loadConnections();
                 }
             } catch (error) {
-                console.error('Error updating typing status:', error);
+                console.error('Error loading user profile:', error);
             }
         }
 
-        function clearTypingIndicator() {
-            const indicator = document.querySelector('.typing-indicator');
-            if (indicator) {
-                indicator.remove();
-            }
-        }
-
-        window.handleKeyPress = (event) => {
-            if (event.key === 'Enter' && !event.shiftKey) {
-                event.preventDefault();
-                sendMessage();
-            }
-        };
-
-        // Utility functions
-        function getChatId(userId1, userId2) {
-            return [userId1, userId2].sort().join('_');
-        }
-
-        function showError(message) {
-            const errorEl = document.getElementById('authError');
-            errorEl.textContent = message;
-            errorEl.classList.remove('hidden');
-        }
-
-        function hideError() {
-            document.getElementById('authError').classList.add('hidden');
-        }
-
-        function showNotification(message) {
-            const notification = document.getElementById('notification');
-            notification.textContent = message;
-            notification.classList.add('show');
-            
-            setTimeout(() => {
-                notification.classList.remove('show');
-            }, 4000);
-        }
-
-        function formatTime(timestamp) {
-            if (!timestamp) return '';
-            const date = timestamp.toDate ? timestamp.toDate() : timestamp;
-            return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        }
-
-        function getInitials(email) {
-            return email.charAt(0).toUpperCase();
-        }
-
-        // Update user online status
-        async function updateUserStatus(isOnline) {
-            if (!window.currentUser) return;
-            
+        async function loadAllUsers() {
             try {
-                const userRef = doc(db, 'users', window.currentUser.uid);
-                await updateDoc(userRef, {
-                    isOnline: isOnline,
-                    lastSeen: serverTimestamp()
-                });
-            } catch (error) {
-                console.error('Error updating user status:', error);
-            }
-        }
-
-        // Load connections with real-time updates
-        function loadConnections() {
-            if (!window.currentUser) return;
-
-            const userRef = doc(db, 'users', window.currentUser.uid);
-            
-            window.unsubscribeConnections = onSnapshot(userRef, async (doc) => {
-                if (!doc.exists()) return;
-                
-                const userData = doc.data();
-                const userConnections = userData.connections || [];
-                
-                // Update local connections set
-                window.connections = new Set(userConnections);
-                
-                // Load connection details
-                const userList = document.getElementById('userList');
-                userList.innerHTML = '';
-                
-                if (userConnections.length === 0) {
-                    userList.innerHTML = '<div class="loading">Open a bottle to make connections...</div>';
-                    return;
-                }
-
-                // Get details for each connection
-                for (const connectionId of userConnections) {
-                    try {
-                        const connectionQuery = query(
-                            collection(db, 'users'),
-                            where('uid', '==', connectionId)
-                        );
-                        const connectionSnapshot = await getDocs(connectionQuery);
-                        
-                        connectionSnapshot.forEach((connectionDoc) => {
-                            const connectionData = connectionDoc.data();
-                            addConnectionToUI(connectionData, connectionDoc.id);
-                        });
-                    } catch (error) {
-                        console.error('Error loading connection:', error);
+                const querySnapshot = await getDocs(collection(db, 'users'));
+                allUsers = [];
+                querySnapshot.forEach((doc) => {
+                    const userData = { id: doc.id, ...doc.data() };
+                    if (userData.uid !== currentUser.uid) {
+                        allUsers.push(userData);
                     }
-                }
-            });
+                });
+                findMatches();
+            } catch (error) {
+                console.error('Error loading users:', error);
+            }
         }
 
-        function addConnectionToUI(userData, docId) {
-            const userList = document.getElementById('userList');
+        async function loadConnections() {
+            try {
+                const q = query(collection(db, 'connections'), where('users', 'array-contains', currentUser.uid));
+                const querySnapshot = await getDocs(q);
+                connections = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                displayConnections();
+            } catch (error) {
+                console.error('Error loading connections:', error);
+            }
+        }
+
+        function findMatches() {
+            const matches = allUsers.filter(user => {
+                const hasSkillsIWant = user.skillsHave.some(skill => 
+                    userProfile.skillsWant.some(wantedSkill => 
+                        skill.toLowerCase().includes(wantedSkill.toLowerCase()) ||
+                        wantedSkill.toLowerCase().includes(skill.toLowerCase())
+                    )
+                );
+                
+                const wantsSkillsIHave = user.skillsWant.some(skill => 
+                    userProfile.skillsHave.some(mySkill => 
+                        skill.toLowerCase().includes(mySkill.toLowerCase()) ||
+                        mySkill.toLowerCase().includes(skill.toLowerCase())
+                    )
+                );
+                
+                return hasSkillsIWant && wantsSkillsIHave;
+            });
+
+            displayMatches(matches);
+        }
+
+        function displayMatches(matches) {
+            const matchesList = document.getElementById('matchesList');
             
-            // Remove loading message if it exists
-            const loading = userList.querySelector('.loading');
-            if (loading) loading.remove();
-            
-            // Check if user already exists
-            const existingUser = userList.querySelector(`[data-user-id="${docId}"]`);
-            if (existingUser) return;
-            
-            const userElement = document.createElement('div');
-            userElement.className = 'user-item new-connection';
-            userElement.setAttribute('data-user-id', docId);
-            userElement.innerHTML = `
-                <div class="user-avatar">${getInitials(userData.email)}</div>
-                <div>
-                    <div>${userData.email}</div>
-                    <div style="font-size: 12px; opacity: 0.7;">
-                        ${userData.isOnline ? '🟢 Online' : '⚫ Offline'}
+            if (matches.length === 0) {
+                matchesList.innerHTML = `
+                    <div class="no-matches">
+                        <h3>No matches found yet</h3>
+                        <p>Try updating your skills or check back later for new members!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            matchesList.innerHTML = matches.map(user => `
+                <div class="profile-card">
+                    <div class="profile-header">
+                        <div class="profile-avatar">${user.name.charAt(0).toUpperCase()}</div>
+                        <div class="profile-info">
+                            <h3>${user.name}</h3>
+                            <p><strong>${user.profession}</strong></p>
+                            <p>📍 ${user.location}</p>
+                        </div>
+                    </div>
+                    <p>${user.bio}</p>
+                    <div class="skills-section">
+                        <strong>Skills they have:</strong>
+                        <div class="skills-list">
+                            ${user.skillsHave.map(skill => `<span class="skill-tag">${skill}</span>`).join('')}
+                        </div>
+                    </div>
+                    <div class="skills-section">
+                        <strong>Skills they want:</strong>
+                        <div class="skills-list">
+                            ${user.skillsWant.map(skill => `<span class="skill-tag wants">${skill}</span>`).join('')}
+                        </div>
+                    </div>
+                    <button class="match-button" onclick="connectWithUser('${user.id}', '${user.name}')">
+                        Connect for Skill Exchange
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function displayUserProfile() {
+            const profileDiv = document.getElementById('userProfile');
+            profileDiv.innerHTML = `
+                <div class="profile-card">
+                    <div class="profile-header">
+                        <div class="profile-avatar">${userProfile.name.charAt(0).toUpperCase()}</div>
+                        <div class="profile-info">
+                            <h3>${userProfile.name}</h3>
+                            <p><strong>${userProfile.profession}</strong></p>
+                            <p>📍 ${userProfile.location}</p>
+                            <p>✉️ ${userProfile.email}</p>
+                        </div>
+                    </div>
+                    <p>${userProfile.bio}</p>
+                    <div class="skills-section">
+                        <strong>Skills I have:</strong>
+                        <div class="skills-list">
+                            ${userProfile.skillsHave.map(skill => `<span class="skill-tag">${skill}</span>`).join('')}
+                        </div>
+                    </div>
+                    <div class="skills-section">
+                        <strong>Skills I want to learn:</strong>
+                        <div class="skills-list">
+                            ${userProfile.skillsWant.map(skill => `<span class="skill-tag wants">${skill}</span>`).join('')}
+                        </div>
                     </div>
                 </div>
             `;
-            userElement.onclick = () => selectUser({
-                id: docId,
-                uid: userData.uid,
-                email: userData.email
-            });
-            
-            userList.appendChild(userElement);
-            
-            // Remove animation class after animation completes
-            setTimeout(() => {
-                userElement.classList.remove('new-connection');
-            }, 1000);
         }
 
-        // Select user for chat
-        window.selectUser = (user) => {
-            window.selectedUser = user;
+        function displayConnections() {
+            const connectionsList = document.getElementById('connectionsList');
             
-            // Update UI
-            document.querySelectorAll('.user-item').forEach(item => {
-                item.classList.remove('active');
-            });
-            
-            const selectedElement = document.querySelector(`[data-user-id="${user.id}"]`);
-            if (selectedElement) {
-                selectedElement.classList.add('active');
-            }
-            
-            document.getElementById('chatHeader').textContent = `💬 ${user.email}`;
-            
-            // Load messages
-            loadMessages();
-            
-            // Listen for typing indicators
-            listenForTyping();
-        };
-
-        // Load messages with real-time updates
-        function loadMessages() {
-            if (window.unsubscribeMessages) {
-                window.unsubscribeMessages();
+            if (connections.length === 0) {
+                connectionsList.innerHTML = `
+                    <div class="no-matches">
+                        <h3>No connections yet</h3>
+                        <p>Start connecting with people from the matches section!</p>
+                    </div>
+                `;
+                return;
             }
 
-            if (!window.selectedUser) return;
-
-            const chatId = getChatId(window.currentUser.uid, window.selectedUser.uid);
-            const messagesQuery = query(
-                collection(db, 'messages'),
-                where('chatId', '==', chatId),
-                orderBy('timestamp', 'asc')
-            );
-
-            const messagesContainer = document.getElementById('messagesContainer');
-            messagesContainer.innerHTML = '';
-
-            window.unsubscribeMessages = onSnapshot(messagesQuery, (snapshot) => {
-                snapshot.docChanges().forEach((change) => {
-                    if (change.type === 'added') {
-                        const message = change.doc.data();
-                        addMessageToUI(message);
-                    }
-                });
-            });
-        }
-
-function addMessageToUI(message, isTemporary = false) {
-    const messagesContainer = document.getElementById('messagesContainer');
-    
-    const loading = messagesContainer.querySelector('.loading');
-    if (loading) loading.remove();
-    
-    const messageElement = document.createElement('div');
-    messageElement.className = `message ${message.senderId === window.currentUser.uid ? 'sent' : 'received'}`;
-    messageElement.setAttribute('data-message-id', message.id);
-    
-    if (isTemporary) {
-        messageElement.classList.add('sending');
-        messageElement.style.opacity = '0.7';
-    }
-    
-    messageElement.innerHTML = `
-        <div>${message.text}</div>
-        <div class="message-info">${formatTime(message.timestamp)}</div>
-    `;
-    
-    messagesContainer.appendChild(messageElement);
-    messagesContainer.scrollTop = messagesContainer.scrollHeight;
-}
-        
-        // Listen for typing indicators
-        function listenForTyping() {
-            if (!window.selectedUser) return;
-            
-            const chatId = getChatId(window.currentUser.uid, window.selectedUser.uid);
-            const typingRef = doc(db, 'typing', chatId);
-            
-            onSnapshot(typingRef, (doc) => {
-                if (!doc.exists()) return;
-                
-                const typingData = doc.data();
-                const otherUserTyping = typingData[window.selectedUser.uid];
-                
-                if (otherUserTyping && otherUserTyping.isTyping) {
-                    showTypingIndicator();
-                } else {
-                    clearTypingIndicator();
-                }
-            });
-        }
-
-        function showTypingIndicator() {
-            const messagesContainer = document.getElementById('messagesContainer');
-            
-            // Don't add if already exists
-            if (messagesContainer.querySelector('.typing-indicator')) return;
-            
-            const typingElement = document.createElement('div');
-            typingElement.className = 'typing-indicator';
-            typingElement.innerHTML = `
-                <div class="typing-dots">
-                    <span></span>
-                    <span></span>
-                    <span></span>
+            connectionsList.innerHTML = connections.map(connection => `
+                <div class="profile-card">
+                    <h3>Connection established</h3>
+                    <p>Connected on: ${new Date(connection.createdAt.seconds * 1000).toLocaleDateString()}</p>
+                    <p>Status: Active</p>
                 </div>
-            `;
-            
-            messagesContainer.appendChild(typingElement);
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            `).join('');
         }
 
-        // Create user document in Firestore
-        async function createUserDocument(user) {
+        async function connectWithUser(userId, userName) {
             try {
-                const userRef = doc(db, 'users', user.uid);
-                await setDoc(userRef, {
-                    email: user.email,
-                    uid: user.uid,
-                    isOnline: true,
-                    connections: [],
-                    createdAt: serverTimestamp(),
-                    lastSeen: serverTimestamp()
-                }, { merge: true });
-            } catch (error) {
-                console.error('Error creating user document:', error);
-            }
-        }
-
-        // Auth state observer
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                window.currentUser = user;
+                await addDoc(collection(db, 'connections'), {
+                    users: [currentUser.uid, userId],
+                    initiator: currentUser.uid,
+                    createdAt: new Date(),
+                    status: 'active'
+                });
                 
-                // Update UI
-                document.getElementById('authSection').classList.add('hidden');
-                document.getElementById('mainContent').classList.remove('hidden');
-                document.getElementById('userInfo').classList.remove('hidden');
-                
-                document.getElementById('userName').textContent = user.email;
-                document.getElementById('userAvatar').textContent = getInitials(user.email);
-                
-                // Create/update user document
-                await createUserDocument(user);
-                
-                // Set user as online
-                await updateUserStatus(true);
-                
-                // Load connections
+                showAlert(`Successfully connected with ${userName}!`, 'success');
                 loadConnections();
-                
-                // Show welcome notification
-                showNotification(`🌊 Welcome back, ${user.email}! Open a bottle to find new connections.`);
-                
-            } else {
-                window.currentUser = null;
-                window.selectedUser = null;
-                
-                // Update UI
-                document.getElementById('authSection').classList.remove('hidden');
-                document.getElementById('mainContent').classList.add('hidden');
-                document.getElementById('userInfo').classList.add('hidden');
-                
-                // Clear form
-                document.getElementById('email').value = '';
-                document.getElementById('password').value = '';
-                
-                // Cleanup subscriptions
-                if (window.unsubscribeMessages) {
-                    window.unsubscribeMessages();
-                }
-                if (window.unsubscribeConnections) {
-                    window.unsubscribeConnections();
-                }
+            } catch (error) {
+                showAlert('Error creating connection', 'error');
+                console.error(error);
             }
-        });
-
-        // Auto-resize textarea
-        document.getElementById('messageInput').addEventListener('input', function() {
-            this.style.height = '50px';
-            this.style.height = Math.min(this.scrollHeight, 150) + 'px';
-        });
-
-        // Handle page visibility changes
-        document.addEventListener('visibilitychange', () => {
-            if (window.currentUser) {
-                updateUserStatus(!document.hidden);
-            }
-        });
-
-        // Handle page unload
-        window.addEventListener('beforeunload', () => {
-            if (window.currentUser) {
-                updateUserStatus(false);
-            }
-        });
-
-        
-setInterval(() => {
-    if (window.currentUser) {
-        updateUserStatus(true);
-    }
-}, 10000); // Update every 10 seconds for more real-time status
-
-// Helper functions for temporary messages
-function updateTemporaryMessage(tempId, realId) {
-    const messageEl = document.querySelector(`[data-message-id="${tempId}"]`);
-    if (messageEl) {
-        messageEl.setAttribute('data-message-id', realId);
-        messageEl.classList.remove('sending');
-        messageEl.style.opacity = '1';
-    }
-}
-
-function removeTemporaryMessage(tempId) {
-    const messageEl = document.querySelector(`[data-message-id="${tempId}"]`);
-    if (messageEl) {
-        messageEl.remove();
-    }
-}
-
-// Update connection status in real-time
-function updateConnectionInUI(userData, docId) {
-    let userElement = document.querySelector(`[data-user-id="${docId}"]`);
-    
-    if (!userElement) {
-        addConnectionToUI(userData, docId);
-    } else {
-        const statusEl = userElement.querySelector('div:last-child div:last-child');
-        if (statusEl) {
-            statusEl.textContent = userData.isOnline ? '🟢 Online' : '⚫ Offline';
         }
-    }
-}
-        
+
+        function editProfile() {
+            showAlert('Profile editing feature coming soon!', 'success');
+        }
+
+        function showSection(section) {
+            document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+            document.getElementById(section + 'Section').classList.add('active');
+        }
+
+        function showAuthSection() {
+            document.getElementById('authSection').style.display = 'block';
+            document.getElementById('mainApp').classList.remove('active');
+        }
+
+        function showMainApp() {
+            document.getElementById('authSection').style.display = 'none';
+            document.getElementById('mainApp').classList.add('active');
+        }
+
+        function showAlert(message, type) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert ${type}`;
+            alertDiv.textContent = message;
+            
+            const container = document.querySelector('.container');
+            container.insertBefore(alertDiv, container.firstChild);
+            
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 5000);
+        }
     </script>
 </body>
 </html>
