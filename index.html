@@ -5,63 +5,61 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bottled - Message in a Bottle</title>
     <style>
-        /* General Styles */
         * {
-            margin: 0; 
-            padding: 0; 
+            margin: 0;
+            padding: 0;
             box-sizing: border-box;
         }
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); 
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
             min-height: 100vh;
             color: #333;
-            overflow-x: hidden; 
+            overflow-x: hidden;
         }
 
         .ocean-bg {
-            position: fixed; 
-            top: 0; 
-            left: 0; 
-            width: 100%; 
-            height: 100%; 
-            background:
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
                 radial-gradient(circle at 20% 80%, rgba(120, 219, 226, 0.2) 0%, transparent 50%),
                 radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
-                linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); 
-            z-index: -1; 
+                linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            z-index: -1;
         }
 
         .waves {
-            position: fixed; 
-            bottom: 0; 
-            left: 0; 
-            width: 100%; 
-            height: 100px; 
-            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120'%3E%3Cpath d='M0,60 C200,100 400,20 600,60 C800,100 1000,20 1200,60 L1200,120 L0,120 Z' fill='rgba(255,255,255,0.1)'/%3E%3C/svg%3E") repeat-x; 
-            animation: wave 15s ease-in-out infinite; 
-            z-index: -1; 
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100px;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120'%3E%3Cpath d='M0,60 C200,100 400,20 600,60 C800,100 1000,20 1200,60 L1200,120 L0,120 Z' fill='rgba(255,255,255,0.1)'/%3E%3C/svg%3E") repeat-x;
+            animation: wave 15s ease-in-out infinite;
+            z-index: -1;
         }
 
         @keyframes wave {
-            0%, 100% { transform: translateX(0px);  }
-            50% { transform: translateX(-50px);  }
+            0%, 100% { transform: translateX(0px); }
+            50% { transform: translateX(-50px); }
         }
 
         .container {
-            max-width: 1200px; 
-            margin: 0 auto; 
+            max-width: 1200px;
+            margin: 0 auto;
             padding: 20px;
             min-height: 100vh;
-            display: flex; 
-            flex-direction: column; 
+            display: flex;
+            flex-direction: column;
         }
 
-        /* Header */
         .header {
-            background: rgba(255, 255, 255, 0.15); 
-            backdrop-filter: blur(15px); 
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(15px);
             border-radius: 20px;
             padding: 20px;
             margin-bottom: 20px;
@@ -69,302 +67,501 @@
             justify-content: space-between;
             align-items: center;
             color: white;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); 
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
         }
 
         .logo {
-            font-size: 28px; 
-            font-weight: bold; 
-            display: flex; 
+            font-size: 28px;
+            font-weight: bold;
+            display: flex;
             align-items: center;
             gap: 10px;
         }
 
         .bottle-icon {
-            font-size: 32px; 
-            animation: float 3s ease-in-out infinite; 
+            font-size: 32px;
+            animation: float 3s ease-in-out infinite;
         }
 
         @keyframes float {
-            0%, 100% { transform: translateY(0px);  }
-            50% { transform: translateY(-10px);  }
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
         }
 
-        /* Main Content Layout */
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.25);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .auth-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            max-width: 420px;
+            margin: auto;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .auth-section h2 {
+            margin-bottom: 30px;
+            color: #2a5298;
+            font-size: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #555;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #e1e5e9;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #2a5298;
+            box-shadow: 0 0 0 3px rgba(42, 82, 152, 0.1);
+        }
+
+        .btn {
+            padding: 14px 28px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #2a5298 0%, #1e3c72 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(42, 82, 152, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.8);
+            color: #333;
+            border: 2px solid #e1e5e9;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.95);
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
         .main-content {
-            display: flex; 
-            flex: 1; 
+            display: flex;
+            flex: 1;
             gap: 20px;
             height: calc(100vh - 140px);
         }
 
-        /* Sidebar & Connections */
         .sidebar {
-            background: rgba(255, 255, 255, 0.15); 
-            backdrop-filter: blur(15px); 
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(15px);
             border-radius: 20px;
             padding: 25px;
             width: 350px;
-            display: flex; 
-            flex-direction: column; 
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); 
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
         }
 
         .bottle-section {
-            text-align: center; 
-            margin-bottom: 30px; 
+            text-align: center;
+            margin-bottom: 30px;
             padding: 20px;
             background: rgba(255, 255, 255, 0.1);
-            border-radius: 15px; 
+            border-radius: 15px;
+        }
+
+        .bottle-container {
+            position: relative;
+            display: inline-block;
+            margin: 20px 0;
         }
 
         .bottle {
-            font-size: 80px; 
-            cursor: pointer; 
+            font-size: 80px;
+            cursor: pointer;
             transition: all 0.3s;
-            filter: drop-shadow(0 5px 15px rgba(0,0,0,0.2)); 
+            display: block;
+            filter: drop-shadow(0 5px 15px rgba(0,0,0,0.2));
         }
+
         .bottle:hover {
-            transform: scale(1.1) rotate(5deg); 
-            filter: drop-shadow(0 8px 25px rgba(0,0,0,0.3)); 
+            transform: scale(1.1) rotate(5deg);
+            filter: drop-shadow(0 8px 25px rgba(0,0,0,0.3));
         }
+
         .bottle.opening {
-            animation: shake 0.5s ease-in-out, glow 0.5s ease-in-out; 
+            animation: shake 0.5s ease-in-out, glow 0.5s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(-10deg); }
+            75% { transform: rotate(10deg); }
+        }
+
+        @keyframes glow {
+            0%, 100% { filter: drop-shadow(0 5px 15px rgba(0,0,0,0.2)); }
+            50% { filter: drop-shadow(0 0 30px rgba(120, 219, 226, 0.8)); }
+        }
+
+        .bottle-text {
+            color: white;
+            font-size: 18px;
+            font-weight: 500;
+            margin-top: 10px;
+        }
+
+        .bottle-subtitle {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .connections-section {
+            flex: 1;
+        }
+
+        .connections-section h3 {
+            color: white;
+            margin-bottom: 20px;
+            font-size: 20px;
         }
 
         .user-list {
-            flex: 1; 
-            overflow-y: auto; 
+            flex: 1;
+            overflow-y: auto;
         }
 
         .user-item {
-            padding: 15px; 
-            border-radius: 12px; 
-            margin-bottom: 10px; 
-            cursor: pointer; 
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            cursor: pointer;
             transition: all 0.3s;
-            display: flex; 
+            display: flex;
             align-items: center;
             gap: 12px;
-            background: rgba(255, 255, 255, 0.1); 
-            color: white; 
-            position: relative; 
-        }
-        .user-item:hover {
-            background: rgba(255, 255, 255, 0.2); 
-            transform: translateX(5px); 
-        }
-        .user-item.active {
-            background: rgba(120, 219, 226, 0.3); 
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            position: relative;
         }
 
-        .unread-badge {
+        .user-item::before {
+            content: '';
             position: absolute;
-            right: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            background-color: #78dbe2;
-            color: #1e3c72;
-            font-size: 12px;
-            font-weight: bold;
-            padding: 3px 8px;
-            border-radius: 12px;
-            transition: all 0.3s;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 3px;
+            background: #78dbe2;
+            border-radius: 0 3px 3px 0;
+            transform: scaleY(0);
+            transition: transform 0.3s;
         }
 
-        /* Chat Area */
-        .chat-area {
-            flex: 1; 
-            background: rgba(255, 255, 255, 0.95); 
-            border-radius: 20px;
-            display: flex; 
-            flex-direction: column; 
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); 
+        .user-item:hover::before,
+        .user-item.active::before {
+            transform: scaleY(1);
         }
-        
+
+        .user-item:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(5px);
+        }
+
+        .user-item.active {
+            background: rgba(120, 219, 226, 0.3);
+        }
+
+        .user-item.new-connection {
+            animation: newConnection 1s ease-out;
+        }
+
+        @keyframes newConnection {
+            0% { 
+                transform: translateX(-100%) scale(0.5);
+                opacity: 0;
+            }
+            100% { 
+                transform: translateX(0) scale(1);
+                opacity: 1;
+            }
+        }
+
+        .chat-area {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
         .chat-header {
-            padding: 25px; 
-            border-bottom: 1px solid rgba(0,0,0,0.1); 
+            padding: 25px;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
             font-weight: 600;
-            color: #2a5298; 
-            font-size: 18px; 
+            color: #2a5298;
+            font-size: 18px;
         }
 
         .messages-container {
-            flex: 1; 
-            padding: 20px; 
-            overflow-y: auto; 
-            display: flex; 
-            flex-direction: column; 
-            gap: 2px; /* Reduced gap for message grouping */
-            scroll-behavior: smooth; 
-        }
-
-        /* NEW: Empty state for chat area */
-        .empty-chat-area {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
             display: flex;
             flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 100%;
-            text-align: center;
-            color: #666;
-            padding: 20px;
+            gap: 15px;
+            scroll-behavior: smooth;
         }
-        .empty-chat-icon {
-            font-size: 80px;
-            margin-bottom: 20px;
-            filter: drop-shadow(0 5px 10px rgba(0,0,0,0.1));
-            animation: float 4s ease-in-out infinite;
-        }
-
 
         .message {
-            max-width: 75%; 
-            padding: 12px 18px; 
-            border-radius: 20px; 
-            position: relative; 
-            word-wrap: break-word; 
-            margin-top: 8px;
+            max-width: 75%;
+            padding: 14px 18px;
+            border-radius: 20px;
+            position: relative;
+            animation: messageSlide 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            word-wrap: break-word;
         }
+
         .message.sent {
-            background: linear-gradient(135deg, #2a5298 0%, #1e3c72 100%); 
-            color: white; 
-            align-self: flex-end; 
-            border-bottom-right-radius: 6px; 
-        }
-        .message.received {
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); 
-            color: #333; 
-            align-self: flex-start; 
-            border-bottom-left-radius: 6px; 
-        }
-        
-        /* NEW: Grouped messages styling */
-        .message.grouped {
-            margin-top: 2px;
-        }
-        .message.sent.grouped {
-            border-top-right-radius: 6px;
+            background: linear-gradient(135deg, #2a5298 0%, #1e3c72 100%);
+            color: white;
+            align-self: flex-end;
             border-bottom-right-radius: 6px;
         }
-        .message.received.grouped {
-            border-top-left-radius: 6px;
+
+        .message.received {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            color: #333;
+            align-self: flex-start;
             border-bottom-left-radius: 6px;
         }
 
-        /* NEW: Timestamp on hover */
         .message-info {
-            display: none;
-            font-size: 11px; 
-            opacity: 0.7; 
-        }
-        .message:hover .message-info {
-            display: block;
+            font-size: 11px;
+            opacity: 0.7;
+            margin-top: 6px;
         }
 
-        /* NEW: Message status indicator */
-        .message-status {
-            font-size: 14px;
-            margin-left: 5px;
+        @keyframes messageSlide {
+            0% { 
+                opacity: 0;
+                transform: translateY(30px) scale(0.8);
+            }
+            100% { 
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
         }
 
-        /* Compose Area & Typing Indicator */
         .compose-area {
-            padding: 20px 25px; 
-            border-top: 1px solid rgba(0,0,0,0.1); 
-            display: flex; 
-            gap: 15px;
-            align-items: flex-end; 
-            position: relative;
-        }
-        
-        /* NEW: Moved typing indicator here */
-        .typing-indicator {
-            position: absolute;
-            top: -32px;
-            left: 25px;
-            padding: 5px 15px; 
-            background: #f0f0f0;
-            border-radius: 20px;
-            border-bottom-left-radius: 6px; 
+            padding: 25px;
+            border-top: 1px solid rgba(0,0,0,0.1);
             display: flex;
-            align-items: center;
-            gap: 5px;
-            font-size: 12px;
-            color: #555;
-        }
-
-        .typing-dots span {
-            width: 7px; 
-            height: 7px; 
-            border-radius: 50%; 
-            background: #999; 
-            animation: typing 1.4s infinite ease-in-out; 
-        }
-        .typing-dots span:nth-child(1) { animation-delay: -0.32s;  }
-        .typing-dots span:nth-child(2) { animation-delay: -0.16s;  }
-        .typing-dots span:nth-child(3) { animation-delay: 0s; }
-
-        @keyframes typing {
-            0%, 80%, 100% { transform: scale(0.8); opacity: 0.5;  }
-            40% { transform: scale(1); opacity: 1;  }
+            gap: 15px;
+            align-items: flex-end;
         }
 
         .compose-input {
-            flex: 1; 
-            padding: 15px 20px; 
-            border: 2px solid #e1e5e9; 
-            border-radius: 25px; 
+            flex: 1;
+            padding: 15px 20px;
+            border: 2px solid #e1e5e9;
+            border-radius: 25px;
             resize: none;
             font-family: inherit;
             font-size: 16px;
             min-height: 50px;
-            max-height: 150px; 
-            transition: all 0.3s; 
+            max-height: 150px;
+            transition: all 0.3s;
         }
+
         .compose-input:focus {
-            outline: none; 
-            border-color: #2a5298; 
-            box-shadow: 0 0 0 3px rgba(42, 82, 152, 0.15); 
+            outline: none;
+            border-color: #2a5298;
+            box-shadow: 0 0 0 3px rgba(42, 82, 152, 0.15);
         }
-        
+
         .send-btn {
-            width: 50px; 
-            height: 50px; 
-            border-radius: 50%; 
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
             background: linear-gradient(135deg, #2a5298 0%, #1e3c72 100%);
-            color: white; 
-            border: none; 
-            cursor: pointer; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            transition: all 0.3s; 
-            font-size: 18px; 
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            font-size: 18px;
         }
+
         .send-btn:hover {
-            transform: scale(1.1); 
-            box-shadow: 0 5px 20px rgba(42, 82, 152, 0.4); 
+            transform: scale(1.1);
+            box-shadow: 0 5px 20px rgba(42, 82, 152, 0.4);
         }
 
-        /* General & Utility Classes */
-        .hidden { display: none !important;  }
+        .send-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
 
-        /* Responsive Design */
+        .hidden {
+            display: none !important;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .error {
+            background: rgba(220, 53, 69, 0.1);
+            color: #dc3545;
+            padding: 12px;
+            border-radius: 12px;
+            margin: 10px 0;
+            border: 1px solid rgba(220, 53, 69, 0.2);
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(40, 167, 69, 0.95);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 12px;
+            transform: translateX(400px);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .typing-indicator {
+            padding: 10px 15px;
+            margin: 5px 0;
+            align-self: flex-start;
+            background: #f8f9fa;
+            border-radius: 20px;
+            border-bottom-left-radius: 6px;
+            max-width: 75%;
+        }
+
+        .typing-dots {
+            display: flex;
+            gap: 3px;
+        }
+
+        .typing-dots span {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #999;
+            animation: typing 1.4s infinite ease-in-out;
+        }
+
+        .typing-dots span:nth-child(1) { animation-delay: -0.32s; }
+        .typing-dots span:nth-child(2) { animation-delay: -0.16s; }
+
+        @keyframes typing {
+            0%, 80%, 100% { 
+                transform: scale(0.8);
+                opacity: 0.5;
+            }
+            40% { 
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
         @media (max-width: 768px) {
             .main-content {
-                flex-direction: column; 
-                height: auto; 
+                flex-direction: column;
+                height: auto;
             }
+            
             .sidebar {
-                width: 100%; 
-                order: 2; 
-                height: 350px;
+                width: 100%;
+                order: 2;
+                height: 300px;
             }
+            
             .chat-area {
-                order: 1; 
-                min-height: 500px; 
+                order: 1;
+                min-height: 500px;
+            }
+
+            .bottle {
+                font-size: 60px;
             }
         }
     </style>
@@ -374,6 +571,7 @@
     <div class="waves"></div>
     
     <div class="container">
+        <!-- Header -->
         <div class="header">
             <div class="logo">
                 <span class="bottle-icon">🍶</span>
@@ -386,8 +584,9 @@
             </div>
         </div>
 
+        <!-- Authentication Section -->
         <div class="auth-section" id="authSection">
-             <h2>🌊 Cast Your Message Into The Digital Ocean</h2>
+            <h2>🌊 Cast Your Message Into The Digital Ocean</h2>
             <div id="loginForm">
                 <div class="form-group">
                     <label for="email">Email</label>
@@ -405,44 +604,47 @@
             <div id="authError" class="error hidden"></div>
         </div>
 
+        <!-- Main App Content -->
         <div class="main-content hidden" id="mainContent">
+            <!-- Sidebar -->
             <div class="sidebar">
+                <!-- Bottle Opening Section -->
                 <div class="bottle-section">
                     <div class="bottle-container">
-                        <div class="bottle" id="magicBottle" onclick="openBottle()" aria-label="Find a random connection">🍶</div>
+                        <div class="bottle" id="magicBottle" onclick="openBottle()">🍶</div>
                     </div>
                     <div class="bottle-text">Find a Random Connection</div>
                     <div class="bottle-subtitle">Click the bottle to meet someone new</div>
                 </div>
 
+                <!-- Connections Section -->
                 <div class="connections-section">
                     <h3>Your Connections</h3>
                     <div class="user-list" id="userList">
-                        </div>
+                        <div class="loading">Open a bottle to make connections...</div>
+                    </div>
                 </div>
             </div>
 
+            <!-- Chat Area -->
             <div class="chat-area">
                 <div class="chat-header" id="chatHeader">
-                    </div>
+                    🌊 Open a bottle to start your first conversation
+                </div>
                 
                 <div class="messages-container" id="messagesContainer">
-                    <div class="empty-chat-area" id="emptyChatArea">
-                        <div class="empty-chat-icon">🌊</div>
-                        <h3>Welcome to the Ocean</h3>
-                        <p>Open a bottle to find a new connection, or select an existing one to continue a conversation.</p>
-                    </div>
+                    <div class="loading" style="color: #666;">Select a connection to view your conversation</div>
                 </div>
 
-                <div class="compose-area" id="composeArea">
+                <div class="compose-area">
                     <textarea 
                         class="compose-input" 
                         id="messageInput" 
-                        placeholder="Type your message..."
+                        placeholder="Type your message and cast it into the digital ocean..."
                         onkeypress="handleKeyPress(event)"
                         oninput="handleTyping()"
                     ></textarea>
-                    <button class="send-btn" id="sendBtn" onclick="sendMessage()" aria-label="Send message">
+                    <button class="send-btn" id="sendBtn" onclick="sendMessage()">
                         ➤
                     </button>
                 </div>
@@ -450,66 +652,105 @@
         </div>
     </div>
 
+    <!-- Notification -->
     <div class="notification" id="notification"></div>
 
+    <!-- Firebase SDK -->
     <script type="module">
         // Import Firebase modules
-        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js'; [cite: 128]
-        import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut as firebaseSignOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js'; [cite: 129, 130]
-        import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, where, getDocs, doc, setDoc, updateDoc, writeBatch, arrayUnion, getDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js'; [cite: 131, 132]
-        import { getFunctions, httpsCallable } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-functions.js';
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { 
+            getAuth, 
+            signInWithEmailAndPassword, 
+            createUserWithEmailAndPassword,
+            signInWithPopup,
+            GoogleAuthProvider,
+            signOut as firebaseSignOut,
+            onAuthStateChanged 
+        } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        import { 
+            getFirestore, 
+            collection, 
+            addDoc, 
+            query, 
+            orderBy, 
+            onSnapshot,
+            serverTimestamp,
+            where,
+            getDocs,
+            doc,
+            setDoc,
+            updateDoc,
+            limit,
+            writeBatch,
+            arrayUnion,
+            arrayRemove
+        } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 
         // TODO: Replace with your Firebase configuration
         const firebaseConfig = {
-          apiKey: "AIzaSyA1wrUreV-64WVaa1SmT02QKu-iKyY-Pvs",
-          authDomain: "testapp-ced4f.firebaseapp.com",
-          databaseURL: "https://testapp-ced4f.firebaseio.com",
-          projectId: "testapp-ced4f",
-          storageBucket: "testapp-ced4f.firebasestorage.app",
-          messagingSenderId: "649071991572",
-          appId: "1:649071991572:web:f7c5cf820021b07689c001",
-          measurementId: "G-NV8M669RE2"
+  apiKey: "AIzaSyA1wrUreV-64WVaa1SmT02QKu-iKyY-Pvs",
+  authDomain: "testapp-ced4f.firebaseapp.com",
+  databaseURL: "https://testapp-ced4f.firebaseio.com",
+  projectId: "testapp-ced4f",
+  storageBucket: "testapp-ced4f.firebasestorage.app",
+  messagingSenderId: "649071991572",
+  appId: "1:649071991572:web:f7c5cf820021b07689c001",
+  measurementId: "G-NV8M669RE2"
         };
-        
+
         // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
-        const functions = getFunctions(app); // Initialize Cloud Functions
+        const provider = new GoogleAuthProvider();
 
-        // --- Global State ---
+        // Global variables
+        window.auth = auth;
+        window.db = db;
+        window.provider = provider;
         window.currentUser = null;
         window.selectedUser = null;
         window.unsubscribeMessages = null;
         window.unsubscribeConnections = null;
-        let typingTimer = null;
+        window.connections = new Set();
+        window.typingTimer = null;
+        window.isTyping = false;
 
-        // --- Authentication Functions (Largely Unchanged) ---
+        // Authentication functions
         window.signIn = async () => {
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
+            
             try {
                 await signInWithEmailAndPassword(auth, email, password);
+                hideError();
             } catch (error) {
                 showError(error.message);
             }
         };
+
         window.signUp = async () => {
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
+            
             try {
                 await createUserWithEmailAndPassword(auth, email, password);
+                hideError();
             } catch (error) {
                 showError(error.message);
             }
         };
+
         window.signInWithGoogle = async () => {
             try {
-                await signInWithPopup(auth, new GoogleAuthProvider());
+                await signInWithPopup(auth, provider);
+                hideError();
             } catch (error) {
                 showError(error.message);
             }
         };
+
         window.signOut = async () => {
             try {
                 if (window.currentUser) {
@@ -521,374 +762,524 @@
             }
         };
 
-        // --- Core Feature: Open Bottle (IMPROVED) ---
-        // This function now calls a secure Cloud Function.
+        // Bottle opening function - the magic feature!
         window.openBottle = async () => {
             const bottle = document.getElementById('magicBottle');
             bottle.classList.add('opening');
             
             try {
-                const findRandomConnection = httpsCallable(functions, 'findRandomConnection');
-                const result = await findRandomConnection();
+                // Find available users (excluding current user and existing connections)
+                const usersQuery = query(
+                    collection(db, 'users'),
+                    where('isOnline', '==', true),
+                    limit(20)
+                );
                 
-                if (result.data.success) {
-                    const randomUser = result.data.user;
-                    showNotification(`🍶 You found ${randomUser.email}! Start chatting now!`);
-                    // Real-time listener for connections will handle the UI update.
+                const usersSnapshot = await getDocs(usersQuery);
+                const availableUsers = [];
+                
+                usersSnapshot.forEach((doc) => {
+                    const userData = doc.data();
+                    if (userData.uid !== window.currentUser.uid && 
+                        !window.connections.has(userData.uid)) {
+                        availableUsers.push({
+                            id: doc.id,
+                            ...userData
+                        });
+                    }
+                });
+
+                if (availableUsers.length === 0) {
+                    showNotification("🌊 No new connections available right now. Try again later!");
+                    return;
                 }
+
+                // Random selection
+                const randomUser = availableUsers[Math.floor(Math.random() * availableUsers.length)];
+                
+                // Create mutual connection
+                await createConnection(randomUser);
+                
+                showNotification(`🍶 You found ${randomUser.email}! Start chatting now!`);
+                
             } catch (error) {
                 console.error('Error opening bottle:', error);
-                showNotification(error.message || "❌ Couldn't open the bottle. Try again!");
+                showNotification("❌ Couldn't open the bottle. Try again!");
             } finally {
-                setTimeout(() => bottle.classList.remove('opening'), 500);
+                setTimeout(() => {
+                    bottle.classList.remove('opening');
+                }, 500);
             }
         };
 
-        // --- Messaging Functions (IMPROVED) ---
+        // Create connection between users
+        async function createConnection(otherUser) {
+            const batch = writeBatch(db);
+            
+            // Update current user's connections
+            const currentUserRef = doc(db, 'users', window.currentUser.uid);
+            batch.update(currentUserRef, {
+                connections: arrayUnion(otherUser.uid)
+            });
+            
+            // Update other user's connections
+            const otherUserRef = doc(db, 'users', otherUser.uid);
+            batch.update(otherUserRef, {
+                connections: arrayUnion(window.currentUser.uid)
+            });
+            
+            await batch.commit();
+            
+            // Add to local connections
+            window.connections.add(otherUser.uid);
+        }
+
+        // Message functions with real-time optimizations
         window.sendMessage = async () => {
             const messageInput = document.getElementById('messageInput');
             const messageText = messageInput.value.trim();
+            const sendBtn = document.getElementById('sendBtn');
+            
             if (!messageText || !window.selectedUser) return;
 
-            const chatId = getChatId(window.currentUser.uid, window.selectedUser.uid);
+            // Disable send button temporarily
+            sendBtn.disabled = true;
             
-            // Clear input immediately for better UX
-            messageInput.value = '';
-            messageInput.style.height = '50px';
-            handleTyping(true); // Stop typing indicator immediately
+            // Clear typing indicator
+            clearTypingIndicator();
 
             try {
+                const chatId = getChatId(window.currentUser.uid, window.selectedUser.uid);
+                
+                // Optimistically add message to UI immediately
+                addMessageToUI({
+                    text: messageText,
+                    senderId: window.currentUser.uid,
+                    timestamp: new Date(),
+                    senderEmail: window.currentUser.email
+                });
+
+                // Clear input immediately for better UX
+                messageInput.value = '';
+                messageInput.style.height = '50px';
+                
+                // Send to Firebase
                 await addDoc(collection(db, 'messages'), {
                     text: messageText,
                     senderId: window.currentUser.uid,
                     receiverId: window.selectedUser.uid,
                     chatId: chatId,
                     timestamp: serverTimestamp(),
-                    read: false // NEW: Read receipt status
+                    senderEmail: window.currentUser.email
                 });
+
             } catch (error) {
                 console.error('Error sending message:', error);
-                showNotification("❌ Failed to send message.");
+                showNotification("❌ Failed to send message. Please try again.");
+                // Remove optimistic message on error
+                const messages = document.getElementById('messagesContainer');
+                const lastMessage = messages.lastElementChild;
+                if (lastMessage && lastMessage.classList.contains('message')) {
+                    lastMessage.remove();
+                }
+            } finally {
+                sendBtn.disabled = false;
             }
         };
 
-        // --- Typing Indicator (IMPROVED) ---
-        window.handleTyping = (forceStop = false) => {
+        // Typing indicator
+        window.handleTyping = () => {
             if (!window.selectedUser) return;
-            const chatId = getChatId(window.currentUser.uid, window.selectedUser.uid);
-            const typingRef = doc(db, 'typing', chatId);
             
-            clearTimeout(typingTimer);
-            
-            if (forceStop) {
-                setDoc(typingRef, { [window.currentUser.uid]: false }, { merge: true });
-                return;
+            if (!window.isTyping) {
+                window.isTyping = true;
+                updateTypingStatus(true);
             }
-
-            setDoc(typingRef, { [window.currentUser.uid]: true }, { merge: true });
             
-            typingTimer = setTimeout(() => {
-                setDoc(typingRef, { [window.currentUser.uid]: false }, { merge: true });
-            }, 2000);
+            clearTimeout(window.typingTimer);
+            window.typingTimer = setTimeout(() => {
+                window.isTyping = false;
+                updateTypingStatus(false);
+            }, 1000);
         };
 
-        // --- UI & State Management (IMPROVED) ---
-        function updateUIOnAuthStateChange(user) {
-            const authSection = document.getElementById('authSection');
-            const mainContent = document.getElementById('mainContent');
-            const userInfo = document.getElementById('userInfo');
-
-            if (user) {
-                window.currentUser = user;
-                authSection.classList.add('hidden');
-                mainContent.classList.remove('hidden');
-                userInfo.classList.remove('hidden');
-                document.getElementById('userName').textContent = user.email;
-                document.getElementById('userAvatar').textContent = user.email.charAt(0).toUpperCase();
-
-                createUserDocument(user).then(() => {
-                    updateUserStatus(true);
-                    loadConnections();
-                });
+        async function updateTypingStatus(isTyping) {
+            try {
+                const chatId = getChatId(window.currentUser.uid, window.selectedUser.uid);
+                const typingRef = doc(db, 'typing', chatId);
                 
-            } else {
-                window.currentUser = null;
-                authSection.classList.remove('hidden');
-                mainContent.classList.add('hidden');
-                userInfo.classList.add('hidden');
-                
-                // Cleanup
-                if (window.unsubscribeMessages) window.unsubscribeMessages();
-                if (window.unsubscribeConnections) window.unsubscribeConnections();
-                document.getElementById('userList').innerHTML = '';
-                showEmptyStateUI('no_chat_selected');
+                if (isTyping) {
+                    await setDoc(typingRef, {
+                        [window.currentUser.uid]: {
+                            isTyping: true,
+                            timestamp: serverTimestamp()
+                        }
+                    }, { merge: true });
+                } else {
+                    await updateDoc(typingRef, {
+                        [window.currentUser.uid]: {
+                            isTyping: false,
+                            timestamp: serverTimestamp()
+                        }
+                    });
+                }
+            } catch (error) {
+                console.error('Error updating typing status:', error);
             }
         }
-        
-        window.selectUser = (user) => {
-            if (window.selectedUser?.uid === user.uid) return; // Don't re-select same user
 
-            window.selectedUser = user;
-            
-            // Update UI
-            document.querySelectorAll('.user-item').forEach(item => item.classList.remove('active'));
-            const selectedElement = document.querySelector(`[data-user-id="${user.uid}"]`);
-            if (selectedElement) {
-                selectedElement.classList.add('active');
-                // Remove unread badge
-                const badge = selectedElement.querySelector('.unread-badge');
-                if (badge) badge.remove();
+        function clearTypingIndicator() {
+            const indicator = document.querySelector('.typing-indicator');
+            if (indicator) {
+                indicator.remove();
             }
-            
-            document.getElementById('chatHeader').textContent = `💬 ${user.email}`;
-            document.getElementById('emptyChatArea').classList.add('hidden');
-            document.getElementById('composeArea').style.visibility = 'visible';
-            
-            loadMessages();
-            listenForTyping();
+        }
 
-            // Move focus to input
-            document.getElementById('messageInput').focus();
+        window.handleKeyPress = (event) => {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendMessage();
+            }
         };
 
-        // --- Data Loading (IMPROVED) ---
+        // Utility functions
+        function getChatId(userId1, userId2) {
+            return [userId1, userId2].sort().join('_');
+        }
+
+        function showError(message) {
+            const errorEl = document.getElementById('authError');
+            errorEl.textContent = message;
+            errorEl.classList.remove('hidden');
+        }
+
+        function hideError() {
+            document.getElementById('authError').classList.add('hidden');
+        }
+
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 4000);
+        }
+
+        function formatTime(timestamp) {
+            if (!timestamp) return '';
+            const date = timestamp.toDate ? timestamp.toDate() : timestamp;
+            return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+
+        function getInitials(email) {
+            return email.charAt(0).toUpperCase();
+        }
+
+        // Update user online status
+        async function updateUserStatus(isOnline) {
+            if (!window.currentUser) return;
+            
+            try {
+                const userRef = doc(db, 'users', window.currentUser.uid);
+                await updateDoc(userRef, {
+                    isOnline: isOnline,
+                    lastSeen: serverTimestamp()
+                });
+            } catch (error) {
+                console.error('Error updating user status:', error);
+            }
+        }
+
+        // Load connections with real-time updates
         function loadConnections() {
+            if (!window.currentUser) return;
+
             const userRef = doc(db, 'users', window.currentUser.uid);
             
             window.unsubscribeConnections = onSnapshot(userRef, async (doc) => {
-                const userData = doc.data();
-                const connectionIds = userData.connections || [];
-                const userList = document.getElementById('userList');
+                if (!doc.exists()) return;
                 
-                if (connectionIds.length === 0) {
-                    userList.innerHTML = '<div class="loading" style="color: white; text-align: center;">Open a bottle to begin...</div>';
+                const userData = doc.data();
+                const userConnections = userData.connections || [];
+                
+                // Update local connections set
+                window.connections = new Set(userConnections);
+                
+                // Load connection details
+                const userList = document.getElementById('userList');
+                userList.innerHTML = '';
+                
+                if (userConnections.length === 0) {
+                    userList.innerHTML = '<div class="loading">Open a bottle to make connections...</div>';
                     return;
                 }
-                
-                userList.innerHTML = ''; // Clear list to rebuild
-                
-                for (const uid of connectionIds) {
-                    const connDoc = await getDoc(doc(db, 'users', uid));
-                    if (connDoc.exists()) {
-                        addConnectionToUI(connDoc.data());
+
+                // Get details for each connection
+                for (const connectionId of userConnections) {
+                    try {
+                        const connectionQuery = query(
+                            collection(db, 'users'),
+                            where('uid', '==', connectionId)
+                        );
+                        const connectionSnapshot = await getDocs(connectionQuery);
+                        
+                        connectionSnapshot.forEach((connectionDoc) => {
+                            const connectionData = connectionDoc.data();
+                            addConnectionToUI(connectionData, connectionDoc.id);
+                        });
+                    } catch (error) {
+                        console.error('Error loading connection:', error);
                     }
                 }
             });
         }
-        
-        function loadMessages() {
-            if (window.unsubscribeMessages) window.unsubscribeMessages();
 
-            const chatId = getChatId(window.currentUser.uid, window.selectedUser.uid);
-            const messagesQuery = query(collection(db, 'messages'), where('chatId', '==', chatId), orderBy('timestamp', 'asc'));
-            const messagesContainer = document.getElementById('messagesContainer');
-            messagesContainer.innerHTML = ''; // Clear previous chat
-
-            window.unsubscribeMessages = onSnapshot(messagesQuery, (snapshot) => {
-                snapshot.docChanges().forEach((change) => {
-                    if (change.type === 'added') {
-                        addMessageToUI(change.doc.id, change.doc.data());
-                    }
-                    if (change.type === 'modified') {
-                        // For read receipts
-                        const messageData = change.doc.data();
-                        if (messageData.read) {
-                            const statusEl = document.querySelector(`[data-message-id="${change.doc.id}"] .message-status`);
-                            if (statusEl) {
-                                statusEl.textContent = '✓✓';
-                                statusEl.style.color = '#78dbe2'; // Read color
-                            }
-                        }
-                    }
-                });
-                markMessagesAsRead(chatId);
-            });
-        }
-
-        function listenForTyping() {
-            const chatId = getChatId(window.currentUser.uid, window.selectedUser.uid);
-            onSnapshot(doc(db, 'typing', chatId), (doc) => {
-                const typingData = doc.data();
-                const otherUserTyping = typingData && typingData[window.selectedUser.uid];
-                showTypingIndicator(otherUserTyping);
-            });
-        }
-
-        // --- UI Rendering Functions (IMPROVED) ---
-        function addConnectionToUI(userData) {
+        function addConnectionToUI(userData, docId) {
             const userList = document.getElementById('userList');
-            const userElement = document.createElement('div');
-            userElement.className = 'user-item';
-            userElement.setAttribute('data-user-id', userData.uid);
             
+            // Remove loading message if it exists
+            const loading = userList.querySelector('.loading');
+            if (loading) loading.remove();
+            
+            // Check if user already exists
+            const existingUser = userList.querySelector(`[data-user-id="${docId}"]`);
+            if (existingUser) return;
+            
+            const userElement = document.createElement('div');
+            userElement.className = 'user-item new-connection';
+            userElement.setAttribute('data-user-id', docId);
             userElement.innerHTML = `
-                <div class="user-avatar">${userData.email.charAt(0).toUpperCase()}</div>
+                <div class="user-avatar">${getInitials(userData.email)}</div>
                 <div>
                     <div>${userData.email}</div>
                     <div style="font-size: 12px; opacity: 0.7;">
                         ${userData.isOnline ? '🟢 Online' : '⚫ Offline'}
                     </div>
                 </div>
-                `;
-            userElement.onclick = () => selectUser(userData);
+            `;
+            userElement.onclick = () => selectUser({
+                id: docId,
+                uid: userData.uid,
+                email: userData.email
+            });
+            
             userList.appendChild(userElement);
+            
+            // Remove animation class after animation completes
+            setTimeout(() => {
+                userElement.classList.remove('new-connection');
+            }, 1000);
         }
 
-        function addMessageToUI(docId, message) {
-            const messagesContainer = document.getElementById('messagesContainer');
-            const lastMessage = messagesContainer.lastElementChild;
-            const isGrouped = lastMessage && lastMessage.dataset.senderId === message.senderId;
+        // Select user for chat
+        window.selectUser = (user) => {
+            window.selectedUser = user;
+            
+            // Update UI
+            document.querySelectorAll('.user-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            const selectedElement = document.querySelector(`[data-user-id="${user.id}"]`);
+            if (selectedElement) {
+                selectedElement.classList.add('active');
+            }
+            
+            document.getElementById('chatHeader').textContent = `💬 ${user.email}`;
+            
+            // Load messages
+            loadMessages();
+            
+            // Listen for typing indicators
+            listenForTyping();
+        };
 
+        // Load messages with real-time updates
+        function loadMessages() {
+            if (window.unsubscribeMessages) {
+                window.unsubscribeMessages();
+            }
+
+            if (!window.selectedUser) return;
+
+            const chatId = getChatId(window.currentUser.uid, window.selectedUser.uid);
+            const messagesQuery = query(
+                collection(db, 'messages'),
+                where('chatId', '==', chatId),
+                orderBy('timestamp', 'asc')
+            );
+
+            const messagesContainer = document.getElementById('messagesContainer');
+            messagesContainer.innerHTML = '';
+
+            window.unsubscribeMessages = onSnapshot(messagesQuery, (snapshot) => {
+                snapshot.docChanges().forEach((change) => {
+                    if (change.type === 'added') {
+                        const message = change.doc.data();
+                        addMessageToUI(message);
+                    }
+                });
+            });
+        }
+
+        function addMessageToUI(message) {
+            const messagesContainer = document.getElementById('messagesContainer');
+            
+            // Remove loading message if it exists
+            const loading = messagesContainer.querySelector('.loading');
+            if (loading) loading.remove();
+            
             const messageElement = document.createElement('div');
             messageElement.className = `message ${message.senderId === window.currentUser.uid ? 'sent' : 'received'}`;
-            if (isGrouped) {
-                messageElement.classList.add('grouped');
-            }
-            messageElement.dataset.senderId = message.senderId;
-            messageElement.dataset.messageId = docId;
-
-            let statusIcon = '';
-            if (message.senderId === window.currentUser.uid) {
-                statusIcon = `<span class="message-status">${message.read ? '✓✓' : '✓'}</span>`;
-            }
-
+            
             messageElement.innerHTML = `
                 <div>${message.text}</div>
-                <div class="message-info">${formatTime(message.timestamp)} ${statusIcon}</div>
+                <div class="message-info">${formatTime(message.timestamp)}</div>
             `;
+            
             messagesContainer.appendChild(messageElement);
+            
+            // Scroll to bottom smoothly
+            setTimeout(() => {
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }, 50);
+        }
+
+        // Listen for typing indicators
+        function listenForTyping() {
+            if (!window.selectedUser) return;
+            
+            const chatId = getChatId(window.currentUser.uid, window.selectedUser.uid);
+            const typingRef = doc(db, 'typing', chatId);
+            
+            onSnapshot(typingRef, (doc) => {
+                if (!doc.exists()) return;
+                
+                const typingData = doc.data();
+                const otherUserTyping = typingData[window.selectedUser.uid];
+                
+                if (otherUserTyping && otherUserTyping.isTyping) {
+                    showTypingIndicator();
+                } else {
+                    clearTypingIndicator();
+                }
+            });
+        }
+
+        function showTypingIndicator() {
+            const messagesContainer = document.getElementById('messagesContainer');
+            
+            // Don't add if already exists
+            if (messagesContainer.querySelector('.typing-indicator')) return;
+            
+            const typingElement = document.createElement('div');
+            typingElement.className = 'typing-indicator';
+            typingElement.innerHTML = `
+                <div class="typing-dots">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            `;
+            
+            messagesContainer.appendChild(typingElement);
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
         }
 
-        function showTypingIndicator(isTyping) {
-            const composeArea = document.getElementById('composeArea');
-            let indicator = composeArea.querySelector('.typing-indicator');
-            if (isTyping) {
-                if (!indicator) {
-                    indicator = document.createElement('div');
-                    indicator.className = 'typing-indicator';
-                    indicator.innerHTML = `<div class="typing-dots"><span></span><span></span><span></span></div>`;
-                    composeArea.prepend(indicator);
-                }
-            } else {
-                if (indicator) {
-                    indicator.remove();
-                }
-            }
-        }
-        
-        function showEmptyStateUI(state) {
-            const emptyArea = document.getElementById('emptyChatArea');
-            const composeArea = document.getElementById('composeArea');
-            if (state === 'no_chat_selected') {
-                emptyArea.classList.remove('hidden');
-                document.getElementById('chatHeader').textContent = '🌊 Welcome to the Ocean';
-                composeArea.style.visibility = 'hidden';
-            }
-        }
-        
-        // --- Utility & Helper Functions ---
-        const getChatId = (uid1, uid2) => [uid1, uid2].sort().join('_');
-        const formatTime = (ts) => ts ? ts.toDate().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
-        const showError = (msg) => {
-            const errEl = document.getElementById('authError');
-            errEl.textContent = msg;
-            errEl.classList.remove('hidden');
-        };
-        const showNotification = (msg) => {
-            const el = document.getElementById('notification');
-            el.textContent = msg;
-            el.classList.add('show');
-            setTimeout(() => el.classList.remove('show'), 4000);
-        };
-        window.handleKeyPress = (e) => {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                sendMessage();
-            }
-        };
-
+        // Create user document in Firestore
         async function createUserDocument(user) {
-            const userRef = doc(db, 'users', user.uid);
-            const userDoc = await getDoc(userRef);
-            if (!userDoc.exists()) {
+            try {
+                const userRef = doc(db, 'users', user.uid);
                 await setDoc(userRef, {
-                    uid: user.uid,
                     email: user.email,
-                    connections: [],
+                    uid: user.uid,
                     isOnline: true,
+                    connections: [],
                     createdAt: serverTimestamp(),
-                });
+                    lastSeen: serverTimestamp()
+                }, { merge: true });
+            } catch (error) {
+                console.error('Error creating user document:', error);
             }
         }
 
-        async function updateUserStatus(isOnline) {
-            if (!window.currentUser) return;
-            await updateDoc(doc(db, 'users', window.currentUser.uid), { isOnline, lastSeen: serverTimestamp() });
-        }
-        
-        async function markMessagesAsRead(chatId) {
-            const q = query(collection(db, 'messages'), 
-                where('chatId', '==', chatId), 
-                where('receiverId', '==', window.currentUser.uid),
-                where('read', '==', false)
-            );
-            const snapshot = await getDocs(q);
-            if (snapshot.empty) return;
-
-            const batch = writeBatch(db);
-            snapshot.forEach(doc => {
-                batch.update(doc.ref, { read: true });
-            });
-            await batch.commit();
-        }
-        
-        // --- Event Listeners ---
-        onAuthStateChanged(auth, updateUIOnAuthStateChange);
-        document.addEventListener('visibilitychange', () => updateUserStatus(!document.hidden));
-
-
-        const functions = require('firebase-functions');
-        const admin = require('firebase-admin');
-        admin.initializeApp();
-
-        exports.findRandomConnection = functions.https.onCall(async (data, context) => {
-            if (!context.auth) {
-                throw new functions.https.HttpsError('unauthenticated', 'You must be logged in.');
-            }
-
-            const currentUid = context.auth.uid;
-            const usersRef = admin.firestore().collection('users');
-
-            const currentUserDoc = await usersRef.doc(currentUid).get();
-            const currentUserConnections = currentUserDoc.data().connections || [];
-
-            const snapshot = await usersRef.where('isOnline', '==', true).limit(50).get();
-
-            const availableUsers = [];
-            snapshot.forEach(doc => {
-                const user = doc.data();
-                if (user.uid !== currentUid && !currentUserConnections.includes(user.uid)) {
-                    availableUsers.push(user);
+        // Auth state observer
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                window.currentUser = user;
+                
+                // Update UI
+                document.getElementById('authSection').classList.add('hidden');
+                document.getElementById('mainContent').classList.remove('hidden');
+                document.getElementById('userInfo').classList.remove('hidden');
+                
+                document.getElementById('userName').textContent = user.email;
+                document.getElementById('userAvatar').textContent = getInitials(user.email);
+                
+                // Create/update user document
+                await createUserDocument(user);
+                
+                // Set user as online
+                await updateUserStatus(true);
+                
+                // Load connections
+                loadConnections();
+                
+                // Show welcome notification
+                showNotification(`🌊 Welcome back, ${user.email}! Open a bottle to find new connections.`);
+                
+            } else {
+                window.currentUser = null;
+                window.selectedUser = null;
+                
+                // Update UI
+                document.getElementById('authSection').classList.remove('hidden');
+                document.getElementById('mainContent').classList.add('hidden');
+                document.getElementById('userInfo').classList.add('hidden');
+                
+                // Clear form
+                document.getElementById('email').value = '';
+                document.getElementById('password').value = '';
+                
+                // Cleanup subscriptions
+                if (window.unsubscribeMessages) {
+                    window.unsubscribeMessages();
                 }
-            });
-
-            if (availableUsers.length === 0) {
-                throw new functions.https.HttpsError('not-found', 'No new connections available right now. Try again later!');
+                if (window.unsubscribeConnections) {
+                    window.unsubscribeConnections();
+                }
             }
-
-            const randomUser = availableUsers[Math.floor(Math.random() * availableUsers.length)];
-
-            const batch = admin.firestore().batch();
-            const otherUserRef = usersRef.doc(randomUser.uid);
-
-            batch.update(currentUserDoc.ref, { connections: admin.firestore.FieldValue.arrayUnion(randomUser.uid) });
-            batch.update(otherUserRef, { connections: admin.firestore.FieldValue.arrayUnion(currentUid) });
-
-            await batch.commit();
-
-            return { success: true, user: { email: randomUser.email, uid: randomUser.uid } };
         });
+
+        // Auto-resize textarea
+        document.getElementById('messageInput').addEventListener('input', function() {
+            this.style.height = '50px';
+            this.style.height = Math.min(this.scrollHeight, 150) + 'px';
+        });
+
+        // Handle page visibility changes
+        document.addEventListener('visibilitychange', () => {
+            if (window.currentUser) {
+                updateUserStatus(!document.hidden);
+            }
+        });
+
+        // Handle page unload
+        window.addEventListener('beforeunload', () => {
+            if (window.currentUser) {
+                updateUserStatus(false);
+            }
+        });
+
+        // Periodic connection check
+        setInterval(() => {
+            if (window.currentUser) {
+                updateUserStatus(true);
+            }
+        }, 30000); // Update every 30 seconds
+
     </script>
 </body>
 </html>
