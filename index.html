@@ -3,1570 +3,685 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تصنيفات الأزاريطه</title>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <title>Bottled - Messaging App</title>
     <style>
-        :root {
-            --primary: #1a1a2e; /* [cite: 1] */
-            --secondary: #16213e; /* [cite: 2] */
-            --accent: #e94560; /* [cite: 2] */
-            --accent-rgb: 233, 69, 96;
-            --light: #e6e6e6; /* [cite: 2] */
-            --dark: #0f0f1a; /* [cite: 2] */
-            --success: #00b894; /* [cite: 2] */
-            --warning: #fdcb6e; /* [cite: 2] */
-            --text: #f1f1f1; /* [cite: 2] */
-            --text-light: #b8b8b8; /* [cite: 2] */
-            --card-bg: #16213e; /* [cite: 2] */
-            --highlight: #e94560; /* [cite: 2] */
-            --trophy: green; /* [cite: 3] */
-            --sidebar-width: 350px;
-        }
-
         * {
-            margin: 0; /* [cite: 3] */
-            padding: 0; /* [cite: 4] */
-            box-sizing: border-box; /* [cite: 4] */
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
         body {
-            font-family: 'Open Sans', sans-serif; /* [cite: 4] */
-            background-color: var(--primary); /* [cite: 5] */
-            color: var(--text); /* [cite: 5] */
-            line-height: 1.6; /* [cite: 5] */
-            transition: padding-right 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); /* For sidebar push effect */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
         }
-        
+
         .container {
-            max-width: 1200px; /* [cite: 5] */
-            margin: 0 auto; /* [cite: 6] */
-            padding: 20px; /* [cite: 6] */
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
 
-        header {
-            background: linear-gradient(135deg, var(--primary), var(--secondary)); /* [cite: 6] */
-            color: white; /* [cite: 7] */
-            padding: 20px 0; /* [cite: 7] */
-            text-align: center; /* [cite: 7] */
-            border-radius: 0 0 10px 10px; /* [cite: 7] */
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3); /* [cite: 7] */
-            margin-bottom: 30px; /* [cite: 8] */
-            border-bottom: 2px solid var(--highlight); /* [cite: 8] */
-        }
-
-        h1 {
-            font-family: 'Montserrat', sans-serif; /* [cite: 8] */
-            font-weight: 700; /* [cite: 9] */
-            font-size: 2.5rem; /* [cite: 9] */
-            margin-bottom: 10px; /* [cite: 9] */
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); /* [cite: 9] */
-        }
-
-        .subtitle {
-            font-weight: 400; /* [cite: 10] */
-            opacity: 0.9; /* [cite: 11] */
-            color: var(--text-light); /* [cite: 11] */
-        }
-
-        /* Search and Filter Panel */
-        .filter-panel {
-            background: var(--card-bg); /* [cite: 11] */
-            border-radius: 10px; /* [cite: 12] */
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3); /* [cite: 12] */
-            padding: 20px; /* [cite: 12] */
-            margin-bottom: 20px; /* [cite: 12] */
-            border: 1px solid rgba(255, 255, 255, 0.1); /* [cite: 13] */
-        }
-
-        .filter-header {
-            display: flex; /* [cite: 13] */
-            justify-content: space-between; /* [cite: 14] */
-            align-items: center; /* [cite: 14] */
-            margin-bottom: 15px; /* [cite: 14] */
-        }
-
-        .filter-title {
-            font-family: 'Montserrat', sans-serif; /* [cite: 14] */
-            font-weight: 600; /* [cite: 15] */
-            color: var(--text); /* [cite: 15] */
-            display: flex; /* [cite: 15] */
-            align-items: center; /* [cite: 15] */
-            gap: 8px; /* [cite: 15] */
-        }
-
-        .search-box {
-            position: relative; /* [cite: 16] */
-            flex: 1; /* [cite: 17] */
-            max-width: 400px; /* [cite: 17] */
-            margin-right: 20px; /* [cite: 17] */
-        }
-
-        .search-input {
-            width: 100%; /* [cite: 17] */
-            padding: 12px 20px 12px 45px; /* [cite: 18] */
-            background: rgba(255, 255, 255, 0.1); /* [cite: 18] */
-            border: 1px solid rgba(255, 255, 255, 0.1); /* [cite: 18] */
-            border-radius: 25px; /* [cite: 18] */
-            color: var(--text); /* [cite: 19] */
-            font-size: 14px; /* [cite: 19] */
-            transition: all 0.3s; /* [cite: 19] */
-        }
-
-        .search-input:focus {
-            outline: none; /* [cite: 19] */
-            border-color: var(--highlight); /* [cite: 20] */
-            box-shadow: 0 0 0 2px rgba(233, 69, 96, 0.2); /* [cite: 20] */
-            background: rgba(255, 255, 255, 0.15); /* [cite: 20] */
-        }
-
-        .search-icon {
-            position: absolute; /* [cite: 21] */
-            left: 15px; /* [cite: 22] */
-            top: 50%; /* [cite: 22] */
-            transform: translateY(-50%); /* [cite: 22] */
-            color: var(--text-light); /* [cite: 22] */
-        }
-
-        .clear-search {
-            position: absolute; /* [cite: 22] */
-            right: 15px; /* [cite: 23] */
-            top: 50%; /* [cite: 23] */
-            transform: translateY(-50%); /* [cite: 23] */
-            background: none; /* [cite: 23] */
-            border: none; /* [cite: 23] */
-            color: var(--text-light); /* [cite: 23] */
-            cursor: pointer; /* [cite: 23] */
-            display: none; /* [cite: 23] */
-        }
-
-        .filter-controls {
-            display: flex; /* [cite: 24] */
-            gap: 15px; /* [cite: 25] */
-            flex-wrap: wrap; /* [cite: 25] */
-            align-items: center; /* [cite: 25] */
-        }
-
-        .filter-group {
-            display: flex; /* [cite: 25] */
-            align-items: center; /* [cite: 26] */
-            gap: 8px; /* [cite: 26] */
-        }
-
-        .filter-label {
-            font-size: 14px; /* [cite: 26] */
-            color: var(--text-light); /* [cite: 27] */
-            white-space: nowrap; /* [cite: 27] */
-        }
-
-        .filter-select {
-            padding: 8px 12px; /* [cite: 27] */
-            background: rgba(255, 255, 255, 0.1); /* [cite: 28] */
-            border: 1px solid rgba(255, 255, 255, 0.1); /* [cite: 28] */
-            border-radius: 5px; /* [cite: 28] */
-            color: var(--text); /* [cite: 28] */
-            font-size: 14px; /* [cite: 28] */
-            min-width: 120px; /* [cite: 28] */
-        }
-
-        .filter-select:focus {
-            outline: none; /* [cite: 29] */
-            border-color: var(--highlight); /* [cite: 30] */
-        }
-
-        .filter-stats {
-            font-size: 14px; /* [cite: 30] */
-            color: var(--text-light); /* [cite: 31] */
-            margin-left: auto; /* [cite: 31] */
-        }
-
-        .leaderboard {
-            background: var(--card-bg); /* [cite: 31] */
-            border-radius: 10px; /* [cite: 32] */
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3); /* [cite: 32] */
-            overflow: hidden; /* [cite: 32] */
-            margin-bottom: 30px; /* [cite: 32] */
-            border: 1px solid rgba(255, 255, 255, 0.1); /* [cite: 33] */
-        }
-
-        .leaderboard-header {
-            background: var(--dark); /* [cite: 33] */
-            color: white; /* [cite: 34] */
-            padding: 15px 20px; /* [cite: 34] */
-            display: flex; /* [cite: 34] */
-            justify-content: space-between; /* [cite: 34] */
-            align-items: center; /* [cite: 34] */
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* [cite: 34] */
-        }
-
-        .leaderboard-title {
-            font-family: 'Montserrat', sans-serif; /* [cite: 35] */
-            font-weight: 600; /* [cite: 36] */
-            font-size: 1.5rem; /* [cite: 36] */
-        }
-         .leaderboard-title .trophy {
-            color: var(--trophy);
-            margin-right: 10px;
-        }
-
-        .refresh-btn {
-            background: var(--highlight); /* [cite: 36] */
-            color: white; /* [cite: 37] */
-            border: none; /* [cite: 37] */
-            padding: 8px 15px; /* [cite: 37] */
-            border-radius: 5px; /* [cite: 37] */
-            cursor: pointer; /* [cite: 37] */
-            font-weight: 600; /* [cite: 37] */
-            transition: all 0.3s; /* [cite: 37] */
-            display: flex; /* [cite: 37] */
-            align-items: center; /* [cite: 37] */
-            gap: 8px; /* [cite: 38] */
-        }
-
-        .refresh-btn:hover {
-            background: #d13354; /* [cite: 38] */
-            transform: translateY(-2px); /* [cite: 39] */
-            box-shadow: 0 2px 8px rgba(233, 69, 96, 0.3); /* [cite: 39] */
-        }
-
-        .player-list {
-            list-style: none; /* [cite: 40] */
-        }
-
-        .player-item {
-            display: flex; /* [cite: 41] */
-            align-items: center; /* [cite: 42] */
-            padding: 15px 20px; /* [cite: 42] */
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05); /* [cite: 42] */
-            transition: all 0.3s; /* [cite: 42] */
-            background: var(--card-bg); /* [cite: 42] */
-            flex-wrap: wrap; /* Allow wrapping for match history */
-        }
-
-        .player-item:hover {
-            background: rgba(30, 41, 72, 0.8); /* Slightly lighter/different shade */
-            transform: translateX(5px) scale(1.01); /* Add a slight scale */
-            box-shadow: 0 0 15px rgba(var(--accent-rgb), 0.1); /* Use --highlight color for shadow */
-        }
-
-        .player-item.selected {
-            background: rgba(233, 69, 96, 0.1); /* [cite: 44] */
-            border-left: 3px solid var(--highlight); /* [cite: 45] */
-        }
-
-        .player-rank {
-            font-family: 'Montserrat', sans-serif; /* [cite: 45] */
-            font-weight: 700; /* [cite: 46] */
-            font-size: 1.2rem; /* [cite: 46] */
-            width: 40px; /* [cite: 46] */
-            text-align: center; /* [cite: 46] */
-            color: var(--text-light); /* [cite: 46] */
-        }
-
-        .player-rank.rank-1 {
-            color: #fdcb6e; /* [cite: 47] */
-            font-size: 1.5rem; /* [cite: 48] */
-            text-shadow: 0 0 8px rgba(253, 203, 110, 0.4); /* [cite: 48] */
-            animation: glow 2s infinite; /* [cite: 99] */
-        }
-
-        .player-rank.rank-2 {
-            color: #a4b0be; /* [cite: 49] */
-            font-size: 1.4rem; /* [cite: 50] */
-            text-shadow: 0 0 6px rgba(164, 176, 190, 0.3); /* [cite: 50] */
-        }
-
-        .player-rank.rank-3 {
-            color: #cd7f32; /* [cite: 51] */
-            font-size: 1.3rem; /* [cite: 52] */
-            text-shadow: 0 0 4px rgba(205, 127, 50, 0.3); /* [cite: 52] */
-        }
-
-        .player-avatar {
-            width: 50px; /* [cite: 53] */
-            height: 50px; /* [cite: 54] */
-            border-radius: 50%; /* [cite: 54] */
-            background: var(--light); /* [cite: 54] */
-            display: flex; /* [cite: 54] */
-            align-items: center; /* [cite: 54] */
-            justify-content: center; /* [cite: 54] */
-            margin: 0 15px; /* [cite: 54] */
-            overflow: hidden; /* [cite: 54] */
-            border: 3px solid rgba(255, 255, 255, 0.1); /* [cite: 55] */
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2); /* [cite: 55] */
-        }
-
-        .player-avatar img {
-            width: 100%; /* [cite: 56] */
-            height: 100%; /* [cite: 57] */
-            object-fit: cover; /* [cite: 57] */
-        }
-
-        .player-info {
-            flex: 1; /* [cite: 57] */
-        }
-
-        .player-name {
-            font-family: 'Montserrat', sans-serif; /* [cite: 58] */
-            font-weight: 600; /* [cite: 59] */
-            font-size: 1.1rem; /* [cite: 59] */
-            margin-bottom: 5px; /* [cite: 59] */
-            color: var(--text); /* [cite: 59] */
-        }
-
-        .player-stats {
-            display: flex; /* [cite: 59] */
-            font-size: 0.9rem; /* [cite: 60] */
-            color: var(--text-light); /* [cite: 60] */
-        }
-
-        .stat {
-            margin-right: 15px; /* [cite: 60] */
-            display: flex; /* [cite: 61] */
-            align-items: center; /* [cite: 61] */
-        }
-
-        .stat.losses i {
-            margin-right: 5px; /* [cite: 61] */
-            color: var(--highlight); /* [cite: 62] */
-        }
-
-        .stat.wins i  {
-            margin-right: 5px; /* [cite: 62] */
-            color: var(--trophy); /* [cite: 63] */
-        }
-
-        .player-ratio {
-            font-family: 'Montserrat', sans-serif; /* [cite: 63] */
-            font-weight: 700; /* [cite: 64] */
-            font-size: 1.2rem; /* [cite: 64] */
-            color: var(--warning); /* [cite: 64] */
-            text-align: center; /* [cite: 64] */
-            min-width: 80px; /* [cite: 64] */
-        }
-
-        .ratio-perfect {
-            color: var(--success); /* [cite: 65] */
-        }
-
-        .ratio-good {
-            color: var(--warning); /* [cite: 67] */
-        }
-
-        .ratio-poor {
-            color: var(--highlight); /* [cite: 68] */
-        }
-
-        .no-results {
-            text-align: center; /* [cite: 68] */
-            padding: 40px 20px; /* [cite: 69] */
-            color: var(--text-light); /* [cite: 69] */
-        }
-
-        .no-results i {
-            font-size: 3rem; /* [cite: 69] */
-            margin-bottom: 15px; /* [cite: 70] */
-            opacity: 0.5; /* [cite: 70] */
-        }
-        
-        /* Player Actions & Match History */
-        .player-actions {
-            width: 100%;
-            text-align: right; 
-            padding-top: 10px;
-            margin-top: 10px;
-            border-top: 1px solid rgba(255,255,255,0.05);
-        }
-
-        .toggle-matches-btn {
-            background: var(--secondary);
-            color: var(--text-light);
-            border: 1px solid rgba(255,255,255,0.1);
-            padding: 8px 12px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 0.85rem;
-            transition: background-color 0.2s, color 0.2s;
-        }
-        .toggle-matches-btn:hover {
-            background: var(--primary);
-            color: var(--text);
-        }
-        .toggle-matches-btn i {
-            margin-right: 5px;
-            transition: transform 0.3s ease-in-out;
-        }
-        .toggle-matches-btn.expanded i {
-            transform: rotate(180deg);
-        }
-
-        .match-history-details {
-            width: 100%;
-            padding: 15px;
-            margin-top: 10px;
-            background: rgba(0,0,0,0.1);
-            border-radius: 5px;
-            color: var(--text-light);
-        }
-        .match-history-details ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-        .match-history-details li {
-            padding: 8px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            font-size: 0.9rem;
+        .header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-        }
-        .match-history-details li:last-child {
-            border-bottom: none;
-        }
-        .match-history-details .match-result-W { color: var(--success); font-weight: bold; }
-        .match-history-details .match-result-L { color: var(--highlight); font-weight: bold; }
-        .match-history-details .match-result-D { color: var(--warning); font-weight: bold; }
-        .match-history-details .match-opponent { color: var(--text); margin: 0 5px; }
-        .match-history-details .match-score { margin: 0 5px; }
-        .match-history-details .match-date { font-size: 0.8em; opacity: 0.7; }
-        .match-history-details .spinner {
-            width: 20px;
-            height: 20px;
-            margin: 10px auto;
-            border-width: 2px;
-        }
-
-
-        /* Admin Sidebar */
-        .floating-admin-btn {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            background-color: var(--accent);
             color: white;
-            border: none;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
-            width: 60px;
-            height: 60px;
-            font-size: 1.5rem;
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
-            cursor: pointer;
-            z-index: 1050;
+            background: rgba(255, 255, 255, 0.2);
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: transform 0.2s ease-out, background-color 0.2s;
+            font-weight: bold;
         }
 
-        .floating-admin-btn:hover {
-            transform: scale(1.1);
-            background-color: #d13354; 
+        .auth-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            max-width: 400px;
+            margin: auto;
         }
 
-        .admin-sidebar {
-            position: fixed;
-            top: 0;
-            right: calc(var(--sidebar-width) * -1); /* Start off-screen */
-            width: var(--sidebar-width);
-            height: 100%;
-            background: var(--card-bg);
-            padding: 20px;
-            padding-top: 60px; /* Space for close button */
-            box-shadow: -5px 0 25px rgba(0, 0, 0, 0.5);
-            transition: right 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
-            z-index: 1100;
-            overflow-y: auto;
-            border-left: 1px solid rgba(255, 255, 255, 0.1);
+        .auth-section h2 {
+            margin-bottom: 30px;
+            color: #333;
         }
-
-        .admin-sidebar.open {
-            right: 0;
-        }
-        
-        body.sidebar-open-overlay {
-            /* padding-right: var(--sidebar-width); Optional: push content */
-        }
-
-        body.sidebar-open-overlay::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 1040; 
-        }
-
-
-        .close-sidebar-btn {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background: none;
-            border: none;
-            color: var(--text-light);
-            font-size: 1.8rem;
-            cursor: pointer;
-            line-height: 1;
-        }
-        .close-sidebar-btn:hover {
-            color: var(--text);
-        }
-        .admin-sidebar h2 {
-            font-family: 'Montserrat', sans-serif; /* [cite: 72] */
-            color: var(--text); /* [cite: 73] */
-            margin-bottom: 20px; /* [cite: 73] */
-            padding-bottom: 10px; /* [cite: 73] */
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* [cite: 73] */
-            margin-top: 0;
-        }
-         .admin-sidebar h3 {
-            font-family: 'Montserrat', sans-serif;
-            color: var(--text-light);
-            margin-top: 20px;
-            margin-bottom: 10px;
-            font-size: 1.1rem;
-        }
-
 
         .form-group {
-            margin-bottom: 18px; /* [cite: 74] */
+            margin-bottom: 20px;
+            text-align: left;
         }
 
         .form-group label {
-            display: block; /* [cite: 75] */
-            margin-bottom: 5px; /* [cite: 76] */
-            font-weight: 600; /* [cite: 76] */
-            color: var(--text-light); /* [cite: 76] */
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #555;
         }
 
-        .form-control {
-            width: 100%; /* [cite: 76] */
-            padding: 10px; /* [cite: 77] */
-            background: rgba(255, 255, 255, 0.1); /* [cite: 77] */
-            border: 1px solid rgba(255, 255, 255, 0.1); /* [cite: 77] */
-            border-radius: 5px; /* [cite: 77] */
-            font-family: inherit; /* [cite: 77] */
-            color: var(--text); /* [cite: 77] */
-            transition: all 0.3s; /* [cite: 78] */
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
         }
 
-        .form-control:focus {
-            outline: none; /* [cite: 78] */
-            border-color: var(--highlight); /* [cite: 79] */
-            box-shadow: 0 0 0 2px rgba(233, 69, 96, 0.2); /* [cite: 79] */
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
         }
 
         .btn {
-            padding: 10px 15px; /* [cite: 80] */
-            border: none; /* [cite: 81] */
-            border-radius: 5px; /* [cite: 81] */
-            font-weight: 600; /* [cite: 81] */
-            cursor: pointer; /* [cite: 81] */
-            transition: all 0.3s; /* [cite: 81] */
-            display: inline-flex; /* Changed to inline-flex for icon alignment */
-            align-items: center; /* [cite: 81] */
-            gap: 8px; /* [cite: 82] */
-            justify-content: center;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 5px;
         }
-        .btn i.fa-spinner {
-            animation: spin 1s linear infinite;
-        }
-
 
         .btn-primary {
-            background: var(--highlight); /* [cite: 82] */
-            color: white; /* [cite: 83] */
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
         }
 
         .btn-primary:hover {
-            background: #d13354; /* [cite: 83] */
-            box-shadow: 0 2px 8px rgba(233, 69, 96, 0.3); /* [cite: 84] */
-        }
-        .btn-primary:disabled {
-            background: var(--text-light);
-            cursor: not-allowed;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
         }
 
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #333;
+            border: 2px solid #e1e5e9;
+        }
+
+        .btn-secondary:hover {
+            background: #e9ecef;
+        }
 
         .btn-danger {
-            background: #d63031; /* [cite: 84] */
-            color: white; /* [cite: 85] */
+            background: #dc3545;
+            color: white;
         }
 
-        .btn-danger:hover {
-            background: #c23636; /* [cite: 85] */
-            box-shadow: 0 2px 8px rgba(214, 48, 49, 0.3); /* [cite: 86] */
-        }
-        .btn-danger:disabled {
-            background: var(--text-light);
-            cursor: not-allowed;
+        .main-content {
+            display: flex;
+            flex: 1;
+            gap: 20px;
+            height: calc(100vh - 140px);
         }
 
-        .btn-success {
-            background: var(--success); /* [cite: 86] */
-            color: white; /* [cite: 87] */
+        .sidebar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            width: 300px;
+            display: flex;
+            flex-direction: column;
         }
 
-        .btn-success:hover {
-            background: #00a884; /* [cite: 87] */
-            box-shadow: 0 2px 8px rgba(0, 184, 148, 0.3); /* [cite: 88] */
-        }
-         .btn-success:disabled {
-            background: var(--text-light);
-            cursor: not-allowed;
+        .sidebar h3 {
+            margin-bottom: 20px;
+            color: #333;
         }
 
-
-        .btn-group {
-            display: flex; /* [cite: 88] */
-            gap: 10px; /* [cite: 89] */
-            flex-wrap: wrap; /* Allow buttons to wrap */
-        }
-        .btn-group .btn {
-            flex-grow: 1; /* Allow buttons to grow if space */
+        .user-list {
+            flex: 1;
+            overflow-y: auto;
         }
 
-
-        /* Login Form */
-        .login-form {
-            max-width: 400px; /* [cite: 89] */
-            margin: 50px auto; /* [cite: 90] */
-            background: var(--card-bg); /* [cite: 90] */
-            padding: 30px; /* [cite: 90] */
-            border-radius: 10px; /* [cite: 90] */
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3); /* [cite: 90] */
-            border: 1px solid rgba(255, 255, 255, 0.1); /* [cite: 91] */
-        }
-
-        .login-form h2 {
-            text-align: center; /* [cite: 91] */
-            margin-bottom: 20px; /* [cite: 92] */
-            color: var(--text); /* [cite: 92] */
-        }
-
-        /* Custom Notification */
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background-color: var(--card-bg);
-            color: var(--text);
-            padding: 15px 20px;
+        .user-item {
+            padding: 12px;
             border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            z-index: 2000;
-            display: none; /* Hidden by default */
-            align-items: center;
-            border-left: 5px solid var(--success); /* Default success */
-            min-width: 300px;
-        }
-        .notification.error {
-            border-left-color: var(--highlight);
-        }
-        .notification.warning {
-            border-left-color: var(--warning);
-        }
-        .notification span {
-            margin-right: auto;
-            padding-right: 15px;
-        }
-        .notification button.close-notification {
-            background: none;
-            border: none;
-            color: var(--text-light);
-            font-size: 1.2rem;
+            margin-bottom: 8px;
             cursor: pointer;
-            padding: 0 5px;
+            transition: background 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
+        .user-item:hover {
+            background: rgba(102, 126, 234, 0.1);
+        }
 
-        /* Animations */
+        .user-item.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .chat-area {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-header {
+            padding: 20px;
+            border-bottom: 1px solid #e1e5e9;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .messages-container {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .message {
+            max-width: 70%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            position: relative;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        .message.sent {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message.received {
+            background: #f8f9fa;
+            color: #333;
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+        }
+
+        .message-info {
+            font-size: 12px;
+            opacity: 0.7;
+            margin-top: 4px;
+        }
+
+        .compose-area {
+            padding: 20px;
+            border-top: 1px solid #e1e5e9;
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+        }
+
+        .compose-input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #e1e5e9;
+            border-radius: 20px;
+            resize: none;
+            font-family: inherit;
+            font-size: 16px;
+            min-height: 44px;
+            max-height: 120px;
+        }
+
+        .compose-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .send-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s;
+        }
+
+        .send-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
         @keyframes fadeIn {
-            from { opacity: 0; /* [cite: 92] */ transform: translateY(20px); } /* [cite: 93] */
-            to { opacity: 1; transform: translateY(0); /* [cite: 93] */ }
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        .fade-in {
-            animation: fadeIn 0.5s ease-out forwards; /* [cite: 94] */
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
         }
 
-        @keyframes glow {
-            0% { text-shadow: 0 0 5px rgba(253, 203, 110, 0.5); /* [cite: 95] */ }
-            50% { text-shadow: 0 0 15px rgba(253, 203, 110, 0.8); /* [cite: 96] */ }
-            100% { text-shadow: 0 0 5px rgba(253, 203, 110, 0.5); /* [cite: 97] */ }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
         }
 
-        /* Responsive */
         @media (max-width: 768px) {
-            .filter-header {
-                flex-direction: column; /* [cite: 99] */
-                gap: 15px; /* [cite: 100] */
-            }
-
-            .search-box {
-                max-width: none; /* [cite: 100] */
-                margin-right: 0; /* [cite: 101] */
-                order: 2; /* [cite: 101] */
-            }
-
-            .filter-controls {
-                justify-content: center; /* [cite: 101] */
-                order: 1; /* [cite: 102] */
-            }
-
-            .filter-stats {
-                margin: 0; /* [cite: 102] */
-                order: 3; /* [cite: 103] */
-                width: 100%;
-                text-align: center;
-                margin-top: 10px;
-            }
-
-            .player-item {
-                /* flex-direction: column; // Keep flex-row for better main info layout */
-                /* text-align: center; // Only for full column */
-                padding: 15px; /* [cite: 104] */
-            }
-            .player-info {
-                min-width: 150px; /* Ensure name/stats don't get too squished */
-            }
-
-            .player-avatar {
-                margin: 0 10px; /* [cite: 105] */
-            }
-
-            .player-stats {
-                /* justify-content: center; */ /* [cite: 106] */
-                /* margin-top: 10px; */ /* [cite: 106] */
+            .main-content {
                 flex-direction: column;
-                align-items: flex-start;
+                height: auto;
             }
-             .player-stats .stat {
-                margin-right: 0;
-                margin-bottom: 3px;
-            }
-
-
-            .player-ratio {
-                margin-top: 10px; /* [cite: 106] */
+            
+            .sidebar {
                 width: 100%;
-                text-align: right;
+                order: 2;
             }
-             .player-actions {
-                text-align: center;
+            
+            .chat-area {
+                order: 1;
+                min-height: 400px;
             }
-
-            .btn-group {
-                flex-direction: column; /* [cite: 107] */
-            }
-            .admin-sidebar {
-                width: 280px; /* Smaller sidebar on mobile */
-                --sidebar-width: 280px;
-            }
-            body.sidebar-open-overlay {
-                /* padding-right: 280px; Optional */
-            }
-        }
-
-        /* Scrollbar styling */
-        ::-webkit-scrollbar {
-            width: 8px; /* [cite: 109] */
-        }
-
-        ::-webkit-scrollbar-track {
-            background: var(--primary); /* [cite: 109] */
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: var(--highlight); /* [cite: 110] */
-            border-radius: 4px; /* [cite: 111] */
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: #d13354; /* [cite: 112] */
-        }
-
-        /* Loading spinner */
-        .spinner {
-            width: 40px; /* [cite: 112] */
-            height: 40px; /* [cite: 113] */
-            margin: 20px auto; /* [cite: 113] */
-            border: 4px solid rgba(255, 255, 255, 0.1); /* [cite: 113] */
-            border-radius: 50%; /* [cite: 113] */
-            border-top: 4px solid var(--highlight); /* [cite: 113] */
-            animation: spin 1s linear infinite; /* [cite: 114] */
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); /* [cite: 114] */ }
-            100% { transform: rotate(360deg); /* [cite: 115] */ }
         }
     </style>
 </head>
 <body>
-    <header>
-        <div class="container">
-            <h1>تصنيفات فيفا الأزاريطه</h1>
-            <p class="subtitle">دوري المزاريطه الممتاز</p>
-        </div>
-    </header>
-
     <div class="container">
-        <div class="filter-panel fade-in">
-            <div class="filter-header"> <div class="filter-title">
-                    <i class="fas fa-filter"></i>
-                    Search & Filters
-                </div>
-                <div class="search-box"> <i class="fas fa-search search-icon"></i>
-                    <input type="text" id="searchInput" class="search-input" placeholder="Search players...">
-                    <button id="clearSearch" class="clear-search"><i class="fas fa-times"></i></button>
-                </div>
-            </div> <div class="filter-controls">
-                <div class="filter-group">
-                    <label class="filter-label">Sort by:</label>
-                    <select id="sortBy" class="filter-select">
-                        <option value="rank">Rank</option> <option value="ratio">W/L Ratio</option>
-                        <option value="wins">Wins</option>
-                        <option value="losses">Losses</option>
-                        <option value="name">Name</option> </select>
-                </div>
-                <div class="filter-group">
-                    <label class="filter-label">Order:</label>
-                    <select id="sortOrder" class="filter-select">
-                        <option value="asc">Ascending</option> <option value="desc">Descending</option>
-                    </select>
-                </div>
-                <div class="filter-group"> <label class="filter-label">Min Wins:</label>
-                    <select id="minWins" class="filter-select">
-                        <option value="0">Any</option>
-                        <option value="1">1+</option>
-                        <option value="5">5+</option> <option value="10">10+</option>
-                        <option value="20">20+</option>
-                    </select>
-                </div> <div class="filter-stats" id="filterStats">
-                    Showing all players
-                </div>
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">🍶 Bottled</div>
+            <div class="user-info hidden" id="userInfo">
+                <div class="user-avatar" id="userAvatar"></div>
+                <span id="userName"></span>
+                <button class="btn btn-danger" onclick="signOut()">Sign Out</button>
             </div>
         </div>
 
-        <div class="leaderboard fade-in">
-            <div class="leaderboard-header"> <h2 class="leaderboard-title"><i class="fas fa-trophy trophy"></i> Current Standings</h2>
-                <button id="refreshBtn" class="refresh-btn"><i class="fas fa-sync-alt"></i> Refresh</button>
+        <!-- Authentication Section -->
+        <div class="auth-section" id="authSection">
+            <h2>Welcome to Bottled</h2>
+            <div id="loginForm">
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" placeholder="Enter your email">
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" placeholder="Enter your password">
+                </div>
+                <button class="btn btn-primary" onclick="signIn()">Sign In</button>
+                <button class="btn btn-secondary" onclick="signUp()">Sign Up</button>
+                <br><br>
+                <button class="btn btn-secondary" onclick="signInWithGoogle()">🔗 Sign in with Google</button>
             </div>
-            <ul class="player-list" id="playerList">
-                <div class="spinner" id="loadingSpinner"></div>
-            </ul> </div>
-    </div> <button id="toggleAdminSidebarBtn" class="floating-admin-btn" style="display: none;">
-        <i class="fas fa-user-shield"></i>
-    </button>
-
-    <div class="admin-sidebar" id="adminSidebar">
-        <button id="closeAdminSidebarBtn" class="close-sidebar-btn">&times;</button>
-        <h2><i class="fas fa-user-shield"></i> Admin Panel</h2>
-        
-        <div class="form-group">
-            <label for="playerName">Player Name</label>
-            <input type="text" id="playerName" class="form-control" placeholder="Enter player name"> </div>
-        
-        <div class="form-group">
-            <label for="playerRank">Rank</label>
-            <input type="number" id="playerRank" class="form-control" placeholder="Enter rank (1 is highest)">
-        </div> <div class="form-group">
-            <label for="playerWins">Wins</label>
-            <input type="number" id="playerWins" class="form-control" placeholder="Enter wins">
-        </div>
-        
-        <div class="form-group">
-            <label for="playerLosses">Losses</label> <input type="number" id="playerLosses" class="form-control" placeholder="Enter losses">
-        </div>
-        
-        <div class="form-group">
-            <label for="playerAvatar">Avatar URL (optional)</label>
-            <input type="text" id="playerAvatar" class="form-control" placeholder="Enter image URL"> </div>
-        
-        <div class="btn-group">
-            <button id="addPlayerBtn" class="btn btn-primary"><i class="fas fa-plus"></i> Add Player</button>
-            <button id="updatePlayerBtn" class="btn btn-success" disabled><i class="fas fa-edit"></i> Update Player</button>
-            <button id="deletePlayerBtn" class="btn btn-danger" disabled><i class="fas fa-trash"></i> Delete Player</button> <button id="clearSelectionBtn" class="btn" style="background: var(--secondary); color: var(--text);"><i class="fas fa-times"></i> Clear</button>
+            <div id="authError" class="error hidden"></div>
         </div>
 
-        <div id="addMatchSection" style="display:none;">
-            <h3>Add Match for Selected Player</h3>
-            <div class="form-group">
-                <label for="matchOpponentName">Opponent Name</label>
-                <input type="text" id="matchOpponentName" class="form-control" placeholder="Opponent's Name">
+        <!-- Main App Content -->
+        <div class="main-content hidden" id="mainContent">
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <h3>Users</h3>
+                <div class="user-list" id="userList">
+                    <div class="loading">Loading users...</div>
+                </div>
             </div>
-            <div class="form-group">
-                <label for="matchPlayerScore">Your Score</label>
-                <input type="number" id="matchPlayerScore" class="form-control" placeholder="e.g., 3">
+
+            <!-- Chat Area -->
+            <div class="chat-area">
+                <div class="chat-header" id="chatHeader">
+                    Select a user to start messaging
+                </div>
+                
+                <div class="messages-container" id="messagesContainer">
+                    <div class="loading">Select a conversation to view messages</div>
+                </div>
+
+                <div class="compose-area">
+                    <textarea 
+                        class="compose-input" 
+                        id="messageInput" 
+                        placeholder="Type your message..."
+                        onkeypress="handleKeyPress(event)"
+                    ></textarea>
+                    <button class="send-btn" onclick="sendMessage()">
+                        ➤
+                    </button>
+                </div>
             </div>
-            <div class="form-group">
-                <label for="matchOpponentScore">Opponent's Score</label>
-                <input type="number" id="matchOpponentScore" class="form-control" placeholder="e.g., 1">
-            </div>
-            <div class="form-group">
-                <label for="matchDate">Match Date (optional)</label>
-                <input type="date" id="matchDate" class="form-control">
-            </div>
-            <button id="addMatchBtnSidebar" class="btn btn-primary"><i class="fas fa-gamepad"></i> Add Match</button>
         </div>
     </div>
 
-    <div class="container">
-        <div class="login-form" id="loginForm">
-            <h2><i class="fas fa-lock"></i> Admin Login</h2>
-            <div class="form-group">
-                <label for="loginEmail">Email</label> <input type="email" id="loginEmail" class="form-control" placeholder="Enter admin email">
-            </div>
-            <div class="form-group">
-                <label for="loginPassword">Password</label>
-                <input type="password" id="loginPassword" class="form-control" placeholder="Enter password"> </div>
-            <button id="loginBtn" class="btn btn-primary"><i class="fas fa-sign-in-alt"></i> Login</button>
-        </div>
-    </div>
+    <!-- Firebase SDK -->
+    <script type="module">
+        // Import Firebase modules
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { 
+            getAuth, 
+            signInWithEmailAndPassword, 
+            createUserWithEmailAndPassword,
+            signInWithPopup,
+            GoogleAuthProvider,
+            signOut as firebaseSignOut,
+            onAuthStateChanged 
+        } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        import { 
+            getFirestore, 
+            collection, 
+            addDoc, 
+            query, 
+            orderBy, 
+            onSnapshot,
+            serverTimestamp,
+            where,
+            getDocs
+        } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 
-    <div id="customNotification" class="notification">
-        <span id="notificationMessage">Notification message here</span>
-        <button id="closeNotification" class="close-notification">&times;</button>
-    </div>
-
-
-    <script>
-        // Firebase configuration - REPLACE WITH YOUR CONFIG
+        // TODO: Replace with your Firebase configuration
         const firebaseConfig = {
-            apiKey: "AIzaSyBezrUgfVjy6ULS4EtORPv-NkXRQo_kXxg", // [cite: 134]
-            authDomain: "tic-tac-77ff7.firebaseapp.com", // [cite: 134]
-            databaseURL: "https://tic-tac-77ff7-default-rtdb.europe-west1.firebasedatabase.app", // [cite: 135]
-            projectId: "tic-tac-77ff7", // [cite: 135]
-            storageBucket: "tic-tac-77ff7.firebasestorage.app", // [cite: 135]
-            messagingSenderId: "882673281893", // [cite: 135]
-            appId: "1:882673281893:web:c1ba7b3fd078350e888f8c", // [cite: 135]
-            measurementId: "G-R2R8W6TZQN" // [cite: 135]
+   apiKey: "AIzaSyA1wrUreV-64WVaa1SmT02QKu-iKyY-Pvs",
+  authDomain: "testapp-ced4f.firebaseapp.com",
+  databaseURL: "https://testapp-ced4f.firebaseio.com",
+  projectId: "testapp-ced4f",
+  storageBucket: "testapp-ced4f.firebasestorage.app",
+  messagingSenderId: "649071991572",
+  appId: "1:649071991572:web:f7c5cf820021b07689c001",
+  measurementId: "G-NV8M669RE2"
         };
+
         // Initialize Firebase
-        firebase.initializeApp(firebaseConfig); // [cite: 136]
-        const database = firebase.database(); // [cite: 136]
-        const auth = firebase.auth(); // [cite: 136]
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const provider = new GoogleAuthProvider();
 
-        // DOM elements
-        const playerList = document.getElementById('playerList'); // [cite: 137]
-        const refreshBtn = document.getElementById('refreshBtn'); // [cite: 137]
-        const loginForm = document.getElementById('loginForm'); // [cite: 138]
-        const loginBtn = document.getElementById('loginBtn'); // [cite: 138]
-        const loadingSpinner = document.getElementById('loadingSpinner'); // [cite: 138]
-        
-        // Search and filter elements
-        const searchInput = document.getElementById('searchInput'); // [cite: 139]
-        const clearSearch = document.getElementById('clearSearch'); // [cite: 139]
-        const sortBy = document.getElementById('sortBy'); // [cite: 140]
-        const sortOrder = document.getElementById('sortOrder'); // [cite: 140]
-        const minWins = document.getElementById('minWins'); // [cite: 140]
-        const filterStats = document.getElementById('filterStats'); // [cite: 140]
-        
-        // Admin Sidebar Form elements
-        const playerNameInput = document.getElementById('playerName'); // [cite: 141]
-        const playerRankInput = document.getElementById('playerRank'); // [cite: 141]
-        const playerWinsInput = document.getElementById('playerWins'); // [cite: 142]
-        const playerLossesInput = document.getElementById('playerLosses'); // [cite: 142]
-        const playerAvatarInput = document.getElementById('playerAvatar'); // [cite: 142]
-        
-        // Admin Sidebar Buttons
-        const addPlayerBtn = document.getElementById('addPlayerBtn'); // [cite: 143]
-        const updatePlayerBtn = document.getElementById('updatePlayerBtn'); // [cite: 143]
-        const deletePlayerBtn = document.getElementById('deletePlayerBtn'); // [cite: 144]
-        const clearSelectionBtn = document.getElementById('clearSelectionBtn'); // [cite: 144]
-        
-        // Login elements
-        const loginEmailInput = document.getElementById('loginEmail'); // [cite: 144]
-        const loginPasswordInput = document.getElementById('loginPassword'); // [cite: 145]
+        // Global variables
+        window.auth = auth;
+        window.db = db;
+        window.provider = provider;
+        window.currentUser = null;
+        window.selectedUser = null;
+        window.unsubscribeMessages = null;
 
-        // Admin Sidebar & Floating Button
-        const toggleAdminSidebarBtn = document.getElementById('toggleAdminSidebarBtn');
-        const adminSidebar = document.getElementById('adminSidebar');
-        const closeAdminSidebarBtn = document.getElementById('closeAdminSidebarBtn');
-
-        // Match History Admin Section
-        const addMatchSection = document.getElementById('addMatchSection');
-        const matchOpponentNameInput = document.getElementById('matchOpponentName');
-        const matchPlayerScoreInput = document.getElementById('matchPlayerScore');
-        const matchOpponentScoreInput = document.getElementById('matchOpponentScore');
-        const matchDateInput = document.getElementById('matchDate');
-        const addMatchBtnSidebar = document.getElementById('addMatchBtnSidebar');
-
-
-        // Custom Notification Elements
-        const notificationElement = document.getElementById('customNotification');
-        const notificationMessage = document.getElementById('notificationMessage');
-        const closeNotificationBtn = document.getElementById('closeNotification');
-
-
-        // Current selected player and data
-        let selectedPlayerId = null; // [cite: 145]
-        let playersData = []; // [cite: 146]
-        let filteredPlayers = []; // [cite: 146]
-
-        // --- Notification System ---
-        closeNotificationBtn.addEventListener('click', () => {
-            notificationElement.style.display = 'none';
-        });
-
-        function showNotification(message, type = 'success', duration = 5000) { // types: success, error, warning
-            notificationMessage.textContent = message;
-            notificationElement.className = 'notification'; // Reset classes
-            notificationElement.classList.add(type);
-            notificationElement.style.display = 'flex';
+        // Authentication functions
+        window.signIn = async () => {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
             
-            if (duration) {
-                setTimeout(() => {
-                    notificationElement.style.display = 'none';
-                }, duration);
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                hideError();
+            } catch (error) {
+                showError(error.message);
             }
-        }
-        
-        // --- Auth State & Sidebar Logic ---
-        auth.onAuthStateChanged(user => {
-            if (user) {
-                loginForm.style.display = 'none';
-                toggleAdminSidebarBtn.style.display = 'flex'; 
-                if (selectedPlayerId) {
-                    addMatchSection.style.display = 'block';
-                }
-            } else {
-                loginForm.style.display = 'block'; /* [cite: 147] */
-                adminSidebar.classList.remove('open');
-                document.body.classList.remove('sidebar-open-overlay');
-                toggleAdminSidebarBtn.style.display = 'none';
-                addMatchSection.style.display = 'none';
-            }
-        });
+        };
 
-        toggleAdminSidebarBtn.addEventListener('click', () => {
-            adminSidebar.classList.add('open');
-            document.body.classList.add('sidebar-open-overlay');
-        });
-
-        closeAdminSidebarBtn.addEventListener('click', () => {
-            adminSidebar.classList.remove('open');
-            document.body.classList.remove('sidebar-open-overlay');
-        });
-
-        document.body.addEventListener('click', (e) => {
-            if (adminSidebar.classList.contains('open') && 
-                !adminSidebar.contains(e.target) && 
-                !toggleAdminSidebarBtn.contains(e.target)) {
-                adminSidebar.classList.remove('open');
-                document.body.classList.remove('sidebar-open-overlay');
-            }
-        });
-
-        // --- Login/Logout ---
-        loginBtn.addEventListener('click', async () => {
-            const email = loginEmailInput.value;
-            const password = loginPasswordInput.value;
+        window.signUp = async () => {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
             
-            loginBtn.disabled = true;
-            loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Logging in...';
+            try {
+                await createUserWithEmailAndPassword(auth, email, password);
+                hideError();
+            } catch (error) {
+                showError(error.message);
+            }
+        };
+
+        window.signInWithGoogle = async () => {
+            try {
+                await signInWithPopup(auth, provider);
+                hideError();
+            } catch (error) {
+                showError(error.message);
+            }
+        };
+
+        window.signOut = async () => {
+            try {
+                await firebaseSignOut(auth);
+            } catch (error) {
+                console.error('Sign out error:', error);
+            }
+        };
+
+        // Message functions
+        window.sendMessage = async () => {
+            const messageInput = document.getElementById('messageInput');
+            const messageText = messageInput.value.trim();
+            
+            if (!messageText || !window.selectedUser) return;
 
             try {
-                await auth.signInWithEmailAndPassword(email, password);
-                showNotification('Login successful!', 'success'); /* [cite: 149] */
-                // Auth state change will handle UI updates
+                const chatId = getChatId(window.currentUser.uid, window.selectedUser.id);
+                
+                await addDoc(collection(db, 'messages'), {
+                    text: messageText,
+                    senderId: window.currentUser.uid,
+                    receiverId: window.selectedUser.id,
+                    chatId: chatId,
+                    timestamp: serverTimestamp(),
+                    senderEmail: window.currentUser.email
+                });
+
+                messageInput.value = '';
+                messageInput.style.height = '44px';
             } catch (error) {
-                showNotification('Login failed: ' + error.message, 'error');
-            } finally {
-                loginBtn.disabled = false;
-                loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Login';
+                console.error('Error sending message:', error);
             }
-        });
-        
-        // Simple logout (example, you might want a dedicated button in the sidebar)
-        // For now, can be triggered from console: auth.signOut();
+        };
 
-        // --- Helper Functions ---
-        function calculateRatio(wins, losses) {
-            if (losses === 0) {
-                return wins > 0 ? wins.toFixed(1) : '0.0'; /* [cite: 151] */
+        window.handleKeyPress = (event) => {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendMessage();
             }
-            return (wins / losses).toFixed(2); /* [cite: 151] */
+        };
+
+        // Utility functions
+        function getChatId(userId1, userId2) {
+            return [userId1, userId2].sort().join('_');
         }
 
-        function getRatioClass(wins, losses) {
-            const ratio = wins / (losses || 1); /* [cite: 152] */
-            if (losses === 0 && wins > 0) return 'ratio-perfect'; /* [cite: 153] */
-            if (ratio >= 2) return 'ratio-perfect'; /* [cite: 153] */
-            if (ratio >= 1) return 'ratio-good'; /* [cite: 154] */
-            return 'ratio-poor'; /* [cite: 154] */
+        function showError(message) {
+            const errorEl = document.getElementById('authError');
+            errorEl.textContent = message;
+            errorEl.classList.remove('hidden');
         }
 
-        // --- Search and Filter Functions ---
-        function applyFilters() {
-            const searchTerm = searchInput.value.toLowerCase().trim(); /* [cite: 154] */
-            const sortByValue = sortBy.value; /* [cite: 155] */
-            const sortOrderValue = sortOrder.value; /* [cite: 155] */
-            const minWinsValue = parseInt(minWins.value); /* [cite: 155] */
-            
-            let filtered = playersData.filter(player => { /* [cite: 156] */
-                const matchesSearch = player.name.toLowerCase().includes(searchTerm);
-                const matchesMinWins = (player.wins || 0) >= minWinsValue;
-                return matchesSearch && matchesMinWins;
-            });
-            
-            filtered.sort((a, b) => { /* [cite: 157] */
-                let aValue, bValue;
-                switch (sortByValue) {
-                    case 'rank':
-                        aValue = a.rank || Infinity; /* [cite: 158] */
-                        bValue = b.rank || Infinity; /* [cite: 158] */
-                        break;
-                    case 'ratio':
-                        aValue = (a.wins || 0) / ((a.losses || 0) || 1); /* [cite: 159] */
-                        bValue = (b.wins || 0) / ((b.losses || 0) || 1); /* [cite: 159] */
-                        break;
-                    case 'wins':
-                        aValue = a.wins || 0; /* [cite: 160] */
-                        bValue = b.wins || 0; /* [cite: 160] */
-                        break;
-                    case 'losses':
-                        aValue = a.losses || 0; /* [cite: 161] */
-                        bValue = b.losses || 0; /* [cite: 161] */
-                        break;
-                    case 'name':
-                        aValue = a.name.toLowerCase(); /* [cite: 162] */
-                        bValue = b.name.toLowerCase(); /* [cite: 162] */
-                        break;
-                    default:
-                        aValue = a.rank || Infinity; /* [cite: 163] */
-                        bValue = b.rank || Infinity; /* [cite: 164] */
-                }
-                if (sortOrderValue === 'desc') {
-                    return bValue > aValue ? 1 : bValue < aValue ? -1 : 0; /* [cite: 165] */
-                } else {
-                    return aValue > bValue ? 1 : aValue < bValue ? -1 : 0; /* [cite: 166] */
-                }
-            });
-            filteredPlayers = filtered; /* [cite: 167] */
-            renderPlayers(filteredPlayers);
-            updateFilterStats();
+        function hideError() {
+            document.getElementById('authError').classList.add('hidden');
         }
 
-        function updateFilterStats() {
-            const totalPlayers = playersData.length; /* [cite: 167] */
-            const filteredCount = filteredPlayers.length; /* [cite: 168] */
-            if (filteredCount === totalPlayers) {
-                filterStats.textContent = `Showing all ${totalPlayers} players`; /* [cite: 168] */
-            } else {
-                filterStats.textContent = `Showing ${filteredCount} of ${totalPlayers} players`; /* [cite: 169] */
-            }
+        function formatTime(timestamp) {
+            if (!timestamp) return '';
+            const date = timestamp.toDate();
+            return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         }
 
-        searchInput.addEventListener('input', (e) => { /* [cite: 170] */
-            const hasValue = e.target.value.length > 0;
-            clearSearch.style.display = hasValue ? 'block' : 'none';
-            applyFilters();
-        });
-        clearSearch.addEventListener('click', () => { /* [cite: 171] */
-            searchInput.value = '';
-            clearSearch.style.display = 'none';
-            applyFilters();
-        });
-        sortBy.addEventListener('change', applyFilters); /* [cite: 172] */
-        sortOrder.addEventListener('change', applyFilters); /* [cite: 172] */
-        minWins.addEventListener('change', applyFilters); /* [cite: 172] */
+        function getInitials(email) {
+            return email.charAt(0).toUpperCase();
+        }
 
-        // --- Load and Render Players ---
-        function loadPlayers() {
-            loadingSpinner.style.display = 'block'; /* [cite: 173] */
-            playerList.innerHTML = ''; /* [cite: 174] */
-            
-            database.ref('players').once('value')
-                .then(snapshot => {
-                    playersData = [];
-                    snapshot.forEach(childSnapshot => {
-                        playersData.push({
-                            id: childSnapshot.key, /* [cite: 175] */
-                            ...childSnapshot.val()
+        // Load users
+        async function loadUsers() {
+            try {
+                const usersQuery = query(collection(db, 'users'));
+                const querySnapshot = await getDocs(usersQuery);
+                
+                const userList = document.getElementById('userList');
+                userList.innerHTML = '';
+
+                querySnapshot.forEach((doc) => {
+                    const userData = doc.data();
+                    if (userData.email !== window.currentUser.email) {
+                        const userElement = document.createElement('div');
+                        userElement.className = 'user-item';
+                        userElement.innerHTML = `
+                            <div class="user-avatar">${getInitials(userData.email)}</div>
+                            <span>${userData.email}</span>
+                        `;
+                        userElement.onclick = () => selectUser({
+                            id: doc.id,
+                            email: userData.email
                         });
-                    });
-                    applyFilters(); /* [cite: 176] */
-                    loadingSpinner.style.display = 'none';
-                })
-                .catch(error => { /* [cite: 177] */
-                    playerList.innerHTML = '<li class="player-item"><div>Error loading players: ' + error.message + '</div></li>';
-                    loadingSpinner.style.display = 'none';
-                    showNotification('Error loading players: ' + error.message, 'error');
+                        userList.appendChild(userElement);
+                    }
                 });
-        }
 
-        function renderPlayers(players) {
-            playerList.innerHTML = ''; /* [cite: 178] */
-            if (players.length === 0) { /* [cite: 179] */
-                const noResults = document.createElement('div'); /* [cite: 179] */
-                noResults.className = 'no-results'; /* [cite: 180] */
-                noResults.innerHTML = `
-                    <i class="fas fa-search"></i>
-                    <div>No players found matching your criteria</div>
-                    <div style="font-size: 14px; margin-top: 10px;">Try adjusting your search or filters</div>
-                `; /* [cite: 180] */
-                playerList.appendChild(noResults); /* [cite: 181] */
-                return;
-            }
-            
-            players.forEach((player, index) => {
-                const playerItem = document.createElement('li');
-                playerItem.className = `player-item fade-in`;
-                playerItem.style.animationDelay = `${index * 0.1}s`; /* [cite: 181] */
-                playerItem.dataset.id = player.id; /* [cite: 182] */
-                
-                if (player.id === selectedPlayerId) {
-                    playerItem.classList.add('selected');
+                if (userList.children.length === 0) {
+                    userList.innerHTML = '<div class="loading">No other users found</div>';
                 }
-                
-                playerItem.addEventListener('click', (e) => {
-                    // Prevent selection when clicking on match toggle button
-                    if (e.target.closest('.toggle-matches-btn')) {
-                        return;
-                    }
-                    selectPlayer(player); /* [cite: 183] */
-                });
-                
-                let rankClass = ''; /* [cite: 184] */
-                const rank = player.rank || index + 1;
-                if (rank === 1) rankClass = 'rank-1';
-                else if (rank === 2) rankClass = 'rank-2';
-                else if (rank === 3) rankClass = 'rank-3'; /* [cite: 185] */
-                
-                const avatarUrl = player.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(player.name)}&background=random&size=128&color=fff&font-size=0.5`; /* [cite: 186, 187] */
-                const wins = player.wins || 0; /* [cite: 187] */
-                const losses = player.losses || 0; /* [cite: 188] */
-                const ratio = calculateRatio(wins, losses);
-                const ratioClass = getRatioClass(wins, losses); /* [cite: 188] */
-
-                playerItem.innerHTML = `
-                    <div class="player-rank ${rankClass}">${rank}</div>
-                    <div class="player-avatar">
-                        <img src="${avatarUrl}" alt="${player.name}" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(player.name)}&background=random&size=128&color=fff&font-size=0.5'"> </div>
-                    <div class="player-info"> <div class="player-name">${player.name}</div>
-                        <div class="player-stats">
-                            <div class="stat wins"><i class="fas fa-trophy"></i> ${wins} Wins</div>
-                            <div class="stat losses"><i class="fas fa-times-circle"></i> ${losses} Losses</div> </div>
-                    </div>
-                    <div class="player-ratio ${ratioClass}">
-                        ${ratio} <div style="font-size: 0.7rem; opacity: 0.8;">W/L</div>
-                    </div>
-                    <div class="player-actions">
-                        <button class="toggle-matches-btn" data-player-id="${player.id}">
-                            <i class="fas fa-chevron-down"></i> Show Matches
-                        </button>
-                    </div>
-                    <div class="match-history-details" id="matches-${player.id}" style="display:none;">
-                        <div class="spinner" style="display:none;"></div>
-                        <ul></ul>
-                    </div>
-                `;
-                
-                const toggleBtn = playerItem.querySelector('.toggle-matches-btn');
-                toggleBtn.addEventListener('click', async function(e) {
-                    e.stopPropagation(); // Prevent player item click event
-                    const playerId = this.dataset.playerId;
-                    const matchesDiv = playerItem.querySelector(`#matches-${playerId}`);
-                    const icon = this.querySelector('i');
-                    const spinner = matchesDiv.querySelector('.spinner');
-                    const ul = matchesDiv.querySelector('ul');
-
-                    const isLoading = this.classList.contains('loading');
-                    if (isLoading) return;
-
-                    if (matchesDiv.style.display === 'none' || matchesDiv.style.display === '') {
-                        this.classList.add('loading');
-                        this.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Loading...`;
-                        ul.innerHTML = '';
-                        spinner.style.display = 'block';
-                        matchesDiv.style.display = 'block';
-
-                        try {
-                            const snapshot = await database.ref(`players/${playerId}/matches`).orderByChild('date').once('value');
-                            const matchesData = snapshot.val();
-                            ul.innerHTML = ''; 
-                            
-                            if (matchesData) {
-                                const matchKeys = Object.keys(matchesData).sort((a, b) => {
-                                    const dateA = matchesData[a].date ? new Date(matchesData[a].date).getTime() : 0;
-                                    const dateB = matchesData[b].date ? new Date(matchesData[b].date).getTime() : 0;
-                                    return dateB - dateA; 
-                                });
-
-                                for (const key of matchKeys) {
-                                    const match = matchesData[key];
-                                    const listItem = document.createElement('li');
-                                    listItem.innerHTML = `
-                                        <span>
-                                          <span class="match-result-${match.result}">${match.result}</span> vs 
-                                          <span class="match-opponent">${match.opponentName}</span>
-                                          <span class="match-score">(${match.playerScore}-${match.opponentScore})</span>
-                                        </span>
-                                        <span class="match-date">${match.date || 'N/A'}</span>
-                                    `;
-                                    ul.appendChild(listItem);
-                                }
-                            } else {
-                                ul.innerHTML = '<li>No match history recorded.</li>';
-                            }
-                            this.innerHTML = `<i class="fas fa-chevron-up"></i> Hide Matches`;
-                            this.classList.add('expanded');
-                        } catch (error) {
-                            showNotification('Error loading match history: ' + error.message, 'error');
-                            ul.innerHTML = '<li>Error loading matches.</li>';
-                            this.innerHTML = `<i class="fas fa-chevron-down"></i> Show Matches`;
-                        } finally {
-                            this.classList.remove('loading');
-                            spinner.style.display = 'none';
-                        }
-                    } else {
-                        matchesDiv.style.display = 'none';
-                        this.innerHTML = `<i class="fas fa-chevron-down"></i> Show Matches`;
-                        this.classList.remove('expanded');
-                    }
-                });
-                playerList.appendChild(playerItem); /* [cite: 193] */
-            });
-        }
-
-        // --- Admin Actions (Player CRUD) ---
-        function selectPlayer(player) {
-            document.querySelectorAll('.player-item').forEach(item => { /* [cite: 193] */
-                item.classList.remove('selected');
-            });
-            const playerElement = document.querySelector(`.player-item[data-id="${player.id}"]`); /* [cite: 194] */
-            if (playerElement) { /* [cite: 195] */
-                playerElement.classList.add('selected'); /* [cite: 195] */
-            }
-            
-            selectedPlayerId = player.id; /* [cite: 196] */
-            playerNameInput.value = player.name; /* [cite: 197] */
-            playerRankInput.value = player.rank || ''; /* [cite: 197] */
-            playerWinsInput.value = player.wins || 0; /* [cite: 197] */
-            playerLossesInput.value = player.losses || 0; /* [cite: 197] */
-            playerAvatarInput.value = player.avatar || ''; /* [cite: 198] */
-            
-            updatePlayerBtn.disabled = false; /* [cite: 198] */
-            deletePlayerBtn.disabled = false; /* [cite: 198] */
-            addPlayerBtn.disabled = true; /* [cite: 198] */
-
-            if (auth.currentUser) {
-                addMatchSection.style.display = 'block';
-                addMatchSection.querySelector('h3').textContent = `Add Match for ${player.name}`;
-            }
-        }
-
-        function clearSelection() {
-            document.querySelectorAll('.player-item').forEach(item => { /* [cite: 199] */
-                item.classList.remove('selected');
-            });
-            selectedPlayerId = null; /* [cite: 200] */
-            playerNameInput.value = ''; /* [cite: 200] */
-            playerRankInput.value = ''; /* [cite: 200] */
-            playerWinsInput.value = ''; /* [cite: 200] */
-            playerLossesInput.value = ''; /* [cite: 200] */
-            playerAvatarInput.value = ''; /* [cite: 200] */
-            
-            updatePlayerBtn.disabled = true; /* [cite: 201] */
-            deletePlayerBtn.disabled = true; /* [cite: 201] */
-            addPlayerBtn.disabled = false; /* [cite: 201] */
-            
-            addMatchSection.style.display = 'none';
-            matchOpponentNameInput.value = '';
-            matchPlayerScoreInput.value = '';
-            matchOpponentScoreInput.value = '';
-            matchDateInput.value = '';
-        }
-
-        addPlayerBtn.addEventListener('click', async () => {
-            const name = playerNameInput.value.trim();
-            const rankInput = playerRankInput.value;
-            const wins = parseInt(playerWinsInput.value) || 0;
-            const losses = parseInt(playerLossesInput.value) || 0; /* [cite: 202] */
-            const avatar = playerAvatarInput.value.trim();
-            
-            if (!name) {
-                showNotification('Please enter a player name', 'error');
-                return;
-            }
-            
-            const rank = rankInput ? parseInt(rankInput) : null; // Store null if empty, or handle default rank logic
-
-            const playerData = { name, wins, losses }; /* [cite: 203] */
-            if (rank !== null) playerData.rank = rank;
-            if (avatar) playerData.avatar = avatar; /* [cite: 204] */
-            
-            addPlayerBtn.disabled = true;
-            addPlayerBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Adding...';
-
-            try {
-                await database.ref('players').push(playerData);
-                showNotification('Player added successfully!', 'success'); /* [cite: 205] */
-                clearSelection(); /* [cite: 205] */
-                loadPlayers(); /* [cite: 206] */
             } catch (error) {
-                showNotification('Error adding player: ' + error.message, 'error');
-            } finally {
-                 // clearSelection enables addPlayerBtn if no player is selected
-                if (!selectedPlayerId) {
-                    addPlayerBtn.disabled = false;
-                }
-                addPlayerBtn.innerHTML = '<i class="fas fa-plus"></i> Add Player';
+                console.error('Error loading users:', error);
             }
-        }); /* [cite: 207] */
+        }
 
-        updatePlayerBtn.addEventListener('click', async () => {
-            if (!selectedPlayerId) return;
+        // Select user for chat
+        window.selectUser = (user) => {
+            window.selectedUser = user;
             
-            const name = playerNameInput.value.trim();
-            const rankInput = playerRankInput.value;
-            const wins = parseInt(playerWinsInput.value) || 0;
-            const losses = parseInt(playerLossesInput.value) || 0; /* [cite: 208] */
-            const avatar = playerAvatarInput.value.trim();
+            // Update UI
+            document.querySelectorAll('.user-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.target.closest('.user-item').classList.add('active');
             
-            if (!name) {
-                showNotification('Please enter a player name', 'error');
-                return;
+            document.getElementById('chatHeader').textContent = `Chat with ${user.email}`;
+            
+            // Load messages
+            loadMessages();
+        };
+
+        // Load messages for selected chat
+        function loadMessages() {
+            if (window.unsubscribeMessages) {
+                window.unsubscribeMessages();
             }
-            const rank = rankInput ? parseInt(rankInput) : null;
 
-            const playerData = { name, wins, losses }; /* [cite: 209] */
-            if (rank !== null) playerData.rank = rank;
-            else playerData.rank = firebase.database.ServerValue.TIMESTAMP; // Or some other default if rank must exist / or remove it
-            
-            if (avatar) playerData.avatar = avatar; /* [cite: 210] */
-            else playerData.avatar = null; // Explicitly remove if empty
+            if (!window.selectedUser) return;
 
-            updatePlayerBtn.disabled = true;
-            updatePlayerBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating...';
+            const chatId = getChatId(window.currentUser.uid, window.selectedUser.id);
+            const messagesQuery = query(
+                collection(db, 'messages'),
+                where('chatId', '==', chatId),
+                orderBy('timestamp', 'asc')
+            );
 
+            window.unsubscribeMessages = onSnapshot(messagesQuery, (snapshot) => {
+                const messagesContainer = document.getElementById('messagesContainer');
+                messagesContainer.innerHTML = '';
+
+                snapshot.forEach((doc) => {
+                    const message = doc.data();
+                    const messageElement = document.createElement('div');
+                    messageElement.className = `message ${message.senderId === window.currentUser.uid ? 'sent' : 'received'}`;
+                    
+                    messageElement.innerHTML = `
+                        <div>${message.text}</div>
+                        <div class="message-info">${formatTime(message.timestamp)}</div>
+                    `;
+                    
+                    messagesContainer.appendChild(messageElement);
+                });
+
+                // Scroll to bottom
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            });
+        }
+
+        // Create user document in Firestore
+        async function createUserDocument(user) {
             try {
-                await database.ref('players/' + selectedPlayerId).update(playerData); /* [cite: 210] */
-                showNotification('Player updated successfully!', 'success'); /* [cite: 211] */
-                clearSelection(); /* [cite: 212] */
-                loadPlayers(); /* [cite: 212] */
+                await addDoc(collection(db, 'users'), {
+                    email: user.email,
+                    uid: user.uid,
+                    createdAt: serverTimestamp()
+                });
             } catch (error) {
-                showNotification('Error updating player: ' + error.message, 'error');
-            } finally {
-                // clearSelection enables addPlayerBtn, but updatePlayerBtn state is managed by selection
-                if (selectedPlayerId) { // Should be null after clearSelection
-                     updatePlayerBtn.disabled = false; // Re-enable if selection somehow persists, though clearSelection should handle this
-                } else {
-                    updatePlayerBtn.disabled = true;
-                }
-                updatePlayerBtn.innerHTML = '<i class="fas fa-edit"></i> Update Player';
+                console.error('Error creating user document:', error);
             }
-        }); /* [cite: 213] */
+        }
 
-        deletePlayerBtn.addEventListener('click', async () => {
-            if (!selectedPlayerId) return;
-            
-            if (confirm('Are you sure you want to delete this player?')) {
-                deletePlayerBtn.disabled = true;
-                deletePlayerBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Deleting...';
-                try {
-                    await database.ref('players/' + selectedPlayerId).remove(); /* [cite: 213] */
-                    showNotification('Player deleted successfully!', 'success'); /* [cite: 214] */
-                    clearSelection();
-                    loadPlayers();
-                } catch (error) { /* [cite: 215] */
-                    showNotification('Error deleting player: ' + error.message, 'error');
-                } finally {
-                    // deletePlayerBtn state is managed by selection
-                    if (selectedPlayerId) {
-                         deletePlayerBtn.disabled = false;
-                    } else {
-                        deletePlayerBtn.disabled = true;
-                    }
-                    deletePlayerBtn.innerHTML = '<i class="fas fa-trash"></i> Delete Player';
+        // Auth state observer
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                window.currentUser = user;
+                
+                // Update UI
+                document.getElementById('authSection').classList.add('hidden');
+                document.getElementById('mainContent').classList.remove('hidden');
+                document.getElementById('userInfo').classList.remove('hidden');
+                
+                document.getElementById('userName').textContent = user.email;
+                document.getElementById('userAvatar').textContent = getInitials(user.email);
+                
+                // Create user document if it doesn't exist
+                await createUserDocument(user);
+                
+                // Load users
+                loadUsers();
+            } else {
+                window.currentUser = null;
+                window.selectedUser = null;
+                
+                // Update UI
+                document.getElementById('authSection').classList.remove('hidden');
+                document.getElementById('mainContent').classList.add('hidden');
+                document.getElementById('userInfo').classList.add('hidden');
+                
+                // Clear form
+                document.getElementById('email').value = '';
+                document.getElementById('password').value = '';
+                
+                if (window.unsubscribeMessages) {
+                    window.unsubscribeMessages();
                 }
             }
         });
 
-        // --- Add Match (from Sidebar) ---
-        addMatchBtnSidebar.addEventListener('click', async () => {
-            if (!selectedPlayerId) {
-                showNotification('Please select a player first.', 'warning');
-                return;
-            }
-
-            const opponentName = matchOpponentNameInput.value.trim();
-            const playerScoreStr = matchPlayerScoreInput.value;
-            const opponentScoreStr = matchOpponentScoreInput.value;
-            const matchDate = matchDateInput.value;
-
-            if (!opponentName || playerScoreStr === '' || opponentScoreStr === '') {
-                showNotification('Please fill in opponent name and both scores.', 'error');
-                return;
-            }
-            
-            const playerScore = parseInt(playerScoreStr);
-            const opponentScore = parseInt(opponentScoreStr);
-
-            if (isNaN(playerScore) || isNaN(opponentScore)) {
-                 showNotification('Scores must be numbers.', 'error');
-                return;
-            }
-
-            const result = playerScore > opponentScore ? 'W' : (playerScore < opponentScore ? 'L' : 'D');
-            
-            const matchData = {
-                opponentName,
-                playerScore,
-                opponentScore,
-                result,
-                date: matchDate || new Date().toISOString().split('T')[0] 
-            };
-
-            addMatchBtnSidebar.disabled = true;
-            addMatchBtnSidebar.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Adding Match...';
-
-            try {
-                await database.ref(`players/${selectedPlayerId}/matches`).push(matchData);
-
-                const playerRef = database.ref(`players/${selectedPlayerId}`);
-                const snapshot = await playerRef.once('value');
-                const currentPlayerData = snapshot.val();
-
-                const newWins = (currentPlayerData.wins || 0) + (result === 'W' ? 1 : 0);
-                const newLosses = (currentPlayerData.losses || 0) + (result === 'L' ? 1 : 0);
-                // Not explicitly tracking draws in main W/L count here
-
-                await playerRef.update({ wins: newWins, losses: newLosses });
-                
-                showNotification('Match added successfully!', 'success');
-                matchOpponentNameInput.value = '';
-                matchPlayerScoreInput.value = '';
-                matchOpponentScoreInput.value = '';
-                matchDateInput.value = '';
-                
-                // Update the displayed wins/losses for the selected player in the admin form
-                playerWinsInput.value = newWins;
-                playerLossesInput.value = newLosses;
-
-                loadPlayers(); // Refresh the main list
-            } catch (error) {
-                showNotification('Error adding match: ' + error.message, 'error');
-            } finally {
-                addMatchBtnSidebar.disabled = false;
-                addMatchBtnSidebar.innerHTML = '<i class="fas fa-gamepad"></i> Add Match';
-            }
+        // Auto-resize textarea
+        document.getElementById('messageInput').addEventListener('input', function() {
+            this.style.height = '44px';
+            this.style.height = Math.min(this.scrollHeight, 120) + 'px';
         });
-
-
-        // --- Event Listeners & Initialize ---
-        clearSelectionBtn.addEventListener('click', clearSelection); /* [cite: 216] */
-        refreshBtn.addEventListener('click', loadPlayers); /* [cite: 217] */
-        
-        loadPlayers(); /* [cite: 218] */
     </script>
 </body>
 </html>
